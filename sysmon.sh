@@ -87,6 +87,7 @@ if [ "$INTERVAL" = 0 ]; then
 fi
 
 while :; do
+    clear
     render
     sleep "$INTERVAL"
 done
