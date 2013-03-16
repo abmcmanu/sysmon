@@ -58,6 +58,17 @@ mem_usage() {
     echo "$((used / 1024)) $((total / 1024)) $((100 * used / total))"
 }
 
+# bar PCT -> [#########...........]
+bar() {
+    local pct=$1 width=30 n i out=""
+    [ "$pct" -gt 100 ] && pct=100
+    n=$((pct * width / 100))
+    for ((i = 0; i < width; i++)); do
+        if [ "$i" -lt "$n" ]; then out+="#"; else out+="."; fi
+    done
+    printf '[%s]' "$out"
+}
+
 render() {
     local cpu mem_used mem_total mem_pct l1 l5 l15
     cpu=$(cpu_usage)
@@ -65,8 +76,8 @@ render() {
     read -r l1 l5 l15 _ < /proc/loadavg
 
     printf '%s  %s\n\n' "$(hostname)" "$(date '+%Y-%m-%d %H:%M:%S')"
-    printf 'cpu   %3d%%\n' "$cpu"
-    printf 'mem   %3d%%  %d / %d MB\n' "$mem_pct" "$mem_used" "$mem_total"
+    printf 'cpu   %3d%%  %s\n' "$cpu" "$(bar "$cpu")"
+    printf 'mem   %3d%%  %s  %d / %d MB\n' "$mem_pct" "$(bar "$mem_pct")" "$mem_used" "$mem_total"
     printf 'load  %s %s %s\n' "$l1" "$l5" "$l15"
 }
 
