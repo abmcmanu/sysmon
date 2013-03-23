@@ -9,12 +9,14 @@ set -u
 
 VERSION="0.1.0-dev"
 INTERVAL=0
+USE_COLOR=1
 
 usage() {
     cat <<EOF
 Usage: ${0##*/} [options]
 
   -i SEC   refresh every SEC seconds (default: print once and exit)
+  -n       no colors
   -h       show this help
   -V       show version
 EOF
@@ -58,6 +60,28 @@ mem_usage() {
     echo "$((used / 1024)) $((total / 1024)) $((100 * used / total))"
 }
 
+setup_colors() {
+    if [ "$USE_COLOR" -eq 1 ] && [ -t 1 ]; then
+        RED=$'\e[31m'
+        YELLOW=$'\e[33m'
+        GREEN=$'\e[32m'
+        BOLD=$'\e[1m'
+        RESET=$'\e[0m'
+    else
+        RED="" YELLOW="" GREEN="" BOLD="" RESET=""
+    fi
+}
+
+level_color() {
+    if [ "$1" -ge 90 ]; then
+        printf '%s' "$RED"
+    elif [ "$1" -ge 70 ]; then
+        printf '%s' "$YELLOW"
+    else
+        printf '%s' "$GREEN"
+    fi
+}
+
 # bar PCT -> [#########...........]
 bar() {
     local pct=$1 width=30 n i out=""
@@ -66,7 +90,7 @@ bar() {
     for ((i = 0; i < width; i++)); do
         if [ "$i" -lt "$n" ]; then out+="#"; else out+="."; fi
     done
-    printf '[%s]' "$out"
+    printf '[%s%s%s]' "$(level_color "$pct")" "$out" "$RESET"
 }
 
 render() {
@@ -75,22 +99,26 @@ render() {
     read -r mem_used mem_total mem_pct <<< "$(mem_usage)"
     read -r l1 l5 l15 _ < /proc/loadavg
 
-    printf '%s  %s\n\n' "$(hostname)" "$(date '+%Y-%m-%d %H:%M:%S')"
+    printf '%s%s%s  %s\n\n' "$BOLD" "$(hostname)" "$RESET" "$(date '+%Y-%m-%d %H:%M:%S')"
     printf 'cpu   %3d%%  %s\n' "$cpu" "$(bar "$cpu")"
     printf 'mem   %3d%%  %s  %d / %d MB\n' "$mem_pct" "$(bar "$mem_pct")" "$mem_used" "$mem_total"
     printf 'load  %s %s %s\n' "$l1" "$l5" "$l15"
 }
 
 OPTS="i:hV"
+OPTS+="n"
 
 while getopts "$OPTS" opt; do
     case $opt in
         i) INTERVAL=$OPTARG ;;
+        n) USE_COLOR=0 ;;
         h) usage; exit 0 ;;
         V) echo "sysmon $VERSION"; exit 0 ;;
         *) usage >&2; exit 2 ;;
     esac
 done
+
+setup_colors
 
 if [ "$INTERVAL" = 0 ]; then
     render
