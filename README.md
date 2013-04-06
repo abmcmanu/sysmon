@@ -12,6 +12,17 @@ mem    41%  [############..................]  1673 / 3953 MB
 load  0.21 0.18 0.12
 ```
 
+## Usage
+
+```
+sysmon.sh              # print once and exit
+sysmon.sh -i 2         # refresh every 2 seconds, Ctrl-C to quit
+```
+
+Install it somewhere in your `$PATH`:
+
+    cp sysmon.sh ~/bin/sysmon
+
 ## License
 
 MIT
