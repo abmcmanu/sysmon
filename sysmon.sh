@@ -7,7 +7,7 @@
 
 set -u
 
-VERSION="0.1.0-dev"
+VERSION="0.1.0"
 INTERVAL=0
 USE_COLOR=1
 
