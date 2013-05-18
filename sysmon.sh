@@ -103,6 +103,9 @@ render() {
     printf 'cpu   %3d%%  %s\n' "$cpu" "$(bar "$cpu")"
     printf 'mem   %3d%%  %s  %d / %d MB\n' "$mem_pct" "$(bar "$mem_pct")" "$mem_used" "$mem_total"
     printf 'load  %s %s %s\n' "$l1" "$l5" "$l15"
+
+    echo "disks"
+    df -P -x tmpfs -x devtmpfs 2>/dev/null | awk 'NR>1 {gsub("%","",$5); printf "  %-24s %3d%%\n", $6, $5}'
 }
 
 OPTS="i:hV"
