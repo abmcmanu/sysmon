@@ -24,7 +24,7 @@ Install it somewhere in your `$PATH`:
     cp sysmon.sh ~/bin/sysmon
 
 Besides cpu/memory/load it shows filesystem usage
-for every mounted filesystem.
+and the five busiest processes.
 
 ## License
 
