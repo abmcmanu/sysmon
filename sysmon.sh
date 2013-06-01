@@ -106,6 +106,9 @@ render() {
 
     echo "disks"
     df -P -x tmpfs -x devtmpfs 2>/dev/null | awk 'NR>1 {gsub("%","",$5); printf "  %-24s %3d%%\n", $6, $5}'
+
+    echo "top processes"
+    ps -eo pid,pcpu,pmem,comm --sort=-pcpu | head -n 6 | sed 's/^/  /'
 }
 
 OPTS="i:hV"
