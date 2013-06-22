@@ -26,7 +26,8 @@ EOF
 read_cpu() {
     local cpu user nice system idle iowait irq softirq steal rest
     read -r cpu user nice system idle iowait irq softirq steal rest < /proc/stat
-    echo "$idle $((user + nice + system + idle + iowait + irq + softirq + steal))"
+    # iowait is time spent idle while waiting for I/O: count it as idle
+    echo "$((idle + iowait)) $((user + nice + system + idle + iowait + irq + softirq + steal))"
 }
 
 # cpu usage in percent, measured over half a second
