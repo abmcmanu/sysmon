@@ -10,12 +10,16 @@ set -u
 VERSION="0.1.0"
 INTERVAL=0
 USE_COLOR=1
+CPU_MAX=90
+MEM_MAX=90
 
 usage() {
     cat <<EOF
 Usage: ${0##*/} [options]
 
   -i SEC   refresh every SEC seconds (default: print once and exit)
+  -c PCT   cpu alert threshold in percent (default: $CPU_MAX)
+  -m PCT   memory alert threshold in percent (default: $MEM_MAX)
   -n       no colors
   -h       show this help
   -V       show version
@@ -94,6 +98,14 @@ bar() {
     printf '[%s%s%s]' "$(level_color "$pct")" "$out" "$RESET"
 }
 
+check_alerts() {
+    local cpu=$1 mem=$2 msg=""
+    [ "$cpu" -ge "$CPU_MAX" ] && msg+="cpu ${cpu}% >= ${CPU_MAX}% "
+    [ "$mem" -ge "$MEM_MAX" ] && msg+="mem ${mem}% >= ${MEM_MAX}% "
+    [ -z "$msg" ] && return 0
+    printf '%s!! ALERT: %s%s\n' "$RED" "$msg" "$RESET" >&2
+}
+
 render() {
     local cpu mem_used mem_total mem_pct l1 l5 l15
     cpu=$(cpu_usage)
@@ -110,14 +122,19 @@ render() {
 
     echo "top processes"
     ps -eo pid,pcpu,pmem,comm --sort=-pcpu | head -n 6 | sed 's/^/  /'
+
+    check_alerts "$cpu" "$mem_pct"
 }
 
 OPTS="i:hV"
+OPTS+="c:m:"
 OPTS+="n"
 
 while getopts "$OPTS" opt; do
     case $opt in
         i) INTERVAL=$OPTARG ;;
+        c) CPU_MAX=$OPTARG ;;
+        m) MEM_MAX=$OPTARG ;;
         n) USE_COLOR=0 ;;
         h) usage; exit 0 ;;
         V) echo "sysmon $VERSION"; exit 0 ;;
