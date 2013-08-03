@@ -17,6 +17,7 @@ load  0.21 0.18 0.12
 ```
 sysmon.sh              # print once and exit
 sysmon.sh -i 2         # refresh every 2 seconds, Ctrl-C to quit
+sysmon.sh -i 5 -c 80   # warn when cpu >= 80%
 ```
 
 Install it somewhere in your `$PATH`:
@@ -25,6 +26,11 @@ Install it somewhere in your `$PATH`:
 
 Besides cpu/memory/load it shows filesystem usage
 and the five busiest processes.
+
+## Alerts
+
+With `-c` and `-m`, a line `!! ALERT: ...` is printed on stderr when cpu
+or memory usage reaches the threshold (90% by default).
 
 ## License
 
