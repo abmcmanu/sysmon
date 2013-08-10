@@ -12,6 +12,7 @@ INTERVAL=0
 USE_COLOR=1
 CPU_MAX=90
 MEM_MAX=90
+LOGFILE=""
 
 usage() {
     cat <<EOF
@@ -20,6 +21,7 @@ Usage: ${0##*/} [options]
   -i SEC   refresh every SEC seconds (default: print once and exit)
   -c PCT   cpu alert threshold in percent (default: $CPU_MAX)
   -m PCT   memory alert threshold in percent (default: $MEM_MAX)
+  -l FILE  append one line per sample to FILE
   -n       no colors
   -h       show this help
   -V       show version
@@ -124,10 +126,12 @@ render() {
     ps -eo pid,pcpu,pmem,comm --sort=-pcpu | head -n 6 | sed 's/^/  /'
 
     check_alerts "$cpu" "$mem_pct"
+    [ -n "$LOGFILE" ] && echo "$(date '+%F %T'),$cpu,$mem_pct,$l1" >> $LOGFILE
 }
 
 OPTS="i:hV"
 OPTS+="c:m:"
+OPTS+="l:"
 OPTS+="n"
 
 while getopts "$OPTS" opt; do
@@ -135,6 +139,7 @@ while getopts "$OPTS" opt; do
         i) INTERVAL=$OPTARG ;;
         c) CPU_MAX=$OPTARG ;;
         m) MEM_MAX=$OPTARG ;;
+        l) LOGFILE=$OPTARG ;;
         n) USE_COLOR=0 ;;
         h) usage; exit 0 ;;
         V) echo "sysmon $VERSION"; exit 0 ;;
