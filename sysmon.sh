@@ -154,6 +154,9 @@ if [ "$INTERVAL" = 0 ]; then
     exit 0
 fi
 
+trap 'printf "\e[?25h"; exit 0' INT TERM
+printf '\e[?25l'
+
 while :; do
     clear
     render
