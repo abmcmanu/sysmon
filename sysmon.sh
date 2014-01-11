@@ -147,6 +147,11 @@ while getopts "$OPTS" opt; do
     esac
 done
 
+if [ ! -r /proc/stat ]; then
+    echo "${0##*/}: /proc/stat is not readable (this script only works on Linux)" >&2
+    exit 1
+fi
+
 setup_colors
 
 if [ "$INTERVAL" = 0 ]; then
