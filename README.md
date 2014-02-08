@@ -19,6 +19,7 @@ sysmon.sh              # print once and exit
 sysmon.sh -i 2         # refresh every 2 seconds, Ctrl-C to quit
 sysmon.sh -i 5 -c 80   # warn when cpu >= 80%
 sysmon.sh -i 60 -l /var/log/sysmon.csv   # keep a log
+sysmon.sh -i 10 -C > load.csv            # csv for later
 ```
 
 Install it somewhere in your `$PATH`:
