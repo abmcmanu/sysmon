@@ -13,6 +13,7 @@ USE_COLOR=1
 CPU_MAX=90
 MEM_MAX=90
 LOGFILE=""
+CSV=0
 
 usage() {
     cat <<EOF
@@ -22,6 +23,7 @@ Usage: ${0##*/} [options]
   -c PCT   cpu alert threshold in percent (default: $CPU_MAX)
   -m PCT   memory alert threshold in percent (default: $MEM_MAX)
   -l FILE  append one line per sample to FILE
+  -C       csv output (pipe it to a file, gnuplot, a spreadsheet...)
   -n       no colors
   -h       show this help
   -V       show version
@@ -114,6 +116,11 @@ render() {
     read -r mem_used mem_total mem_pct <<< "$(mem_usage)"
     read -r l1 l5 l15 _ < /proc/loadavg
 
+    if [ "$CSV" -eq 1 ]; then
+        printf '%s,%s,%s,%s,%s,%s\n' "$(date +%s)" "$cpu" "$mem_pct" "$l1" "$l5" "$l15"
+        return
+    fi
+
     printf '%s%s%s  %s\n\n' "$BOLD" "$(hostname)" "$RESET" "$(date '+%Y-%m-%d %H:%M:%S')"
     printf 'cpu   %3d%%  %s\n' "$cpu" "$(bar "$cpu")"
     printf 'mem   %3d%%  %s  %d / %d MB\n' "$mem_pct" "$(bar "$mem_pct")" "$mem_used" "$mem_total"
@@ -132,6 +139,7 @@ render() {
 OPTS="i:hV"
 OPTS+="c:m:"
 OPTS+="l:"
+OPTS+="C"
 OPTS+="n"
 
 while getopts "$OPTS" opt; do
@@ -140,6 +148,7 @@ while getopts "$OPTS" opt; do
         c) CPU_MAX=$OPTARG ;;
         m) MEM_MAX=$OPTARG ;;
         l) LOGFILE=$OPTARG ;;
+        C) CSV=1 ;;
         n) USE_COLOR=0 ;;
         h) usage; exit 0 ;;
         V) echo "sysmon $VERSION"; exit 0 ;;
@@ -153,6 +162,9 @@ if [ ! -r /proc/stat ]; then
 fi
 
 setup_colors
+[ "$CSV" -eq 1 ] && USE_COLOR=0 && setup_colors
+
+[ "$CSV" -eq 1 ] && echo "ts,cpu,mem,load1,load5,load15"
 
 if [ "$INTERVAL" = 0 ]; then
     render
@@ -163,7 +175,7 @@ trap 'printf "\e[?25h"; exit 0' INT TERM
 printf '\e[?25l'
 
 while :; do
-    clear
+    [ "$CSV" -eq 1 ] || clear
     render
     sleep "$INTERVAL"
 done
