@@ -34,6 +34,17 @@ and the five busiest processes.
 With `-c` and `-m`, a line `!! ALERT: ...` is printed on stderr when cpu
 or memory usage reaches the threshold (90% by default).
 
+## Plotting
+
+`-C` prints `ts,cpu,mem,load1,load5,load15` lines. One hour of data,
+plotted with gnuplot:
+
+```sh
+./sysmon.sh -i 10 -C > /tmp/sysmon.csv &   # let it run for a while
+gnuplot -p -e "set datafile separator ','; set xdata time; set timefmt '%s'; \
+  plot '/tmp/sysmon.csv' using 1:2 with lines title 'cpu', '' using 1:3 with lines title 'mem'"
+```
+
 ## License
 
 MIT
