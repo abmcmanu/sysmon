@@ -2,6 +2,11 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 0.3.0 - 2014-03-29
+
+- CSV output `-C` for spreadsheets and gnuplot.
+- Clear error on systems without /proc.
+
 ## 0.2.0 - 2013-09-21
 
 - Filesystem usage and top processes.
