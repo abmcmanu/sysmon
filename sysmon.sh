@@ -62,9 +62,12 @@ mem_usage() {
             MemFree:)      free=$val ;;
             Buffers:)      buffers=$val ;;
             Cached:)       cached=$val ;;
+            MemAvailable:) avail=$val ;;
         esac
     done < /proc/meminfo
-    avail=$((free + buffers + cached))
+    # MemAvailable appeared in Linux 3.14 and accounts for reclaimable
+    # slab and shared memory; fall back to the old estimate otherwise.
+    [ -n "$avail" ] || avail=$((free + buffers + cached))
     local used=$((total - avail))
     echo "$((used / 1024)) $((total / 1024)) $((100 * used / total))"
 }
