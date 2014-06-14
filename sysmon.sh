@@ -111,6 +111,9 @@ check_alerts() {
     [ "$mem" -ge "$MEM_MAX" ] && msg+="mem ${mem}% >= ${MEM_MAX}% "
     [ -z "$msg" ] && return 0
     printf '%s!! ALERT: %s%s\n' "$RED" "$msg" "$RESET" >&2
+    if command -v logger > /dev/null 2>&1; then
+        logger -t sysmon "ALERT: $msg"
+    fi
 }
 
 render() {

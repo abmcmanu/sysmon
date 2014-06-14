@@ -33,6 +33,8 @@ and the five busiest processes.
 
 With `-c` and `-m`, a line `!! ALERT: ...` is printed on stderr when cpu
 or memory usage reaches the threshold (90% by default).
+Alerts also go to syslog (`logger -t sysmon`), so they end up in
+`/var/log/syslog` or `journalctl -t sysmon`.
 
 ## Plotting
 
