@@ -6,6 +6,7 @@
 # Run `sysmon.sh -h` for options.
 
 set -u
+set -o pipefail
 
 VERSION="0.3.0"
 INTERVAL=0
