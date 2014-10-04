@@ -134,13 +134,15 @@ render() {
     printf 'load  %s %s %s\n' "$l1" "$l5" "$l15"
 
     echo "disks"
-    df -P -x tmpfs -x devtmpfs 2>/dev/null | awk 'NR>1 {gsub("%","",$5); printf "  %-24s %3d%%\n", $6, $5}'
+    df -P -x tmpfs -x devtmpfs 2> /dev/null | awk 'NR > 1 { sub("%", "", $5); printf "  %-24s %3d%%\n", $6, $5 }'
 
     echo "top processes"
     ps -eo pid,pcpu,pmem,comm --sort=-pcpu | head -n 6 | sed 's/^/  /'
 
     check_alerts "$cpu" "$mem_pct"
-    [ -n "$LOGFILE" ] && echo "$(date '+%F %T'),$cpu,$mem_pct,$l1" >> $LOGFILE
+    if [ -n "$LOGFILE" ]; then
+        printf '%s,%s,%s,%s\n' "$(date '+%F %T')" "$cpu" "$mem_pct" "$l1" >> "$LOGFILE"
+    fi
 }
 
 OPTS="i:hV"
