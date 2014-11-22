@@ -2,6 +2,12 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 0.4.0 - 2014-11-22
+
+- Memory usage based on `MemAvailable` (Linux >= 3.14).
+- Alerts are also sent to syslog.
+- shellcheck clean.
+
 ## 0.3.0 - 2014-03-29
 
 - CSV output `-C` for spreadsheets and gnuplot.
