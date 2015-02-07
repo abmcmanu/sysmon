@@ -47,6 +47,10 @@ gnuplot -p -e "set datafile separator ','; set xdata time; set timefmt '%s'; \
   plot '/tmp/sysmon.csv' using 1:2 with lines title 'cpu', '' using 1:3 with lines title 'mem'"
 ```
 
+## Tests
+
+    make test     # needs bats: https://github.com/sstephenson/bats
+
 ## License
 
 MIT
