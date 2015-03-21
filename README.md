@@ -24,7 +24,7 @@ sysmon.sh -i 10 -C > load.csv            # csv for later
 
 Install it somewhere in your `$PATH`:
 
-    cp sysmon.sh ~/bin/sysmon
+    sudo make install      # /usr/local/bin/sysmon
 
 Besides cpu/memory/load it shows filesystem usage
 and the five busiest processes.
