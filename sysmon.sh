@@ -54,9 +54,10 @@ cpu_usage() {
     echo $(( (100 * (dt - di)) / dt ))
 }
 
-# prints "used_mb total_mb percent"
+# prints "used_mb total_mb percent swap_used_mb swap_total_mb"
 mem_usage() {
     local key val total=0 free=0 buffers=0 cached=0 avail=""
+    local swap_total=0 swap_free=0
     while read -r key val _; do
         case $key in
             MemTotal:)     total=$val ;;
@@ -64,13 +65,15 @@ mem_usage() {
             Buffers:)      buffers=$val ;;
             Cached:)       cached=$val ;;
             MemAvailable:) avail=$val ;;
+            SwapTotal:)    swap_total=$val ;;
+            SwapFree:)     swap_free=$val ;;
         esac
     done < /proc/meminfo
     # MemAvailable appeared in Linux 3.14 and accounts for reclaimable
     # slab and shared memory; fall back to the old estimate otherwise.
     [ -n "$avail" ] || avail=$((free + buffers + cached))
     local used=$((total - avail))
-    echo "$((used / 1024)) $((total / 1024)) $((100 * used / total))"
+    echo "$((used / 1024)) $((total / 1024)) $((100 * used / total)) $(((swap_total - swap_free) / 1024)) $((swap_total / 1024))"
 }
 
 setup_colors() {
@@ -119,8 +122,9 @@ check_alerts() {
 
 render() {
     local cpu mem_used mem_total mem_pct l1 l5 l15
+    local swap_used swap_total
     cpu=$(cpu_usage)
-    read -r mem_used mem_total mem_pct <<< "$(mem_usage)"
+    read -r mem_used mem_total mem_pct swap_used swap_total <<< "$(mem_usage)"
     read -r l1 l5 l15 _ < /proc/loadavg
 
     if [ "$CSV" -eq 1 ]; then
@@ -131,6 +135,9 @@ render() {
     printf '%s%s%s  %s\n\n' "$BOLD" "$(hostname)" "$RESET" "$(date '+%Y-%m-%d %H:%M:%S')"
     printf 'cpu   %3d%%  %s\n' "$cpu" "$(bar "$cpu")"
     printf 'mem   %3d%%  %s  %d / %d MB\n' "$mem_pct" "$(bar "$mem_pct")" "$mem_used" "$mem_total"
+    if [ "$swap_total" -gt 0 ]; then
+        printf 'swap        %d / %d MB\n' "$swap_used" "$swap_total"
+    fi
     printf 'load  %s %s %s\n' "$l1" "$l5" "$l15"
 
     echo "disks"
