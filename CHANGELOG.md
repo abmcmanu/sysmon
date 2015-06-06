@@ -2,6 +2,11 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 0.5.0 - 2015-06-06
+
+- Swap usage.
+- Test suite (bats), Makefile, Travis CI.
+
 ## 0.4.0 - 2014-11-22
 
 - Memory usage based on `MemAvailable` (Linux >= 3.14).

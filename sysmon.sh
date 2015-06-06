@@ -8,7 +8,7 @@
 set -u
 set -o pipefail
 
-VERSION="0.4.0"
+VERSION="0.5.0"
 INTERVAL=0
 USE_COLOR=1
 CPU_MAX=90
