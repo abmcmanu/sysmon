@@ -51,6 +51,16 @@ gnuplot -p -e "set datafile separator ','; set xdata time; set timefmt '%s'; \
 
     make test     # needs bats: https://github.com/sstephenson/bats
 
+## Known limitations
+
+* Linux only (`/proc`).
+* Every refresh forks a dozen processes (`date`, `ps`, `df`, `awk`...):
+  with `-i 1` on a small box, sysmon itself shows up in its own top list.
+* No memory between two refreshes: no averages, no history, alerts
+  cannot say "for 5 minutes".
+* Other programs can only consume the numbers by parsing the output.
+
+
 ## License
 
 MIT
