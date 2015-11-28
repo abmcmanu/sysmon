@@ -60,6 +60,8 @@ gnuplot -p -e "set datafile separator ','; set xdata time; set timefmt '%s'; \
   cannot say "for 5 minutes".
 * Other programs can only consume the numbers by parsing the output.
 
+A rewrite as a small C daemon is being considered, see
+[docs/adr/0001-rewrite-in-c.md](docs/adr/0001-rewrite-in-c.md).
 
 ## License
 
