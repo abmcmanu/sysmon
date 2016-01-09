@@ -4,6 +4,8 @@
 #
 # Reads /proc directly, no dependencies beyond bash and coreutils.
 # Run `sysmon.sh -h` for options.
+#
+# NOTE: superseded by the C daemon (sysmond), see ../README.md.
 
 set -u
 set -o pipefail

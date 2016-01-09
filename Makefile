@@ -4,8 +4,8 @@
 #   make install   install as $(PREFIX)/bin/sysmon
 
 PREFIX ?= /usr/local
-SCRIPT  = sysmon.sh
-TESTDIR = tests
+SCRIPT  = legacy/sysmon.sh
+TESTDIR = legacy/tests
 
 all:
 	@echo "nothing to build, try: make test | make install"
