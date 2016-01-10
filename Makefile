@@ -1,26 +1,31 @@
-# sysmon - shell edition
+# sysmon
 #
-#   make test      run the bats test suite
-#   make install   install as $(PREFIX)/bin/sysmon
+#   make             build sysmond
 
-PREFIX ?= /usr/local
-SCRIPT  = legacy/sysmon.sh
-TESTDIR = legacy/tests
+CC     ?= cc
+CFLAGS ?= -O2 -g
+CFLAGS += -std=c11 -Wall -Wextra -Isrc
+LDLIBS  =
+BUILD  ?= build
 
-all:
-	@echo "nothing to build, try: make test | make install"
+PLATFORM_SRC = src/collect_linux.c
+CFLAGS += -D_GNU_SOURCE
 
-test:
-	bats $(TESTDIR)
+LIB_SRC = src/config.c src/log.c src/metrics.c $(PLATFORM_SRC)
 
-lint:
-	shellcheck $(SCRIPT)
+LIB_OBJ  = $(LIB_SRC:%.c=$(BUILD)/obj/%.o)
+MAIN_OBJ = $(BUILD)/obj/src/main.o
 
-install:
-	install -d $(DESTDIR)$(PREFIX)/bin
-	install -m 755 $(SCRIPT) $(DESTDIR)$(PREFIX)/bin/sysmon
+all: $(BUILD)/sysmond
 
-uninstall:
-	rm -f $(DESTDIR)$(PREFIX)/bin/sysmon
+$(BUILD)/sysmond: $(MAIN_OBJ) $(LIB_OBJ)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
-.PHONY: all test lint install uninstall
+$(BUILD)/obj/%.o: %.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+clean:
+	rm -rf $(BUILD)
+
+.PHONY: all clean
