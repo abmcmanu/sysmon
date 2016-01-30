@@ -42,6 +42,13 @@ metric_t *metrics_set(const char *name, double value)
     return m;
 }
 
+void metrics_set_help(const char *name, const char *help)
+{
+    metric_t *m = get_or_create(name);
+    if (m)
+        snprintf(m->help, sizeof m->help, "%s", help);
+}
+
 const metric_t *metrics_get(const char *name)
 {
     return find(name);

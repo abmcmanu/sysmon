@@ -107,6 +107,14 @@ static void sample_load(void)
 
 int collect_init(void)
 {
+    metrics_set_help("cpu_usage_percent", "CPU busy time over the last interval, in percent.");
+    metrics_set_help("mem_total_bytes", "Physical memory.");
+    metrics_set_help("mem_used_bytes", "Memory in use (total - available).");
+    metrics_set_help("mem_used_percent", "Memory in use, in percent.");
+    metrics_set_help("load1", "Load average over 1 minute.");
+    metrics_set_help("load5", "Load average over 5 minutes.");
+    metrics_set_help("load15", "Load average over 15 minutes.");
+
     /* prime the cpu counters so the first real tick has a delta */
     unsigned long long idle, total;
     if (read_cpu(&idle, &total) < 0) {
