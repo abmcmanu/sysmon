@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #define METRIC_NAME_MAX 64
+#define METRIC_HELP_MAX 128
 #define METRICS_MAX     256
 
 /*
@@ -13,10 +14,12 @@
  */
 typedef struct metric {
     char name[METRIC_NAME_MAX];
+    char help[METRIC_HELP_MAX];
     double value; /* NAN until the first sample */
 } metric_t;
 
 metric_t *metrics_set(const char *name, double value);
+void metrics_set_help(const char *name, const char *help);
 const metric_t *metrics_get(const char *name);
 size_t metrics_count(void);
 const metric_t *metrics_at(size_t i);
