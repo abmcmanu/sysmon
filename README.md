@@ -5,6 +5,12 @@ cpu, memory and load at a fixed interval and keeps them in memory.
 
 The original bash version (2013-2015) lives in [`legacy/`](legacy/).
 
+## Configuration
+
+See [`contrib/sysmond.conf`](contrib/sysmond.conf) for every key.
+
+    ./build/sysmond -c contrib/sysmond.conf
+
 ## License
 
 MIT

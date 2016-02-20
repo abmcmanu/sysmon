@@ -31,6 +31,7 @@ static void usage(FILE *out)
     fprintf(out,
             "usage: sysmond [options]\n"
             "\n"
+            "  -c FILE   configuration file\n"
             "  -i SEC    sampling interval in seconds (default: 5)\n"
             "  -l LEVEL  log level: error, warn, info, debug\n"
             "  -V        print version and exit\n"
@@ -64,13 +65,18 @@ static void tick(const config_t *cfg)
 int main(int argc, char **argv)
 {
     config_t cfg;
+    const char *cfg_path = NULL;
     int interval = 0, level = -1, opt;
     static const char optstring[] = "hVi:l:"
+                                    "c:"
                                     ;
 
     config_defaults(&cfg);
     while ((opt = getopt(argc, argv, optstring)) != -1) {
         switch (opt) {
+        case 'c':
+            cfg_path = optarg;
+            break;
         case 'i':
             interval = atoi(optarg);
             if (interval < 1) {
@@ -97,6 +103,8 @@ int main(int argc, char **argv)
         }
     }
 
+    if (cfg_path && config_load(&cfg, cfg_path) < 0)
+        return 1;
     /* the command line wins over the configuration file */
     if (interval)
         cfg.interval = interval;
