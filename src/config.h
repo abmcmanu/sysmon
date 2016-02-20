@@ -10,5 +10,7 @@ typedef struct config {
 } config_t;
 
 void config_defaults(config_t *cfg);
+/* Returns 0 on success, -1 if the file is missing or has errors. */
+int config_load(config_t *cfg, const char *path);
 
 #endif
