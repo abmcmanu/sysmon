@@ -111,6 +111,8 @@ int main(int argc, char **argv)
     if (level >= 0)
         cfg.log_level = level;
     log_set_level(cfg.log_level);
+    if (cfg.log_file[0] && log_open(cfg.log_file) < 0)
+        return 1;
 
     struct sigaction sa;
     memset(&sa, 0, sizeof sa);

@@ -10,6 +10,8 @@ enum {
     SM_LOG_DEBUG,
 };
 
+/* Log to `path` (appending), or to stderr when path is NULL. */
+int log_open(const char *path);
 void log_close(void);
 void log_set_level(int level);
 int log_level_from_str(const char *s);
