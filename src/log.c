@@ -10,6 +10,24 @@ static FILE *out;
 static int threshold = SM_LOG_INFO;
 static const char *const names[] = { "error", "warn", "info", "debug" };
 
+int log_open(const char *path)
+{
+    if (out && out != stderr)
+        fclose(out);
+    out = stderr;
+    if (!path)
+        return 0;
+
+    FILE *f = fopen(path, "a");
+    if (!f) {
+        fprintf(stderr, "sysmond: cannot open log file %s: %s\n", path, strerror(errno));
+        return -1;
+    }
+    setvbuf(f, NULL, _IOLBF, 0);
+    out = f;
+    return 0;
+}
+
 void log_close(void)
 {
     if (out && out != stderr)

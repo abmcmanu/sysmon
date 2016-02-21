@@ -24,6 +24,13 @@ static char *trim(char *s)
     return s;
 }
 
+static int copy(char *dst, size_t size, const char *src)
+{
+    if (strlen(src) >= size)
+        return -1;
+    memcpy(dst, src, strlen(src) + 1);
+    return 0;
+}
 
 static int to_int(const char *s, int min, int max, int *out)
 {
@@ -48,6 +55,8 @@ static int set_key(config_t *cfg, const char *section, const char *key, const ch
             cfg->log_level = l;
             return 0;
         }
+        if (strcmp(key, "log_file") == 0)
+            return copy(cfg->log_file, sizeof cfg->log_file, val);
     }
     return 1; /* unknown key */
 }
