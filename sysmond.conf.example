@@ -1,0 +1,11 @@
+# sysmond configuration
+#
+# ini-style: [section], key = value, '#' or ';' start a comment.
+# Keys that may appear several times (mount, load, rule) build a list.
+
+[core]
+# seconds between two samples
+interval = 5
+# error | warn | info | debug
+log_level = info
+#log_file = /var/log/sysmond.log
