@@ -11,6 +11,8 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #include "collector.h"
 #include "config.h"
@@ -32,6 +34,7 @@ static void usage(FILE *out)
             "usage: sysmond [options]\n"
             "\n"
             "  -c FILE   configuration file\n"
+            "  -f        stay in the foreground\n"
             "  -i SEC    sampling interval in seconds (default: 5)\n"
             "  -l LEVEL  log level: error, warn, info, debug\n"
             "  -V        print version and exit\n"
@@ -55,6 +58,35 @@ static void print_sample(void)
     fflush(stdout);
 }
 
+static int daemonize(void)
+{
+    pid_t pid = fork();
+    if (pid < 0)
+        return -1;
+    if (pid > 0)
+        _exit(0);
+    if (setsid() < 0)
+        return -1;
+    pid = fork(); /* never reacquire a controlling terminal */
+    if (pid < 0)
+        return -1;
+    if (pid > 0)
+        _exit(0);
+
+    umask(022);
+    if (chdir("/") < 0)
+        return -1;
+    int fd = open("/dev/null", O_RDWR);
+    if (fd >= 0) {
+        dup2(fd, STDIN_FILENO);
+        dup2(fd, STDOUT_FILENO);
+        dup2(fd, STDERR_FILENO);
+        if (fd > STDERR_FILENO)
+            close(fd);
+    }
+    return 0;
+}
+
 static void tick(const config_t *cfg)
 {
     collect_sample();
@@ -66,9 +98,11 @@ int main(int argc, char **argv)
 {
     config_t cfg;
     const char *cfg_path = NULL;
+    int foreground = 0;
     int interval = 0, level = -1, opt;
     static const char optstring[] = "hVi:l:"
                                     "c:"
+                                    "f"
                                     ;
 
     config_defaults(&cfg);
@@ -76,6 +110,9 @@ int main(int argc, char **argv)
         switch (opt) {
         case 'c':
             cfg_path = optarg;
+            break;
+        case 'f':
+            foreground = 1;
             break;
         case 'i':
             interval = atoi(optarg);
@@ -127,6 +164,10 @@ int main(int argc, char **argv)
     /* Open listeners and plugins before daemonizing: errors still reach
      * the terminal and relative paths still mean something. */
 
+    if (!foreground && daemonize() < 0) {
+        log_err("daemonize: %s", strerror(errno));
+        return 1;
+    }
 
     log_info("sysmond %s started (pid %ld, interval %ds)", SYSMON_VERSION, (long)getpid(),
              cfg.interval);
