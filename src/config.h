@@ -8,6 +8,7 @@ typedef struct config {
     int interval;  /* seconds between two samples */
     int log_level;
     char log_file[CFG_PATH_MAX];
+    char pid_file[CFG_PATH_MAX];
 } config_t;
 
 void config_defaults(config_t *cfg);

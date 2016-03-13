@@ -57,6 +57,8 @@ static int set_key(config_t *cfg, const char *section, const char *key, const ch
         }
         if (strcmp(key, "log_file") == 0)
             return copy(cfg->log_file, sizeof cfg->log_file, val);
+        if (strcmp(key, "pid_file") == 0)
+            return copy(cfg->pid_file, sizeof cfg->pid_file, val);
     }
     return 1; /* unknown key */
 }

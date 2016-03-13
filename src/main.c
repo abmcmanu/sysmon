@@ -87,6 +87,18 @@ static int daemonize(void)
     return 0;
 }
 
+static int write_pidfile(const char *path)
+{
+    FILE *f = fopen(path, "w");
+    if (!f) {
+        log_err("pid file %s: %s", path, strerror(errno));
+        return -1;
+    }
+    fprintf(f, "%ld\n", (long)getpid());
+    fclose(f);
+    return 0;
+}
+
 static void tick(const config_t *cfg)
 {
     collect_sample();
@@ -168,6 +180,8 @@ int main(int argc, char **argv)
         log_err("daemonize: %s", strerror(errno));
         return 1;
     }
+    if (!foreground && cfg.pid_file[0] && write_pidfile(cfg.pid_file) < 0)
+        return 1;
 
     log_info("sysmond %s started (pid %ld, interval %ds)", SYSMON_VERSION, (long)getpid(),
              cfg.interval);
@@ -178,6 +192,8 @@ int main(int argc, char **argv)
     }
 
     log_info("shutting down");
+    if (!foreground && cfg.pid_file[0])
+        unlink(cfg.pid_file);
     log_close();
     return 0;
 }
