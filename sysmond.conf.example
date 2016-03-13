@@ -9,3 +9,4 @@ interval = 5
 # error | warn | info | debug
 log_level = info
 #log_file = /var/log/sysmond.log
+#pid_file = /run/sysmond.pid
