@@ -102,8 +102,8 @@ static int write_pidfile(const char *path)
 static void tick(const config_t *cfg)
 {
     collect_sample();
+    collect_disks(cfg);
     print_sample();
-    (void)cfg;
 }
 
 int main(int argc, char **argv)

@@ -12,6 +12,8 @@ void config_defaults(config_t *cfg)
     memset(cfg, 0, sizeof *cfg);
     cfg->interval = 5;
     cfg->log_level = SM_LOG_INFO;
+    snprintf(cfg->mounts[0], CFG_PATH_MAX, "/");
+    cfg->nmounts = 1;
 }
 
 static char *trim(char *s)
@@ -43,6 +45,8 @@ static int to_int(const char *s, int min, int max, int *out)
     return 0;
 }
 
+static int seen_mount;
+
 static int set_key(config_t *cfg, const char *section, const char *key, const char *val)
 {
     if (strcmp(section, "core") == 0) {
@@ -60,6 +64,16 @@ static int set_key(config_t *cfg, const char *section, const char *key, const ch
         if (strcmp(key, "pid_file") == 0)
             return copy(cfg->pid_file, sizeof cfg->pid_file, val);
     }
+    if (strcmp(section, "disk") == 0 && strcmp(key, "mount") == 0) {
+        /* the first `mount` replaces the default "/" */
+        if (!seen_mount) {
+            cfg->nmounts = 0;
+            seen_mount = 1;
+        }
+        if (cfg->nmounts == CFG_LIST_MAX)
+            return -1;
+        return copy(cfg->mounts[cfg->nmounts++], CFG_PATH_MAX, val);
+    }
     return 1; /* unknown key */
 }
 
@@ -68,6 +82,7 @@ int config_load(config_t *cfg, const char *path)
     char line[512], section[32] = "core";
     int lineno = 0, errors = 0;
 
+    seen_mount = 0;
     FILE *f = fopen(path, "r");
     if (!f) {
         log_err("config: %s: %s", path, strerror(errno));
