@@ -9,6 +9,8 @@ typedef struct config {
     int log_level;
     char log_file[CFG_PATH_MAX];
     char pid_file[CFG_PATH_MAX];
+    char mounts[CFG_LIST_MAX][CFG_PATH_MAX];
+    int nmounts;
 } config_t;
 
 void config_defaults(config_t *cfg);

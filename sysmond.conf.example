@@ -10,3 +10,8 @@ interval = 5
 log_level = info
 #log_file = /var/log/sysmond.log
 #pid_file = /run/sysmond.pid
+
+[disk]
+# defaults to "/" when no mount is listed
+mount = /
+#mount = /home
