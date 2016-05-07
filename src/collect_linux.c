@@ -39,7 +39,9 @@ static void sample_cpu(void)
         log_warn("cpu: cannot read /proc/stat");
         return;
     }
-    if (have_prev) {
+    /* Counters can go backwards after a VM migration or a hotplug:
+     * drop that interval instead of reporting garbage. */
+    if (have_prev && total > prev_total && idle >= prev_idle) {
         double dt = (double)(total - prev_total);
         double di = (double)(idle - prev_idle);
         metrics_set("cpu_usage_percent", 100.0 * (dt - di) / dt);
