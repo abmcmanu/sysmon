@@ -54,6 +54,7 @@ static void sample_cpu(void)
 static void sample_mem(void)
 {
     unsigned long long total = 0, avail = 0, free_ = 0, buffers = 0, cached = 0;
+    unsigned long long swap_total = 0, swap_free = 0;
     char line[256], key[64];
     unsigned long long val;
 
@@ -75,6 +76,10 @@ static void sample_mem(void)
             buffers = val;
         else if (strcmp(key, "Cached") == 0)
             cached = val;
+        else if (strcmp(key, "SwapTotal") == 0)
+            swap_total = val;
+        else if (strcmp(key, "SwapFree") == 0)
+            swap_free = val;
     }
     fclose(f);
 
@@ -87,6 +92,8 @@ static void sample_mem(void)
     metrics_set("mem_total_bytes", (double)total * 1024.0);
     metrics_set("mem_used_bytes", used);
     metrics_set("mem_used_percent", 100.0 * used / ((double)total * 1024.0));
+    metrics_set("swap_total_bytes", (double)swap_total * 1024.0);
+    metrics_set("swap_used_bytes", (double)(swap_total - swap_free) * 1024.0);
 }
 
 static void sample_load(void)
@@ -113,6 +120,8 @@ int collect_init(void)
     metrics_set_help("mem_total_bytes", "Physical memory.");
     metrics_set_help("mem_used_bytes", "Memory in use (total - available).");
     metrics_set_help("mem_used_percent", "Memory in use, in percent.");
+    metrics_set_help("swap_total_bytes", "Swap space.");
+    metrics_set_help("swap_used_bytes", "Swap space in use.");
     metrics_set_help("load1", "Load average over 1 minute.");
     metrics_set_help("load5", "Load average over 5 minutes.");
     metrics_set_help("load15", "Load average over 15 minutes.");
