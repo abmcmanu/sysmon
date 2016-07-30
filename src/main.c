@@ -99,6 +99,22 @@ static int write_pidfile(const char *path)
     return 0;
 }
 
+static double now(void)
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
+}
+
+static void wait_until(double deadline)
+{
+    double d = deadline - now();
+    if (d <= 0)
+        return;
+    struct timespec ts = { (time_t)d, (long)((d - (double)(time_t)d) * 1e9) };
+    nanosleep(&ts, NULL); /* EINTR is fine: the main loop re-checks `running` */
+}
+
 static void tick(const config_t *cfg)
 {
     collect_sample();
@@ -186,9 +202,14 @@ int main(int argc, char **argv)
     log_info("sysmond %s started (pid %ld, interval %ds)", SYSMON_VERSION, (long)getpid(),
              cfg.interval);
 
+    double next = now();
     while (running) {
         tick(&cfg);
-        sleep((unsigned)cfg.interval);
+        next += cfg.interval;
+        double t = now();
+        if (next < t) /* overran, or the machine was suspended: do not catch up */
+            next = t;
+        wait_until(next);
     }
 
     log_info("shutting down");
