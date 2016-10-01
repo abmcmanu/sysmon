@@ -1,6 +1,6 @@
 # 1. Rewrite sysmon as a C daemon
 
-* Status: proposed
+* Status: accepted (2016-10, shipped in 1.0.0)
 * Date: 2015-11-28
 
 ## Context
