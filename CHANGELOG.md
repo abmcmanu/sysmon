@@ -2,6 +2,13 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 1.0.0 - 2016-10-02
+
+- Rewrite as a C daemon, `sysmond`. The shell version moves to `legacy/`.
+- cpu, memory, swap, load and disk usage.
+- ini configuration file, daemon mode, pid file, log file.
+- Fixed sampling cadence on the monotonic clock.
+
 ## 0.5.0 - 2015-06-06
 
 - Swap usage.
