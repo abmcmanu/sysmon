@@ -13,6 +13,7 @@ CFLAGS += -D_GNU_SOURCE
 
 LIB_SRC = src/config.c src/log.c src/metrics.c $(PLATFORM_SRC)
 LIB_SRC += src/collect_disk.c
+LIB_SRC += src/sb.c
 
 LIB_OBJ  = $(LIB_SRC:%.c=$(BUILD)/obj/%.o)
 MAIN_OBJ = $(BUILD)/obj/src/main.o
