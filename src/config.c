@@ -14,6 +14,7 @@ void config_defaults(config_t *cfg)
     cfg->log_level = SM_LOG_INFO;
     snprintf(cfg->mounts[0], CFG_PATH_MAX, "/");
     cfg->nmounts = 1;
+    snprintf(cfg->socket_path, sizeof cfg->socket_path, "/tmp/sysmond.sock");
 }
 
 static char *trim(char *s)
@@ -63,6 +64,8 @@ static int set_key(config_t *cfg, const char *section, const char *key, const ch
             return copy(cfg->log_file, sizeof cfg->log_file, val);
         if (strcmp(key, "pid_file") == 0)
             return copy(cfg->pid_file, sizeof cfg->pid_file, val);
+        if (strcmp(key, "socket") == 0)
+            return copy(cfg->socket_path, sizeof cfg->socket_path, val);
     }
     if (strcmp(section, "disk") == 0 && strcmp(key, "mount") == 0) {
         /* the first `mount` replaces the default "/" */
