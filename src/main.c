@@ -3,6 +3,7 @@
  *
  * Samples cpu, memory and load at a fixed interval and keeps the
  * latest values in an in-memory registry (metrics.c).
+ * Clients query it over a unix socket (docs/PROTOCOL.md).
  */
 #include <errno.h>
 #include <signal.h>
@@ -13,12 +14,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/select.h>
 
 #include "collector.h"
 #include "config.h"
 #include "log.h"
 #include "metrics.h"
 #include "version.h"
+#include "server.h"
 
 static volatile sig_atomic_t running = 1;
 
@@ -106,13 +109,27 @@ static double now(void)
     return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
 }
 
-static void wait_until(double deadline)
+/* Serve control clients until `deadline`, the time of the next sample. */
+static void wait_until(double deadline, int srv)
 {
-    double d = deadline - now();
-    if (d <= 0)
-        return;
-    struct timespec ts = { (time_t)d, (long)((d - (double)(time_t)d) * 1e9) };
-    nanosleep(&ts, NULL); /* EINTR is fine: the main loop re-checks `running` */
+    while (running) {
+        double d = deadline - now();
+        if (d <= 0)
+            return;
+        struct timeval tv = { (time_t)d, (suseconds_t)((d - (double)(time_t)d) * 1e6) };
+        fd_set rfds;
+        FD_ZERO(&rfds);
+        FD_SET(srv, &rfds);
+        int n = select(srv + 1, &rfds, NULL, NULL, &tv);
+        if (n < 0) {
+            if (errno == EINTR)
+                continue;
+            log_err("select: %s", strerror(errno));
+            return;
+        }
+        if (n > 0 && FD_ISSET(srv, &rfds))
+            server_handle(srv);
+    }
 }
 
 static void tick(const config_t *cfg)
@@ -191,6 +208,9 @@ int main(int argc, char **argv)
 
     /* Open listeners and plugins before daemonizing: errors still reach
      * the terminal and relative paths still mean something. */
+    int srv = server_open(cfg.socket_path);
+    if (srv < 0)
+        return 1;
 
     if (!foreground && daemonize() < 0) {
         log_err("daemonize: %s", strerror(errno));
@@ -209,10 +229,11 @@ int main(int argc, char **argv)
         double t = now();
         if (next < t) /* overran, or the machine was suspended: do not catch up */
             next = t;
-        wait_until(next);
+        wait_until(next, srv);
     }
 
     log_info("shutting down");
+    server_close(srv, cfg.socket_path);
     if (!foreground && cfg.pid_file[0])
         unlink(cfg.pid_file);
     log_close();
