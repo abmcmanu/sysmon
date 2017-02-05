@@ -202,6 +202,7 @@ int main(int argc, char **argv)
     sigemptyset(&sa.sa_mask);
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
+    signal(SIGPIPE, SIG_IGN); /* a client hanging up must not kill us */
 
     if (collect_init() < 0)
         return 1;
