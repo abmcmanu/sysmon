@@ -11,13 +11,22 @@ The original bash version (2013-2015) lives in [`legacy/`](legacy/).
 Linux with any C11 compiler, no dependencies:
 
     make
-    ./build/sysmond -f -i 2
+    ./build/sysmond -f
+    ./build/sysmonctl list
 
 ## Configuration
 
 See [`contrib/sysmond.conf`](contrib/sysmond.conf) for every key.
 
     ./build/sysmond -c contrib/sysmond.conf
+
+## Querying
+
+    sysmonctl ping
+    sysmonctl list
+    sysmonctl get mem_used_percent
+
+The protocol is plain text, see [docs/PROTOCOL.md](docs/PROTOCOL.md).
 
 ## License
 
