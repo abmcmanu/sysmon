@@ -1,6 +1,7 @@
 # sysmon
 #
 #   make             build sysmond
+#                    + sysmonctl
 
 CC     ?= cc
 CFLAGS ?= -O2 -g
@@ -19,10 +20,16 @@ LIB_SRC += src/server.c
 LIB_OBJ  = $(LIB_SRC:%.c=$(BUILD)/obj/%.o)
 MAIN_OBJ = $(BUILD)/obj/src/main.o
 
-all: $(BUILD)/sysmond
+CTL_SRC = tools/sysmonctl.c src/sb.c
+CTL_OBJ = $(CTL_SRC:%.c=$(BUILD)/obj/%.o)
+
+all: $(BUILD)/sysmond $(BUILD)/sysmonctl
 
 $(BUILD)/sysmond: $(MAIN_OBJ) $(LIB_OBJ)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+$(BUILD)/sysmonctl: $(CTL_OBJ)
+	$(CC) $(LDFLAGS) -o $@ $^
 
 $(BUILD)/obj/%.o: %.c
 	@mkdir -p $(@D)
