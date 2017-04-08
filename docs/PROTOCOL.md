@@ -21,6 +21,8 @@ Any tool that speaks unix sockets works:
 | `ping` | `pong` |
 | `list` | one `NAME VALUE` line per metric |
 | `get METRIC` | the current value |
+| `version` | `sysmond X.Y.Z` |
+| `help` | the list of commands |
 
 ## Limits
 
