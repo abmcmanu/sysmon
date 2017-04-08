@@ -89,6 +89,11 @@ static void handle_cmd(char *line, sb_t *out)
             sb_printf(out, "%.6g\n", m->value);
         else
             sb_printf(out, "ERR unknown metric '%s'\n", argc > 1 ? argv[1] : "");
+    } else if (strcmp(argv[0], "version") == 0) {
+        sb_printf(out, "sysmond %s\n", SYSMON_VERSION);
+    } else if (strcmp(argv[0], "help") == 0) {
+        sb_puts(out, "ping | version | list | get METRIC"
+                     "\n");
     } else {
         sb_printf(out, "ERR unknown command '%s'\n", argv[0]);
     }
