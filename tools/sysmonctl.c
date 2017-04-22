@@ -58,13 +58,17 @@ static void usage(FILE *out)
             "  list                   all metrics with their current value\n"
             "  get METRIC             one metric\n"
             "\n"
-            "SOCKET defaults to " DEFAULT_SOCKET ".\n");
+            "SOCKET defaults to $SYSMON_SOCKET, then " DEFAULT_SOCKET ".\n");
 }
 
 int main(int argc, char **argv)
 {
     const char *sock = DEFAULT_SOCKET;
     int opt;
+    const char *env = getenv("SYSMON_SOCKET");
+
+    if (env && *env)
+        sock = env;
 
     while ((opt = getopt(argc, argv, "+s:hV")) != -1) {
         switch (opt) {
