@@ -40,6 +40,7 @@ static void usage(FILE *out)
             "  -f        stay in the foreground\n"
             "  -i SEC    sampling interval in seconds (default: 5)\n"
             "  -l LEVEL  log level: error, warn, info, debug\n"
+            "  -p        print every sample to stdout\n"
             "  -V        print version and exit\n"
             "  -h        show this help\n");
 }
@@ -136,7 +137,8 @@ static void tick(const config_t *cfg)
 {
     collect_sample();
     collect_disks(cfg);
-    print_sample();
+    if (cfg->print)
+        print_sample();
 }
 
 int main(int argc, char **argv)
@@ -144,10 +146,12 @@ int main(int argc, char **argv)
     config_t cfg;
     const char *cfg_path = NULL;
     int foreground = 0;
+    int print = 0;
     int interval = 0, level = -1, opt;
     static const char optstring[] = "hVi:l:"
                                     "c:"
                                     "f"
+                                    "p"
                                     ;
 
     config_defaults(&cfg);
@@ -158,6 +162,9 @@ int main(int argc, char **argv)
             break;
         case 'f':
             foreground = 1;
+            break;
+        case 'p':
+            print = 1;
             break;
         case 'i':
             interval = atoi(optarg);
@@ -192,6 +199,7 @@ int main(int argc, char **argv)
         cfg.interval = interval;
     if (level >= 0)
         cfg.log_level = level;
+    cfg.print = print;
     log_set_level(cfg.log_level);
     if (cfg.log_file[0] && log_open(cfg.log_file) < 0)
         return 1;
