@@ -7,6 +7,7 @@
 typedef struct config {
     int interval;  /* seconds between two samples */
     int log_level;
+    int print;     /* -p: print samples to stdout */
     char log_file[CFG_PATH_MAX];
     char pid_file[CFG_PATH_MAX];
     char mounts[CFG_LIST_MAX][CFG_PATH_MAX];
