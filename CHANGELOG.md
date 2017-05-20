@@ -2,6 +2,12 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 1.1.0 - 2017-05-20
+
+- Unix socket control protocol (`ping`, `list`, `get`, `help`, `version`).
+- `sysmonctl` client.
+- Samples are printed only with `-p`.
+
 ## 1.0.0 - 2016-10-02
 
 - Rewrite as a C daemon, `sysmond`. The shell version moves to `legacy/`.
