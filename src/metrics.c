@@ -39,6 +39,7 @@ metric_t *metrics_set(const char *name, double value)
     if (!m)
         return NULL;
     m->value = value;
+    ring_push(&m->hist, value);
     return m;
 }
 
