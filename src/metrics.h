@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 
+#include "ring.h"
+
 #define METRIC_NAME_MAX 64
 #define METRIC_HELP_MAX 128
 #define METRICS_MAX     256
@@ -16,6 +18,7 @@ typedef struct metric {
     char name[METRIC_NAME_MAX];
     char help[METRIC_HELP_MAX];
     double value; /* NAN until the first sample */
+    ring_t hist;
 } metric_t;
 
 metric_t *metrics_set(const char *name, double value);
