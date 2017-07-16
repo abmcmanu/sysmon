@@ -72,6 +72,30 @@ static void cmd_list(sb_t *out)
     }
 }
 
+static void cmd_history(sb_t *out, int argc, char **argv, int avg)
+{
+    if (argc < 2) {
+        sb_printf(out, "ERR usage: %s METRIC [N]\n", argv[0]);
+        return;
+    }
+    const metric_t *m = metrics_get(argv[1]);
+    if (!m) {
+        sb_printf(out, "ERR unknown metric '%s'\n", argv[1]);
+        return;
+    }
+    long n = argc > 2 ? strtol(argv[2], NULL, 10) : 60;
+    if (n <= 0)
+        n = 60;
+    if (avg) {
+        sb_printf(out, "%.6g\n", ring_avg(&m->hist, (size_t)n));
+        return;
+    }
+    size_t len = ring_len(&m->hist);
+    size_t from = (size_t)n < len ? len - (size_t)n : 0;
+    for (size_t i = from; i < len; i++)
+        sb_printf(out, "%.6g\n", ring_at(&m->hist, i));
+}
+
 static void handle_cmd(char *line, sb_t *out)
 {
     char *argv[MAX_ARGS];
@@ -89,10 +113,15 @@ static void handle_cmd(char *line, sb_t *out)
             sb_printf(out, "%.6g\n", m->value);
         else
             sb_printf(out, "ERR unknown metric '%s'\n", argc > 1 ? argv[1] : "");
+    } else if (strcmp(argv[0], "history") == 0) {
+        cmd_history(out, argc, argv, 0);
+    } else if (strcmp(argv[0], "avg") == 0) {
+        cmd_history(out, argc, argv, 1);
     } else if (strcmp(argv[0], "version") == 0) {
         sb_printf(out, "sysmond %s\n", SYSMON_VERSION);
     } else if (strcmp(argv[0], "help") == 0) {
         sb_puts(out, "ping | version | list | get METRIC"
+                     " | history METRIC [N] | avg METRIC [N]"
                      "\n");
     } else {
         sb_printf(out, "ERR unknown command '%s'\n", argv[0]);

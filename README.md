@@ -25,6 +25,7 @@ See [`contrib/sysmond.conf`](contrib/sysmond.conf) for every key.
     sysmonctl ping
     sysmonctl list
     sysmonctl get mem_used_percent
+    sysmonctl history cpu_usage_percent 30
 
 The protocol is plain text, see [docs/PROTOCOL.md](docs/PROTOCOL.md).
 
