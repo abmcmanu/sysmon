@@ -3,6 +3,7 @@
  *
  *   sysmonctl list
  *   sysmonctl get cpu_usage_percent
+ *   sysmonctl history mem_used_percent 30
  */
 #include <errno.h>
 #include <stdio.h>
@@ -57,6 +58,8 @@ static void usage(FILE *out)
             "  ping                   check that sysmond is alive\n"
             "  list                   all metrics with their current value\n"
             "  get METRIC             one metric\n"
+            "  history METRIC [N]     the last N samples (default 60)\n"
+            "  avg METRIC [N]         average of the last N samples\n"
             "\n"
             "SOCKET defaults to $SYSMON_SOCKET, then " DEFAULT_SOCKET ".\n");
 }

@@ -21,6 +21,8 @@ Any tool that speaks unix sockets works:
 | `ping` | `pong` |
 | `list` | one `NAME VALUE` line per metric |
 | `get METRIC` | the current value |
+| `history METRIC [N]` | the last N samples, oldest first, one per line (default 60, max 300) |
+| `avg METRIC [N]` | average of the last N samples |
 | `version` | `sysmond X.Y.Z` |
 | `help` | the list of commands |
 
