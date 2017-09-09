@@ -16,6 +16,17 @@
 
 #define MAX_ARGS 4
 
+/* A connectable socket means another sysmond is alive: do not steal it. */
+static int socket_in_use(const struct sockaddr_un *addr)
+{
+    int fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (fd < 0)
+        return 0;
+    int alive = connect(fd, (const struct sockaddr *)addr, sizeof *addr) == 0;
+    close(fd);
+    return alive;
+}
+
 int server_open(const char *path)
 {
     struct sockaddr_un addr;
@@ -28,6 +39,10 @@ int server_open(const char *path)
     addr.sun_family = AF_UNIX;
     memcpy(addr.sun_path, path, strlen(path) + 1);
 
+    if (socket_in_use(&addr)) {
+        log_err("%s is in use: is another sysmond running?", path);
+        return -1;
+    }
     int fd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (fd < 0) {
         log_err("socket: %s", strerror(errno));
