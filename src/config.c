@@ -121,10 +121,11 @@ int config_load(config_t *cfg, const char *path)
         char *val = trim(eq + 1);
 
         int rc = set_key(cfg, section, key, val);
-        if (rc > 0)
-            log_warn("%s:%d: ignoring unknown key '%s'", path, lineno, key);
-        else if (rc < 0) {
-            log_err("%s:%d: invalid value for '%s'", path, lineno, key);
+        if (rc > 0) {
+            log_err("%s:%d: unknown key '%s' in [%s]", path, lineno, key, section);
+            errors++;
+        } else if (rc < 0) {
+            log_err("%s:%d: invalid value for '%s': %s", path, lineno, key, val);
             errors++;
         }
     }
