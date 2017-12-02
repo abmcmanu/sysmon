@@ -2,6 +2,12 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 1.2.0 - 2017-12-02
+
+- 300-sample history per metric, `history` and `avg` commands.
+- Refuse to start when another sysmond is listening on the socket.
+- Unknown configuration keys are now errors.
+
 ## 1.1.0 - 2017-05-20
 
 - Unix socket control protocol (`ping`, `list`, `get`, `help`, `version`).
