@@ -9,8 +9,12 @@ CFLAGS += -std=c11 -Wall -Wextra -Isrc
 LDLIBS  =
 BUILD  ?= build
 
+UNAME_S := $(shell uname -s)
 PLATFORM_SRC = src/collect_linux.c
 CFLAGS += -D_GNU_SOURCE
+ifneq ($(UNAME_S),Linux)
+$(error sysmond only supports Linux for now)
+endif
 
 LIB_SRC = src/config.c src/log.c src/metrics.c $(PLATFORM_SRC)
 LIB_SRC += src/collect_disk.c
