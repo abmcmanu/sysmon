@@ -5,7 +5,7 @@
 
 /*
  * Platform collector: one implementation per OS (collect_linux.c,
- * more to come), selected by the Makefile.
+ * collect_darwin.c), selected by the Makefile.
  */
 int collect_init(void);
 int collect_sample(void);
