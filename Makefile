@@ -10,10 +10,11 @@ LDLIBS  =
 BUILD  ?= build
 
 UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+PLATFORM_SRC = src/collect_darwin.c
+else
 PLATFORM_SRC = src/collect_linux.c
 CFLAGS += -D_GNU_SOURCE
-ifneq ($(UNAME_S),Linux)
-$(error sysmond only supports Linux for now)
 endif
 
 LIB_SRC = src/config.c src/log.c src/metrics.c $(PLATFORM_SRC)

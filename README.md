@@ -14,6 +14,8 @@ Linux with any C11 compiler, no dependencies:
     ./build/sysmond -f
     ./build/sysmonctl list
 
+macOS is supported since 1.3 (Mach host statistics instead of `/proc`).
+
 ## Configuration
 
 See [`contrib/sysmond.conf`](contrib/sysmond.conf) for every key.
