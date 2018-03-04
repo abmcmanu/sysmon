@@ -15,6 +15,8 @@ Linux with any C11 compiler, no dependencies:
     ./build/sysmonctl list
 
 macOS is supported since 1.3 (Mach host statistics instead of `/proc`).
+Xcode command line tools are enough: `xcode-select --install && make`.
+Plugins are built as `.so` there too, `dlopen()` does not care.
 
 ## Configuration
 
