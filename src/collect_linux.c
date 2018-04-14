@@ -100,15 +100,10 @@ static void sample_load(void)
 {
     double l[3];
 
-    FILE *f = fopen("/proc/loadavg", "r");
-    if (!f) {
-        log_warn("load: cannot read /proc/loadavg");
+    if (getloadavg(l, 3) != 3) {
+        log_warn("load: getloadavg failed");
         return;
     }
-    int n = fscanf(f, "%lf %lf %lf", &l[0], &l[1], &l[2]);
-    fclose(f);
-    if (n != 3)
-        return;
     metrics_set("load1", l[0]);
     metrics_set("load5", l[1]);
     metrics_set("load15", l[2]);
