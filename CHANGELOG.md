@@ -2,6 +2,10 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 1.3.0 - 2018-05-26
+
+- macOS support.
+
 ## 1.2.0 - 2017-12-02
 
 - 300-sample history per metric, `history` and `avg` commands.
