@@ -166,6 +166,9 @@ void server_handle(int listen_fd)
             log_warn("accept: %s", strerror(errno));
         return;
     }
+    /* BSDs (macOS included) let accepted sockets inherit O_NONBLOCK
+     * from the listener; Linux does not. Be explicit. */
+    fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) & ~O_NONBLOCK);
 
     char buf[512];
     size_t len = 0;
