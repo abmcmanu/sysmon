@@ -2,6 +2,10 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 1.3.1 - 2018-08-25
+
+- Fixed: on macOS, accepted sockets inherited O_NONBLOCK from the listener and short requests were dropped.
+
 ## 1.3.0 - 2018-05-26
 
 - macOS support.
