@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <sys/un.h>
 #include <unistd.h>
 
@@ -169,6 +170,9 @@ void server_handle(int listen_fd)
     /* BSDs (macOS included) let accepted sockets inherit O_NONBLOCK
      * from the listener; Linux does not. Be explicit. */
     fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) & ~O_NONBLOCK);
+    /* a client that connects and never writes must not stall sampling */
+    struct timeval tv = { 1, 0 };
+    setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof tv);
 
     char buf[512];
     size_t len = 0;
