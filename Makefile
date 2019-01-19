@@ -6,6 +6,7 @@
 CC     ?= cc
 CFLAGS ?= -O2 -g
 CFLAGS += -std=c11 -Wall -Wextra -Isrc
+CFLAGS += -Iinclude
 LDLIBS  =
 BUILD  ?= build
 
