@@ -33,6 +33,10 @@ See [`contrib/sysmond.conf`](contrib/sysmond.conf) for every key.
 
 The protocol is plain text, see [docs/PROTOCOL.md](docs/PROTOCOL.md).
 
+## Plugins
+
+Extra metrics come from plugins, see [docs/PLUGINS.md](docs/PLUGINS.md).
+
 ## License
 
 MIT

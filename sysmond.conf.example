@@ -16,3 +16,8 @@ socket = /tmp/sysmond.sock
 # defaults to "/" when no mount is listed
 mount = /
 #mount = /home
+
+[plugins]
+dir = /usr/local/lib/sysmon/plugins
+load = uptime
+load = net

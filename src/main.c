@@ -4,6 +4,7 @@
  * Samples cpu, memory and load at a fixed interval and keeps the
  * latest values in an in-memory registry (metrics.c).
  * Clients query it over a unix socket (docs/PROTOCOL.md).
+ * Extra metrics come from dlopen()ed plugins (docs/PLUGINS.md).
  */
 #include <errno.h>
 #include <signal.h>
@@ -22,6 +23,7 @@
 #include "metrics.h"
 #include "version.h"
 #include "server.h"
+#include "plugins.h"
 
 static volatile sig_atomic_t running = 1;
 
@@ -137,6 +139,7 @@ static void tick(const config_t *cfg)
 {
     collect_sample();
     collect_disks(cfg);
+    plugins_collect();
     if (cfg->print)
         print_sample();
 }
@@ -220,6 +223,7 @@ int main(int argc, char **argv)
     int srv = server_open(cfg.socket_path);
     if (srv < 0)
         return 1;
+    plugins_load(&cfg);
 
     if (!foreground && daemonize() < 0) {
         log_err("daemonize: %s", strerror(errno));
@@ -242,6 +246,7 @@ int main(int argc, char **argv)
     }
 
     log_info("shutting down");
+    plugins_unload();
     server_close(srv, cfg.socket_path);
     if (!foreground && cfg.pid_file[0])
         unlink(cfg.pid_file);

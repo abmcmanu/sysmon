@@ -15,6 +15,7 @@ void config_defaults(config_t *cfg)
     snprintf(cfg->mounts[0], CFG_PATH_MAX, "/");
     cfg->nmounts = 1;
     snprintf(cfg->socket_path, sizeof cfg->socket_path, "/tmp/sysmond.sock");
+    snprintf(cfg->plugin_dir, CFG_PATH_MAX, "/usr/local/lib/sysmon/plugins");
 }
 
 static char *trim(char *s)
@@ -76,6 +77,15 @@ static int set_key(config_t *cfg, const char *section, const char *key, const ch
         if (cfg->nmounts == CFG_LIST_MAX)
             return -1;
         return copy(cfg->mounts[cfg->nmounts++], CFG_PATH_MAX, val);
+    }
+    if (strcmp(section, "plugins") == 0) {
+        if (strcmp(key, "dir") == 0)
+            return copy(cfg->plugin_dir, sizeof cfg->plugin_dir, val);
+        if (strcmp(key, "load") == 0) {
+            if (cfg->nplugins == CFG_LIST_MAX)
+                return -1;
+            return copy(cfg->plugins[cfg->nplugins++], sizeof cfg->plugins[0], val);
+        }
     }
     return 1; /* unknown key */
 }
