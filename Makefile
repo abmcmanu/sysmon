@@ -34,6 +34,7 @@ CTL_SRC = tools/sysmonctl.c src/sb.c
 CTL_OBJ = $(CTL_SRC:%.c=$(BUILD)/obj/%.o)
 
 PLUGINS =
+PLUGINS += $(BUILD)/plugins/uptime.so
 
 all: $(BUILD)/sysmond $(BUILD)/sysmonctl plugins
 
