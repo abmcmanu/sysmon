@@ -35,6 +35,7 @@ CTL_OBJ = $(CTL_SRC:%.c=$(BUILD)/obj/%.o)
 
 PLUGINS =
 PLUGINS += $(BUILD)/plugins/uptime.so
+PLUGINS += $(BUILD)/plugins/net.so
 
 all: $(BUILD)/sysmond $(BUILD)/sysmonctl plugins
 
