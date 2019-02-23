@@ -5,6 +5,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#ifdef __APPLE__
+#include <ifaddrs.h>
+#include <net/if.h>
+#include <sys/socket.h>
+#endif
 
 #include "sysmon/plugin.h"
 
@@ -19,6 +24,26 @@ static double now(void)
     return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
 }
 
+#ifdef __APPLE__
+static int read_counters(unsigned long long *rx, unsigned long long *tx)
+{
+    struct ifaddrs *ifa;
+    if (getifaddrs(&ifa) < 0)
+        return -1;
+    *rx = *tx = 0;
+    for (struct ifaddrs *i = ifa; i; i = i->ifa_next) {
+        if (!i->ifa_addr || i->ifa_addr->sa_family != AF_LINK || !i->ifa_data)
+            continue;
+        if (i->ifa_flags & IFF_LOOPBACK)
+            continue;
+        const struct if_data *d = i->ifa_data;
+        *rx += d->ifi_ibytes;
+        *tx += d->ifi_obytes;
+    }
+    freeifaddrs(ifa);
+    return 0;
+}
+#else
 static int read_counters(unsigned long long *rx, unsigned long long *tx)
 {
     char line[512];
@@ -47,6 +72,7 @@ static int read_counters(unsigned long long *rx, unsigned long long *tx)
     fclose(f);
     return 0;
 }
+#endif
 
 static int net_init(const sysmon_host_t *host)
 {
