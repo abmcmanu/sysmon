@@ -8,9 +8,13 @@
 #include "plugins.h"
 #include "sysmon/plugin.h"
 
+#define MAX_FAILURES 5
+
 typedef struct loaded {
     void *handle;
     const sysmon_plugin_t *p;
+    int failures;
+    int disabled;
 } loaded_t;
 
 static loaded_t loaded[CFG_LIST_MAX];
@@ -90,8 +94,14 @@ void plugins_collect(void)
 {
     for (int i = 0; i < nloaded; i++) {
         loaded_t *l = &loaded[i];
-        if (l->p->collect && l->p->collect() != 0)
-            log_warn("plugin %s: collect failed", l->p->name);
+        if (l->disabled || !l->p->collect)
+            continue;
+        if (l->p->collect() == 0) {
+            l->failures = 0;
+        } else if (++l->failures >= MAX_FAILURES) {
+            l->disabled = 1;
+            log_warn("plugin %s: %d consecutive failures, disabled", l->p->name, MAX_FAILURES);
+        }
     }
 }
 
