@@ -2,6 +2,12 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 2.0.0 - 2019-04-13
+
+- Plugin ABI (`include/sysmon/plugin.h`) and `dlopen` loader.
+- `uptime` and `net` plugins.
+- Control socket: 1 s read timeout.
+
 ## 1.3.1 - 2018-08-25
 
 - Fixed: on macOS, accepted sockets inherited O_NONBLOCK from the listener and short requests were dropped.
