@@ -93,7 +93,9 @@ static int net_collect(void)
     if (read_counters(&rx, &tx) < 0)
         return -1;
     double t = now(), dt = t - prev_t;
-    if (dt > 0) {
+    /* macOS if_data counters are 32 bits and wrap at 4 GiB; interfaces
+     * also come and go. Skip any interval where a total went down. */
+    if (dt > 0 && rx >= prev_rx && tx >= prev_tx) {
         H->set("net_rx_bytes_per_second", (double)(rx - prev_rx) / dt);
         H->set("net_tx_bytes_per_second", (double)(tx - prev_tx) / dt);
     }
