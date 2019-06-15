@@ -2,6 +2,10 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 2.0.1 - 2019-06-15
+
+- Fixed: absurd network rates when macOS 32-bit counters wrapped.
+
 ## 2.0.0 - 2019-04-13
 
 - Plugin ABI (`include/sysmon/plugin.h`) and `dlopen` loader.
