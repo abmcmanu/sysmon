@@ -37,6 +37,10 @@ The protocol is plain text, see [docs/PROTOCOL.md](docs/PROTOCOL.md).
 
 Extra metrics come from plugins, see [docs/PLUGINS.md](docs/PLUGINS.md).
 
+## Tests
+
+    make test
+
 ## License
 
 MIT
