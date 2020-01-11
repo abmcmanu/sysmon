@@ -3,6 +3,7 @@
 #   make             build sysmond
 #                    + sysmonctl
 #                    + plugins
+#   make test        unit tests
 
 CC     ?= cc
 CFLAGS ?= -O2 -g
@@ -37,6 +38,8 @@ PLUGINS =
 PLUGINS += $(BUILD)/plugins/uptime.so
 PLUGINS += $(BUILD)/plugins/net.so
 
+TESTS = $(BUILD)/tests/test_ring
+
 all: $(BUILD)/sysmond $(BUILD)/sysmonctl plugins
 
 $(BUILD)/sysmond: $(MAIN_OBJ) $(LIB_OBJ)
@@ -56,7 +59,14 @@ $(BUILD)/obj/%.o: %.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+$(BUILD)/tests/%: tests/%.c $(LIB_OBJ)
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(LDFLAGS) -Itests -o $@ $^ $(LDLIBS)
+
+test: $(TESTS)
+	@for t in $(TESTS); do $$t || exit 1; done
+
 clean:
 	rm -rf $(BUILD)
 
-.PHONY: all plugins clean
+.PHONY: all plugins test smoke clean
