@@ -39,6 +39,7 @@ PLUGINS += $(BUILD)/plugins/uptime.so
 PLUGINS += $(BUILD)/plugins/net.so
 
 TESTS = $(BUILD)/tests/test_ring
+TESTS += $(BUILD)/tests/test_config
 
 all: $(BUILD)/sysmond $(BUILD)/sysmonctl plugins
 
