@@ -40,6 +40,7 @@ PLUGINS += $(BUILD)/plugins/net.so
 
 TESTS = $(BUILD)/tests/test_ring
 TESTS += $(BUILD)/tests/test_config
+TESTS += $(BUILD)/tests/test_sb
 
 all: $(BUILD)/sysmond $(BUILD)/sysmonctl plugins
 
