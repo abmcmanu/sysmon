@@ -4,6 +4,7 @@
 #                    + sysmonctl
 #                    + plugins
 #   make test        unit tests
+#   make smoke       start a daemon and poke at it
 
 CC     ?= cc
 CFLAGS ?= -O2 -g
@@ -67,6 +68,9 @@ $(BUILD)/tests/%: tests/%.c $(LIB_OBJ)
 
 test: $(TESTS)
 	@for t in $(TESTS); do $$t || exit 1; done
+
+smoke: all
+	BUILD=$(BUILD) sh tests/smoke.sh
 
 clean:
 	rm -rf $(BUILD)
