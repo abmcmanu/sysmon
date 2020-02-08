@@ -40,6 +40,7 @@ Extra metrics come from plugins, see [docs/PLUGINS.md](docs/PLUGINS.md).
 ## Tests
 
     make test
+    make smoke
 
 ## License
 
