@@ -5,6 +5,7 @@
 #                    + plugins
 #   make test        unit tests
 #   make smoke       start a daemon and poke at it
+#   make asan        build and test with ASan + UBSan (in build-asan/)
 
 CC     ?= cc
 CFLAGS ?= -O2 -g
@@ -12,6 +13,11 @@ CFLAGS += -std=c11 -Wall -Wextra -Isrc
 CFLAGS += -Iinclude
 LDLIBS  =
 BUILD  ?= build
+
+ifeq ($(SANITIZE),1)
+CFLAGS  += -O1 -fsanitize=address,undefined -fno-omit-frame-pointer
+LDFLAGS += -fsanitize=address,undefined
+endif
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
@@ -72,7 +78,10 @@ test: $(TESTS)
 smoke: all
 	BUILD=$(BUILD) sh tests/smoke.sh
 
-clean:
-	rm -rf $(BUILD)
+asan:
+	$(MAKE) BUILD=build-asan SANITIZE=1 all test
 
-.PHONY: all plugins test smoke clean
+clean:
+	rm -rf $(BUILD) build-asan
+
+.PHONY: all plugins test smoke asan clean
