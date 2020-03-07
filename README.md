@@ -41,6 +41,7 @@ Extra metrics come from plugins, see [docs/PLUGINS.md](docs/PLUGINS.md).
 
     make test
     make smoke
+    make asan
 
 ## License
 
