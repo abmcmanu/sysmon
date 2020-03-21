@@ -30,6 +30,8 @@ double ring_last(const ring_t *r)
 
 double ring_avg(const ring_t *r, size_t n)
 {
+    if (n > r->len)
+        n = r->len;
     if (n == 0)
         return NAN;
 
