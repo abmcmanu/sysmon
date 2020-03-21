@@ -7,6 +7,7 @@ int main(void)
 {
     CHECK(ring_len(&r) == 0);
     CHECK(isnan(ring_last(&r)));
+    CHECK(isnan(ring_avg(&r, 10)));
 
     for (int i = 1; i <= 3; i++)
         ring_push(&r, i);
@@ -14,6 +15,8 @@ int main(void)
     CHECK(ring_at(&r, 0) == 1);
     CHECK(ring_last(&r) == 3);
     CHECK_NEAR(ring_avg(&r, 2), 2.5, 1e-9);
+    /* asking for more samples than we have averages what we have */
+    CHECK_NEAR(ring_avg(&r, 100), 2.0, 1e-9);
     CHECK(isnan(ring_at(&r, 3)));
 
     /* wrap around: only the newest RING_CAP samples survive */
