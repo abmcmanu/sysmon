@@ -5,6 +5,8 @@
  * latest values in an in-memory registry (metrics.c).
  * Clients query it over a unix socket (docs/PROTOCOL.md).
  * Extra metrics come from dlopen()ed plugins (docs/PLUGINS.md).
+ *
+ * Single thread, single poll() loop: see docs/adr/0004-poll-loop.md.
  */
 #include <errno.h>
 #include <signal.h>
@@ -15,7 +17,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <sys/select.h>
+#include <poll.h>
 
 #include "collector.h"
 #include "config.h"
@@ -112,26 +114,47 @@ static double now(void)
     return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
 }
 
-/* Serve control clients until `deadline`, the time of the next sample. */
-static void wait_until(double deadline, int srv)
+#define MAX_LISTENERS 4
+
+typedef struct listener {
+    int fd;
+    void (*handle)(int fd);
+} listener_t;
+
+static listener_t listeners[MAX_LISTENERS];
+static int nlisteners;
+
+static void add_listener(int fd, void (*handle)(int))
 {
+    listeners[nlisteners].fd = fd;
+    listeners[nlisteners].handle = handle;
+    nlisteners++;
+}
+
+/* Serve clients until `deadline`, the time of the next sample. */
+static void wait_until(double deadline)
+{
+    struct pollfd pfds[MAX_LISTENERS];
+
     while (running) {
         double d = deadline - now();
         if (d <= 0)
             return;
-        struct timeval tv = { (time_t)d, (suseconds_t)((d - (double)(time_t)d) * 1e6) };
-        fd_set rfds;
-        FD_ZERO(&rfds);
-        FD_SET(srv, &rfds);
-        int n = select(srv + 1, &rfds, NULL, NULL, &tv);
+        for (int i = 0; i < nlisteners; i++) {
+            pfds[i].fd = listeners[i].fd;
+            pfds[i].events = POLLIN;
+            pfds[i].revents = 0;
+        }
+        int n = poll(pfds, (nfds_t)nlisteners, (int)(d * 1000.0) + 1);
         if (n < 0) {
             if (errno == EINTR)
                 continue;
-            log_err("select: %s", strerror(errno));
+            log_err("poll: %s", strerror(errno));
             return;
         }
-        if (n > 0 && FD_ISSET(srv, &rfds))
-            server_handle(srv);
+        for (int i = 0; i < nlisteners; i++)
+            if (pfds[i].revents & POLLIN)
+                listeners[i].handle(listeners[i].fd);
     }
 }
 
@@ -223,6 +246,7 @@ int main(int argc, char **argv)
     int srv = server_open(cfg.socket_path);
     if (srv < 0)
         return 1;
+    add_listener(srv, server_handle);
     plugins_load(&cfg);
 
     if (!foreground && daemonize() < 0) {
@@ -242,7 +266,7 @@ int main(int argc, char **argv)
         double t = now();
         if (next < t) /* overran, or the machine was suspended: do not catch up */
             next = t;
-        wait_until(next, srv);
+        wait_until(next);
     }
 
     log_info("shutting down");
