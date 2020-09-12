@@ -2,5 +2,6 @@
 /build-asan/
 *.o
 *.so
+*.d
 *.dSYM/
 .DS_Store
