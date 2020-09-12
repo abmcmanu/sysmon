@@ -11,6 +11,7 @@ CC     ?= cc
 CFLAGS ?= -O2 -g
 CFLAGS += -std=c11 -Wall -Wextra -Isrc
 CFLAGS += -Iinclude
+CFLAGS += -MMD -MP
 LDLIBS  =
 BUILD  ?= build
 
@@ -83,5 +84,7 @@ asan:
 
 clean:
 	rm -rf $(BUILD) build-asan
+
+-include $(shell find $(BUILD) -name '*.d' 2>/dev/null)
 
 .PHONY: all plugins test smoke asan clean
