@@ -2,6 +2,12 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 2.1.0 - 2020-10-03
+
+- `poll()` based event loop.
+- Unit tests, smoke test, sanitizers, CI on Linux and macOS.
+- Fixed: `avg` returned 0 when asked for more samples than available.
+
 ## 2.0.1 - 2019-06-15
 
 - Fixed: absurd network rates when macOS 32-bit counters wrapped.
