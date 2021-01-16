@@ -21,6 +21,8 @@ typedef struct metric {
     ring_t hist;
 } metric_t;
 
+/* [a-zA-Z_][a-zA-Z0-9_]*, the Prometheus metric name charset */
+int metric_name_valid(const char *name);
 metric_t *metrics_set(const char *name, double value);
 void metrics_set_help(const char *name, const char *help);
 const metric_t *metrics_get(const char *name);
