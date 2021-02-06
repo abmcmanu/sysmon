@@ -21,3 +21,9 @@ mount = /
 dir = /usr/local/lib/sysmon/plugins
 load = uptime
 load = net
+
+[http]
+# Prometheus endpoint at http://BIND:PORT/metrics, 0 disables it.
+# There is no authentication: keep it on localhost or behind a proxy.
+port = 9273
+bind = 127.0.0.1
