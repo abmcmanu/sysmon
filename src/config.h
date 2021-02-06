@@ -16,6 +16,8 @@ typedef struct config {
     char plugin_dir[CFG_PATH_MAX];
     char plugins[CFG_LIST_MAX][64];
     int nplugins;
+    char http_bind[64];
+    int http_port; /* 0 = disabled */
 } config_t;
 
 void config_defaults(config_t *cfg);

@@ -26,6 +26,7 @@
 #include "version.h"
 #include "server.h"
 #include "plugins.h"
+#include "http.h"
 
 static volatile sig_atomic_t running = 1;
 
@@ -247,6 +248,13 @@ int main(int argc, char **argv)
     if (srv < 0)
         return 1;
     add_listener(srv, server_handle);
+    int http_fd = -1;
+    if (cfg.http_port > 0) {
+        http_fd = http_open(cfg.http_bind, cfg.http_port);
+        if (http_fd < 0)
+            return 1;
+        add_listener(http_fd, http_handle);
+    }
     plugins_load(&cfg);
 
     if (!foreground && daemonize() < 0) {
@@ -271,6 +279,8 @@ int main(int argc, char **argv)
 
     log_info("shutting down");
     plugins_unload();
+    if (http_fd >= 0)
+        close(http_fd);
     server_close(srv, cfg.socket_path);
     if (!foreground && cfg.pid_file[0])
         unlink(cfg.pid_file);

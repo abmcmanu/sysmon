@@ -16,6 +16,7 @@ void config_defaults(config_t *cfg)
     cfg->nmounts = 1;
     snprintf(cfg->socket_path, sizeof cfg->socket_path, "/tmp/sysmond.sock");
     snprintf(cfg->plugin_dir, CFG_PATH_MAX, "/usr/local/lib/sysmon/plugins");
+    snprintf(cfg->http_bind, sizeof cfg->http_bind, "127.0.0.1");
 }
 
 static char *trim(char *s)
@@ -86,6 +87,12 @@ static int set_key(config_t *cfg, const char *section, const char *key, const ch
                 return -1;
             return copy(cfg->plugins[cfg->nplugins++], sizeof cfg->plugins[0], val);
         }
+    }
+    if (strcmp(section, "http") == 0) {
+        if (strcmp(key, "port") == 0)
+            return to_int(val, 0, 65535, &cfg->http_port);
+        if (strcmp(key, "bind") == 0)
+            return copy(cfg->http_bind, sizeof cfg->http_bind, val);
     }
     return 1; /* unknown key */
 }
