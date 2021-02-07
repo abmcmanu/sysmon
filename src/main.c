@@ -5,6 +5,7 @@
  * latest values in an in-memory registry (metrics.c).
  * Clients query it over a unix socket (docs/PROTOCOL.md).
  * Extra metrics come from dlopen()ed plugins (docs/PLUGINS.md).
+ * Prometheus scrapes it over HTTP at /metrics.
  *
  * Single thread, single poll() loop: see docs/adr/0004-poll-loop.md.
  */

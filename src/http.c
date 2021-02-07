@@ -45,6 +45,21 @@ int http_open(const char *bind_addr, int port)
     return fd;
 }
 
+/* Prometheus text exposition format 0.0.4 */
+static void render_prometheus(sb_t *out)
+{
+    for (size_t i = 0; i < metrics_count(); i++) {
+        const metric_t *m = metrics_at(i);
+        if (m->help[0])
+            sb_printf(out, "# HELP sysmon_%s %s\n", m->name, m->help);
+        sb_printf(out, "# TYPE sysmon_%s gauge\n", m->name);
+        if (isnan(m->value))
+            sb_printf(out, "sysmon_%s NaN\n", m->name);
+        else
+            sb_printf(out, "sysmon_%s %.17g\n", m->name, m->value);
+    }
+}
+
 static int write_all(int fd, const char *p, size_t n)
 {
     while (n > 0) {
@@ -111,7 +126,11 @@ void http_handle(int listen_fd)
         ctype = "text/html; charset=utf-8";
         sb_printf(&body, "<html><head><title>sysmond</title></head><body>"
                          "<h1>sysmond %s</h1>"
+                         "<p><a href=\"/metrics\">metrics</a></p>"
                          "</body></html>\n", SYSMON_VERSION);
+    } else if (strcmp(path, "/metrics") == 0) {
+        ctype = "text/plain; version=0.0.4; charset=utf-8";
+        render_prometheus(&body);
     } else {
         status = 404;
         sb_puts(&body, "not found\n");
