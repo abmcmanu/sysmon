@@ -131,6 +131,8 @@ void http_handle(int listen_fd)
     } else if (strcmp(path, "/metrics") == 0) {
         ctype = "text/plain; version=0.0.4; charset=utf-8";
         render_prometheus(&body);
+    } else if (strcmp(path, "/healthz") == 0) {
+        sb_puts(&body, "ok\n");
     } else {
         status = 404;
         sb_puts(&body, "not found\n");
