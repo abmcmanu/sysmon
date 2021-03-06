@@ -48,6 +48,9 @@ int http_open(const char *bind_addr, int port)
 /* Prometheus text exposition format 0.0.4 */
 static void render_prometheus(sb_t *out)
 {
+    sb_puts(out, "# HELP sysmon_build_info sysmond build information.\n"
+                 "# TYPE sysmon_build_info gauge\n");
+    sb_printf(out, "sysmon_build_info{version=\"%s\"} 1\n", SYSMON_VERSION);
     for (size_t i = 0; i < metrics_count(); i++) {
         const metric_t *m = metrics_at(i);
         if (m->help[0])
