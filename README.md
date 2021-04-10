@@ -37,6 +37,22 @@ The protocol is plain text, see [docs/PROTOCOL.md](docs/PROTOCOL.md).
 
 Extra metrics come from plugins, see [docs/PLUGINS.md](docs/PLUGINS.md).
 
+## Prometheus
+
+Enable the HTTP listener:
+
+    [http]
+    port = 9273
+
+then scrape it:
+
+```yaml
+scrape_configs:
+  - job_name: sysmon
+    static_configs:
+      - targets: ['web01:9273', 'web02:9273']
+```
+
 ## Tests
 
     make test
