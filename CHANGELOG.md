@@ -2,6 +2,11 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 2.2.0 - 2021-05-01
+
+- Prometheus endpoint (`[http] port`), `/healthz`.
+- Metric names are validated.
+
 ## 2.1.0 - 2020-10-03
 
 - `poll()` based event loop.
