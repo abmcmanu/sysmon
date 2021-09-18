@@ -125,6 +125,10 @@ void http_handle(int listen_fd)
     sb_t body;
     sb_init(&body);
 
+    if (strcmp(method, "GET") != 0) {
+        status = 405;
+        sb_puts(&body, "method not allowed\n");
+    } else
     if (strcmp(path, "/") == 0) {
         ctype = "text/html; charset=utf-8";
         sb_printf(&body, "<html><head><title>sysmond</title></head><body>"
