@@ -62,6 +62,7 @@ ctl list | grep -q '^uptime_seconds ' || fail "list: no plugin metric"
 ctl get mem_used_percent > /dev/null || fail "get"
 ! ctl get no_such_metric > /dev/null 2>&1 || fail "get: unknown metric accepted"
 [ "$(ctl history load1 2 | wc -l)" -eq 2 ] || fail "history"
+ctl json | grep -q '"metrics":{' || fail "json"
 
 if command -v curl > /dev/null 2>&1; then
     curl -fsS "http://127.0.0.1:$PORT/metrics" | grep -q '^sysmon_cpu_usage_percent ' ||
