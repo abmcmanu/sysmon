@@ -14,6 +14,7 @@
 #include "sb.h"
 #include "server.h"
 #include "version.h"
+#include "json.h"
 
 #define MAX_ARGS 4
 
@@ -133,11 +134,14 @@ static void handle_cmd(char *line, sb_t *out)
         cmd_history(out, argc, argv, 0);
     } else if (strcmp(argv[0], "avg") == 0) {
         cmd_history(out, argc, argv, 1);
+    } else if (strcmp(argv[0], "json") == 0) {
+        json_metrics(out);
     } else if (strcmp(argv[0], "version") == 0) {
         sb_printf(out, "sysmond %s\n", SYSMON_VERSION);
     } else if (strcmp(argv[0], "help") == 0) {
         sb_puts(out, "ping | version | list | get METRIC"
                      " | history METRIC [N] | avg METRIC [N]"
+                     " | json"
                      "\n");
     } else {
         sb_printf(out, "ERR unknown command '%s'\n", argv[0]);

@@ -23,6 +23,7 @@ Any tool that speaks unix sockets works:
 | `get METRIC` | the current value |
 | `history METRIC [N]` | the last N samples, oldest first, one per line (default 60, max 300) |
 | `avg METRIC [N]` | average of the last N samples |
+| `json` | all metrics as one JSON object: `{"version":..., "timestamp":..., "metrics":{...}}` |
 | `version` | `sysmond X.Y.Z` |
 | `help` | the list of commands |
 
