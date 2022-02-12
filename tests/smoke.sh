@@ -40,6 +40,10 @@ load = net
 
 [http]
 port = $PORT
+
+[alerts]
+# always true: lets us check that rules fire
+rule = mem_total_bytes > 0
 EOF
 
 "$BUILD/sysmond" -f -c "$tmp/sysmond.conf" &
@@ -63,6 +67,7 @@ ctl get mem_used_percent > /dev/null || fail "get"
 ! ctl get no_such_metric > /dev/null 2>&1 || fail "get: unknown metric accepted"
 [ "$(ctl history load1 2 | wc -l)" -eq 2 ] || fail "history"
 ctl json | grep -q '"metrics":{' || fail "json"
+ctl alerts | grep -q '^FIRING' || fail "alerts"
 
 if command -v curl > /dev/null 2>&1; then
     curl -fsS "http://127.0.0.1:$PORT/metrics" | grep -q '^sysmon_cpu_usage_percent ' ||

@@ -3,6 +3,8 @@
 
 #define CFG_PATH_MAX 256
 #define CFG_LIST_MAX 16
+#define CFG_ALERTS_MAX 32
+#define CFG_RULE_MAX 256
 
 typedef struct config {
     int interval;  /* seconds between two samples */
@@ -18,6 +20,8 @@ typedef struct config {
     int nplugins;
     char http_bind[64];
     int http_port; /* 0 = disabled */
+    char alerts[CFG_ALERTS_MAX][CFG_RULE_MAX];
+    int nalerts;
 } config_t;
 
 void config_defaults(config_t *cfg);

@@ -27,3 +27,9 @@ load = net
 # There is no authentication: keep it on localhost or behind a proxy.
 port = 9273
 bind = 127.0.0.1
+
+[alerts]
+# METRIC OP THRESHOLD [for N]   with OP one of > >= < <=
+rule = cpu_usage_percent > 90 for 6
+rule = mem_used_percent > 95 for 3
+rule = disk_root_used_percent >= 90

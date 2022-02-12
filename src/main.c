@@ -28,6 +28,7 @@
 #include "server.h"
 #include "plugins.h"
 #include "http.h"
+#include "alert.h"
 
 static volatile sig_atomic_t running = 1;
 
@@ -165,6 +166,7 @@ static void tick(const config_t *cfg)
     collect_sample();
     collect_disks(cfg);
     plugins_collect();
+    alerts_eval();
     if (cfg->print)
         print_sample();
 }
@@ -241,6 +243,8 @@ int main(int argc, char **argv)
     signal(SIGPIPE, SIG_IGN); /* a client hanging up must not kill us */
 
     if (collect_init() < 0)
+        return 1;
+    if (alerts_load(cfg.alerts, cfg.nalerts) < 0)
         return 1;
 
     /* Open listeners and plugins before daemonizing: errors still reach
