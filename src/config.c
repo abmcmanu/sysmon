@@ -94,6 +94,13 @@ static int set_key(config_t *cfg, const char *section, const char *key, const ch
         if (strcmp(key, "bind") == 0)
             return copy(cfg->http_bind, sizeof cfg->http_bind, val);
     }
+    if (strcmp(section, "alerts") == 0) {
+        if (strcmp(key, "rule") == 0) {
+            if (cfg->nalerts == CFG_ALERTS_MAX)
+                return -1;
+            return copy(cfg->alerts[cfg->nalerts++], CFG_RULE_MAX, val);
+        }
+    }
     return 1; /* unknown key */
 }
 

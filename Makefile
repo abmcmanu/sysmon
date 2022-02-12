@@ -37,6 +37,7 @@ LIB_SRC += src/server.c
 LIB_SRC += src/plugins.c
 LIB_SRC += src/http.c
 LIB_SRC += src/json.c
+LIB_SRC += src/alert.c
 
 LIB_OBJ  = $(LIB_SRC:%.c=$(BUILD)/obj/%.o)
 MAIN_OBJ = $(BUILD)/obj/src/main.o
