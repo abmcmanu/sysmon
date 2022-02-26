@@ -126,6 +126,7 @@ void alerts_eval(void)
         else if (t < 0)
             log_info("alert resolved: %s (value %.6g)", a->rule, a->last);
     }
+    metrics_set("alerts_firing", alerts_firing());
 }
 
 int alerts_firing(void)
