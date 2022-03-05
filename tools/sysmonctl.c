@@ -61,6 +61,7 @@ static void usage(FILE *out)
             "  history METRIC [N]     the last N samples (default 60)\n"
             "  avg METRIC [N]         average of the last N samples\n"
             "  json                   all metrics as JSON\n"
+            "  alerts                 alert rules and their state\n"
             "\n"
             "SOCKET defaults to $SYSMON_SOCKET, then " DEFAULT_SOCKET ".\n");
 }

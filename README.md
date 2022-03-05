@@ -31,6 +31,7 @@ See [`contrib/sysmond.conf`](contrib/sysmond.conf) for every key.
     sysmonctl get mem_used_percent
     sysmonctl history cpu_usage_percent 30
     sysmonctl json
+    sysmonctl alerts
 
 The protocol is plain text, see [docs/PROTOCOL.md](docs/PROTOCOL.md).
 
