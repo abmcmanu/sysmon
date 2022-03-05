@@ -24,6 +24,7 @@ Any tool that speaks unix sockets works:
 | `history METRIC [N]` | the last N samples, oldest first, one per line (default 60, max 300) |
 | `avg METRIC [N]` | average of the last N samples |
 | `json` | all metrics as one JSON object: `{"version":..., "timestamp":..., "metrics":{...}}` |
+| `alerts` | one line per rule: `FIRING` or `ok`, the rule, last value, seconds since last change |
 | `version` | `sysmond X.Y.Z` |
 | `help` | the list of commands |
 
