@@ -2,6 +2,12 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 2.3.0 - 2022-03-19
+
+- Alert rules with hysteresis (`for N`), `alerts` command, `alerts_firing` gauge.
+- `json` command.
+- HTTP: 405 for non-GET requests.
+
 ## 2.2.0 - 2021-05-01
 
 - Prometheus endpoint (`[http] port`), `/healthz`.
