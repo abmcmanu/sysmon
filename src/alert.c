@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "alert.h"
 #include "log.h"
@@ -13,6 +15,7 @@
 
 static alert_t alerts[ALERTS_MAX];
 static int nalerts;
+static char hook[256];
 
 int alert_parse(const char *rule, alert_t *a)
 {
@@ -87,7 +90,7 @@ int alert_update(alert_t *a, double v)
     return 0;
 }
 
-int alerts_load(char rules[][256], int n)
+int alerts_load(char rules[][256], int n, const char *exec_path)
 {
     alert_t parsed[ALERTS_MAX];
     int count = 0;
@@ -108,9 +111,31 @@ int alerts_load(char rules[][256], int n)
     }
     memcpy(alerts, parsed, sizeof(alert_t) * (size_t)count);
     nalerts = count;
+    snprintf(hook, sizeof hook, "%s", exec_path ? exec_path : "");
     if (nalerts)
         log_info("alerts: %d rule(s) loaded", nalerts);
     return 0;
+}
+
+/* Runs the hook with the alert described in the environment.
+ * Fire and forget: the hook must not block the daemon. */
+static void run_hook(const alert_t *a, const char *state)
+{
+    pid_t pid = fork();
+    if (pid < 0) {
+        log_warn("alerts: fork: %s", strerror(errno));
+        return;
+    }
+    if (pid == 0) {
+        char value[64];
+        snprintf(value, sizeof value, "%.6g", a->last);
+        setenv("SYSMON_ALERT", a->rule, 1);
+        setenv("SYSMON_STATE", state, 1);
+        setenv("SYSMON_METRIC", a->metric, 1);
+        setenv("SYSMON_VALUE", value, 1);
+        execl(hook, hook, (char *)NULL);
+        _exit(127);
+    }
 }
 
 void alerts_eval(void)
@@ -125,6 +150,8 @@ void alerts_eval(void)
             log_warn("ALERT FIRING: %s (value %.6g)", a->rule, a->last);
         else if (t < 0)
             log_info("alert resolved: %s (value %.6g)", a->rule, a->last);
+        if (t && hook[0])
+            run_hook(a, t > 0 ? "firing" : "resolved");
     }
     metrics_set("alerts_firing", alerts_firing());
 }

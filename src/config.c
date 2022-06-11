@@ -100,6 +100,8 @@ static int set_key(config_t *cfg, const char *section, const char *key, const ch
                 return -1;
             return copy(cfg->alerts[cfg->nalerts++], CFG_RULE_MAX, val);
         }
+        if (strcmp(key, "exec") == 0)
+            return copy(cfg->alert_exec, sizeof cfg->alert_exec, val);
     }
     return 1; /* unknown key */
 }

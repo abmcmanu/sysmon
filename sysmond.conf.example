@@ -33,3 +33,6 @@ bind = 127.0.0.1
 rule = cpu_usage_percent > 90 for 6
 rule = mem_used_percent > 95 for 3
 rule = disk_root_used_percent >= 90
+# Run on every state change. The alert is passed in SYSMON_ALERT,
+# SYSMON_STATE (firing|resolved), SYSMON_METRIC and SYSMON_VALUE.
+#exec = /usr/local/bin/sysmon-notify

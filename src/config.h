@@ -22,6 +22,7 @@ typedef struct config {
     int http_port; /* 0 = disabled */
     char alerts[CFG_ALERTS_MAX][CFG_RULE_MAX];
     int nalerts;
+    char alert_exec[CFG_PATH_MAX];
 } config_t;
 
 void config_defaults(config_t *cfg);
