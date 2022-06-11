@@ -244,7 +244,7 @@ int main(int argc, char **argv)
 
     if (collect_init() < 0)
         return 1;
-    if (alerts_load(cfg.alerts, cfg.nalerts) < 0)
+    if (alerts_load(cfg.alerts, cfg.nalerts, cfg.alert_exec) < 0)
         return 1;
 
     /* Open listeners and plugins before daemonizing: errors still reach

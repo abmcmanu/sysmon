@@ -33,7 +33,7 @@ int alert_parse(const char *rule, alert_t *a);
  * -1 when it resolves, 0 otherwise. */
 int alert_update(alert_t *a, double value);
 
-int alerts_load(char rules[][256], int n);
+int alerts_load(char rules[][256], int n, const char *exec_path);
 void alerts_eval(void);
 int alerts_firing(void);
 void alerts_dump(sb_t *out);
