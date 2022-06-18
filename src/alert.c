@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 #include "alert.h"
 #include "log.h"
@@ -140,6 +141,9 @@ static void run_hook(const alert_t *a, const char *state)
 
 void alerts_eval(void)
 {
+    while (waitpid(-1, NULL, WNOHANG) > 0)
+        ; /* reap finished hooks */
+
     for (int i = 0; i < nalerts; i++) {
         alert_t *a = &alerts[i];
         const metric_t *m = metrics_get(a->metric);
