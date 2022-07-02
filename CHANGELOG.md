@@ -2,6 +2,11 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 2.3.1 - 2022-07-02
+
+- Alert exec hook (`[alerts] exec`).
+- Fixed: finished hooks were left as zombies.
+
 ## 2.3.0 - 2022-03-19
 
 - Alert rules with hysteresis (`for N`), `alerts` command, `alerts_firing` gauge.
