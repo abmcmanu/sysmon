@@ -17,6 +17,8 @@ jobs:
         run: make
       - name: unit tests
         run: make test
+      - name: smoke test
+        run: make smoke
 
   sanitizers:
     runs-on: ubuntu-latest
