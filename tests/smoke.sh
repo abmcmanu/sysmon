@@ -77,6 +77,11 @@ else
     echo "smoke: curl not found, skipping http checks"
 fi
 
+kill -HUP "$pid"
+sleep 0.5
+ctl ping | grep -qx pong || fail "daemon died on SIGHUP"
+grep -q 'configuration reloaded' "$tmp/sysmond.log" || fail "reload not logged"
+
 kill "$pid"
 wait "$pid" || fail "daemon exited with an error"
 pid=""

@@ -31,9 +31,14 @@
 #include "alert.h"
 
 static volatile sig_atomic_t running = 1;
+static volatile sig_atomic_t reload_requested;
 
 static void on_signal(int sig)
 {
+    if (sig == SIGHUP) {
+        reload_requested = 1;
+        return;
+    }
     (void)sig;
     running = 0;
 }
@@ -140,6 +145,8 @@ static void wait_until(double deadline)
     struct pollfd pfds[MAX_LISTENERS];
 
     while (running) {
+        if (reload_requested)
+            return;
         double d = deadline - now();
         if (d <= 0)
             return;
@@ -159,6 +166,35 @@ static void wait_until(double deadline)
             if (pfds[i].revents & POLLIN)
                 listeners[i].handle(listeners[i].fd);
     }
+}
+
+/* Re-read the configuration. Socket, HTTP listener and plugins are
+ * set up once at startup: changing them still needs a restart. */
+static void reload(config_t *cfg, const char *path)
+{
+    config_t fresh;
+
+    if (!path) {
+        log_info("reload: no configuration file, nothing to do");
+        return;
+    }
+    config_defaults(&fresh);
+    if (config_load(&fresh, path) < 0) {
+        log_warn("reload: %s has errors, keeping the current configuration", path);
+        return;
+    }
+    if (alerts_load(fresh.alerts, fresh.nalerts, fresh.alert_exec) < 0) {
+        log_warn("reload: invalid alert rules, keeping the current configuration");
+        return;
+    }
+    cfg->interval = fresh.interval;
+    cfg->log_level = fresh.log_level;
+    log_set_level(cfg->log_level);
+    memcpy(cfg->mounts, fresh.mounts, sizeof cfg->mounts);
+    cfg->nmounts = fresh.nmounts;
+    memcpy(cfg->alerts, fresh.alerts, sizeof cfg->alerts);
+    cfg->nalerts = fresh.nalerts;
+    log_info("configuration reloaded from %s", path);
 }
 
 static void tick(const config_t *cfg)
@@ -240,6 +276,7 @@ int main(int argc, char **argv)
     sigemptyset(&sa.sa_mask);
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
+    sigaction(SIGHUP, &sa, NULL);
     signal(SIGPIPE, SIG_IGN); /* a client hanging up must not kill us */
 
     if (collect_init() < 0)
@@ -274,6 +311,10 @@ int main(int argc, char **argv)
 
     double next = now();
     while (running) {
+        if (reload_requested) {
+            reload_requested = 0;
+            reload(&cfg, cfg_path);
+        }
         tick(&cfg);
         next += cfg.interval;
         double t = now();

@@ -2,6 +2,8 @@
 #
 # ini-style: [section], key = value, '#' or ';' start a comment.
 # Keys that may appear several times (mount, load, rule) build a list.
+# `kill -HUP $(pidof sysmond)` or `sysmonctl reload` re-reads this file
+# (socket, http and plugins still need a restart).
 
 [core]
 # seconds between two samples
