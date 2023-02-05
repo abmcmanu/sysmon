@@ -19,6 +19,13 @@
 
 #define MAX_ARGS 4
 
+static void (*reload_cb)(void);
+
+void server_on_reload(void (*cb)(void))
+{
+    reload_cb = cb;
+}
+
 /* A connectable socket means another sysmond is alive: do not steal it. */
 static int socket_in_use(const struct sockaddr_un *addr)
 {
@@ -139,6 +146,13 @@ static void handle_cmd(char *line, sb_t *out)
         json_metrics(out);
     } else if (strcmp(argv[0], "alerts") == 0) {
         alerts_dump(out);
+    } else if (strcmp(argv[0], "reload") == 0) {
+        if (reload_cb) {
+            reload_cb();
+            sb_puts(out, "reloading\n");
+        } else {
+            sb_puts(out, "ERR reload not supported\n");
+        }
     } else if (strcmp(argv[0], "version") == 0) {
         sb_printf(out, "sysmond %s\n", SYSMON_VERSION);
     } else if (strcmp(argv[0], "help") == 0) {
@@ -146,6 +160,7 @@ static void handle_cmd(char *line, sb_t *out)
                      " | history METRIC [N] | avg METRIC [N]"
                      " | json"
                      " | alerts"
+                     " | reload"
                      "\n");
     } else {
         sb_printf(out, "ERR unknown command '%s'\n", argv[0]);

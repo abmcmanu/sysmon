@@ -168,6 +168,11 @@ static void wait_until(double deadline)
     }
 }
 
+static void request_reload(void)
+{
+    reload_requested = 1;
+}
+
 /* Re-read the configuration. Socket, HTTP listener and plugins are
  * set up once at startup: changing them still needs a restart. */
 static void reload(config_t *cfg, const char *path)
@@ -289,6 +294,7 @@ int main(int argc, char **argv)
     int srv = server_open(cfg.socket_path);
     if (srv < 0)
         return 1;
+    server_on_reload(request_reload);
     add_listener(srv, server_handle);
     int http_fd = -1;
     if (cfg.http_port > 0) {

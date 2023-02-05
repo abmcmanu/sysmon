@@ -25,6 +25,7 @@ Any tool that speaks unix sockets works:
 | `avg METRIC [N]` | average of the last N samples |
 | `json` | all metrics as one JSON object: `{"version":..., "timestamp":..., "metrics":{...}}` |
 | `alerts` | one line per rule: `FIRING` or `ok`, the rule, last value, seconds since last change |
+| `reload` | re-read the configuration file, same as `SIGHUP`; replies `reloading` |
 | `version` | `sysmond X.Y.Z` |
 | `help` | the list of commands |
 
