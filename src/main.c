@@ -49,6 +49,7 @@ static void usage(FILE *out)
             "usage: sysmond [options]\n"
             "\n"
             "  -c FILE   configuration file\n"
+            "  -t        check the configuration and exit\n"
             "  -f        stay in the foreground\n"
             "  -i SEC    sampling interval in seconds (default: 5)\n"
             "  -l LEVEL  log level: error, warn, info, debug\n"
@@ -216,11 +217,13 @@ int main(int argc, char **argv)
 {
     config_t cfg;
     const char *cfg_path = NULL;
+    int check_only = 0;
     int foreground = 0;
     int print = 0;
     int interval = 0, level = -1, opt;
     static const char optstring[] = "hVi:l:"
                                     "c:"
+                                    "t"
                                     "f"
                                     "p"
                                     ;
@@ -230,6 +233,9 @@ int main(int argc, char **argv)
         switch (opt) {
         case 'c':
             cfg_path = optarg;
+            break;
+        case 't':
+            check_only = 1;
             break;
         case 'f':
             foreground = 1;
@@ -265,6 +271,12 @@ int main(int argc, char **argv)
 
     if (cfg_path && config_load(&cfg, cfg_path) < 0)
         return 1;
+    if (check_only) {
+        if (alerts_load(cfg.alerts, cfg.nalerts, cfg.alert_exec) < 0)
+            return 1;
+        printf("%s: OK\n", cfg_path ? cfg_path : "(defaults)");
+        return 0;
+    }
     /* the command line wins over the configuration file */
     if (interval)
         cfg.interval = interval;
