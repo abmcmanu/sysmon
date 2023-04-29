@@ -196,6 +196,9 @@ static void reload(config_t *cfg, const char *path)
     cfg->interval = fresh.interval;
     cfg->log_level = fresh.log_level;
     log_set_level(cfg->log_level);
+    /* after logrotate moved the file away */
+    memcpy(cfg->log_file, fresh.log_file, sizeof cfg->log_file);
+    log_open(cfg->log_file[0] ? cfg->log_file : NULL);
     memcpy(cfg->mounts, fresh.mounts, sizeof cfg->mounts);
     cfg->nmounts = fresh.nmounts;
     memcpy(cfg->alerts, fresh.alerts, sizeof cfg->alerts);
