@@ -2,6 +2,12 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 2.4.0 - 2023-06-10
+
+- Live reload with SIGHUP or `sysmonctl reload`; alert state survives reloads.
+- `-t` checks the configuration.
+- The log file is reopened on reload (logrotate).
+
 ## 2.3.1 - 2022-07-02
 
 - Alert exec hook (`[alerts] exec`).
