@@ -1,0 +1,20 @@
+[Unit]
+Description=sysmon system monitoring daemon
+Documentation=man:sysmond(8)
+After=network.target
+
+[Service]
+# DynamicUser implies a private /tmp: in /etc/sysmond.conf use
+#   socket = /run/sysmond/sysmond.sock
+Type=simple
+ExecStart=/usr/local/bin/sysmond -f -c /etc/sysmond.conf
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+DynamicUser=yes
+RuntimeDirectory=sysmond
+ProtectSystem=strict
+ProtectHome=read-only
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target
