@@ -6,6 +6,7 @@
 #   make test        unit tests
 #   make smoke       start a daemon and poke at it
 #   make asan        build and test with ASan + UBSan (in build-asan/)
+#   make install     PREFIX=/usr/local DESTDIR=
 
 CC     ?= cc
 CFLAGS ?= -O2 -g
@@ -14,6 +15,7 @@ CFLAGS += -Iinclude
 CFLAGS += -MMD -MP
 LDLIBS  =
 BUILD  ?= build
+PREFIX ?= /usr/local
 
 ifeq ($(SANITIZE),1)
 CFLAGS  += -O1 -fsanitize=address,undefined -fno-omit-frame-pointer
@@ -86,9 +88,18 @@ smoke: all
 asan:
 	$(MAKE) BUILD=build-asan SANITIZE=1 all test
 
+install: all
+	install -d $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/lib/sysmon/plugins
+	install -m 755 $(BUILD)/sysmond $(BUILD)/sysmonctl $(DESTDIR)$(PREFIX)/bin/
+	install -m 644 $(PLUGINS) $(DESTDIR)$(PREFIX)/lib/sysmon/plugins/
+
+uninstall:
+	rm -f $(DESTDIR)$(PREFIX)/bin/sysmond $(DESTDIR)$(PREFIX)/bin/sysmonctl
+	rm -rf $(DESTDIR)$(PREFIX)/lib/sysmon
+
 clean:
 	rm -rf $(BUILD) build-asan
 
 -include $(shell find $(BUILD) -name '*.d' 2>/dev/null)
 
-.PHONY: all plugins test smoke asan clean
+.PHONY: all plugins test smoke asan install uninstall clean
