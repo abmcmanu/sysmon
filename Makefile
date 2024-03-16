@@ -92,10 +92,13 @@ install: all
 	install -d $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/lib/sysmon/plugins
 	install -m 755 $(BUILD)/sysmond $(BUILD)/sysmonctl $(DESTDIR)$(PREFIX)/bin/
 	install -m 644 $(PLUGINS) $(DESTDIR)$(PREFIX)/lib/sysmon/plugins/
+	install -d $(DESTDIR)$(PREFIX)/share/man/man8
+	install -m 644 docs/sysmond.8 $(DESTDIR)$(PREFIX)/share/man/man8/
 
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/sysmond $(DESTDIR)$(PREFIX)/bin/sysmonctl
 	rm -rf $(DESTDIR)$(PREFIX)/lib/sysmon
+	rm -f $(DESTDIR)$(PREFIX)/share/man/man8/sysmond.8
 
 clean:
 	rm -rf $(BUILD) build-asan

@@ -1,0 +1,75 @@
+.TH SYSMOND 8 "2024" "sysmon 2.4.0" "System Manager's Manual"
+.SH NAME
+sysmond \- small system monitoring daemon
+.SH SYNOPSIS
+.B sysmond
+.RB [ \-ftpVh ]
+.RB [ \-c
+.IR file ]
+.RB [ \-i
+.IR seconds ]
+.RB [ \-l
+.IR level ]
+.SH DESCRIPTION
+.B sysmond
+samples cpu, memory, swap, load and disk usage at a fixed interval,
+plus whatever its plugins provide, and keeps the values and a short
+history in memory.
+Clients query it over a unix socket, usually with
+.BR sysmonctl (1).
+It can also expose its metrics to Prometheus over HTTP and evaluate
+simple threshold alerts.
+.SH OPTIONS
+.TP
+.BI \-c " file"
+Read the configuration from
+.IR file .
+.TP
+.B \-f
+Stay in the foreground instead of daemonizing.
+.TP
+.B \-t
+Check the configuration and alert rules, then exit.
+.TP
+.BI \-i " seconds"
+Sampling interval, overrides the configuration.
+.TP
+.BI \-l " level"
+Log level: error, warn, info or debug.
+.TP
+.B \-p
+Print every sample to standard output (with
+.BR \-f ).
+.TP
+.B \-V
+Print the version and exit.
+.SH SIGNALS
+.TP
+.B SIGHUP
+Re-read the configuration file and reopen the log file.
+The socket, HTTP listener and plugins are not affected.
+.TP
+.BR SIGINT ", " SIGTERM
+Exit cleanly, removing the socket and the pid file.
+.SH FILES
+.TP
+.I /etc/sysmond.conf
+Configuration, see
+.I contrib/sysmond.conf
+for every key.
+.TP
+.I /tmp/sysmond.sock
+Default control socket.
+.TP
+.I /usr/local/lib/sysmon/plugins/
+Default plugin directory.
+.SH EXAMPLES
+.nf
+sysmond -f -c /etc/sysmond.conf
+sysmonctl get cpu_usage_percent
+curl -s localhost:9273/metrics
+.fi
+.SH SEE ALSO
+.BR sysmonctl (1),
+.BR proc (5),
+.BR statvfs (3)
