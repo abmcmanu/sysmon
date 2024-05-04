@@ -1,6 +1,6 @@
 #ifndef SYSMON_VERSION_H
 #define SYSMON_VERSION_H
 
-#define SYSMON_VERSION "2.4.0"
+#define SYSMON_VERSION "2.5.0"
 
 #endif
