@@ -2,6 +2,10 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 2.5.0 - 2024-05-04
+
+- `make install`, systemd unit, launchd plist, man page.
+
 ## 2.4.0 - 2023-06-10
 
 - Live reload with SIGHUP or `sysmonctl reload`; alert state survives reloads.
