@@ -10,44 +10,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 
 #include "sb.h"
 #include "version.h"
+#include "client.h"
 
 #define DEFAULT_SOCKET "/tmp/sysmond.sock"
-
-static int ctl_query(const char *path, const char *cmd, sb_t *out)
-{
-    struct sockaddr_un addr;
-
-    if (strlen(path) >= sizeof addr.sun_path) {
-        errno = ENAMETOOLONG;
-        return -1;
-    }
-    memset(&addr, 0, sizeof addr);
-    addr.sun_family = AF_UNIX;
-    memcpy(addr.sun_path, path, strlen(path) + 1);
-
-    int fd = socket(AF_UNIX, SOCK_STREAM, 0);
-    if (fd < 0)
-        return -1;
-    if (connect(fd, (struct sockaddr *)&addr, sizeof addr) < 0) {
-        int e = errno;
-        close(fd);
-        errno = e;
-        return -1;
-    }
-    dprintf(fd, "%s\n", cmd);
-
-    char buf[4096];
-    ssize_t n;
-    while ((n = read(fd, buf, sizeof buf)) > 0)
-        sb_append(out, buf, (size_t)n);
-    close(fd);
-    return 0;
-}
 
 static void usage(FILE *out)
 {
