@@ -35,6 +35,7 @@ checks; nothing is done in signal context.
 | `src/alert.c` | threshold rules, state machine, exec hook |
 | `src/log.c`, `src/sb.c` | logging, growable string buffer |
 | `tools/sysmonctl.c` | CLI client |
+| `tools/tui.c` | `sysmonctl top` |
 | `include/sysmon/plugin.h` | the only public header |
 
 ## Boundaries

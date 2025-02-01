@@ -46,6 +46,7 @@ MAIN_OBJ = $(BUILD)/obj/src/main.o
 
 CTL_SRC = tools/sysmonctl.c src/sb.c
 CTL_SRC += tools/client.c
+CTL_SRC += tools/tui.c
 CTL_OBJ = $(CTL_SRC:%.c=$(BUILD)/obj/%.o)
 
 PLUGINS =
