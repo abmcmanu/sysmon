@@ -4,6 +4,7 @@
  *   sysmonctl list
  *   sysmonctl get cpu_usage_percent
  *   sysmonctl history mem_used_percent 30
+ *   sysmonctl top
  */
 #include <errno.h>
 #include <stdio.h>
@@ -14,6 +15,7 @@
 #include "sb.h"
 #include "version.h"
 #include "client.h"
+#include "tui.h"
 
 #define DEFAULT_SOCKET "/tmp/sysmond.sock"
 
@@ -31,6 +33,7 @@ static void usage(FILE *out)
             "  json                   all metrics as JSON\n"
             "  alerts                 alert rules and their state\n"
             "  reload                 re-read the configuration file\n"
+            "  top [SEC]              interactive dashboard\n"
             "\n"
             "SOCKET defaults to $SYSMON_SOCKET, then " DEFAULT_SOCKET ".\n");
 }
@@ -63,6 +66,11 @@ int main(int argc, char **argv)
     if (optind >= argc) {
         usage(stderr);
         return 2;
+    }
+
+    if (strcmp(argv[optind], "top") == 0) {
+        double secs = optind + 1 < argc ? atof(argv[optind + 1]) : 1.0;
+        return tui_run(sock, (int)(secs * 1000.0)) < 0 ? 1 : 0;
     }
 
     sb_t cmd, out;
