@@ -22,6 +22,7 @@
 #include "tui.h"
 
 #define MAX_METRICS 256
+#define SPARK_MAX 120
 
 #define RESET  "\033[0m"
 #define BOLD   "\033[1m"
@@ -152,6 +153,41 @@ static void human_bytes(double b, char *buf, size_t size)
     snprintf(buf, size, u ? "%.1f %s" : "%.0f %s", b, units[u]);
 }
 
+static int history(const char *sock, const char *metric, int n, double *dst)
+{
+    char cmd[128];
+    sb_t out;
+    int count = 0;
+
+    snprintf(cmd, sizeof cmd, "history %s %d", metric, n);
+    sb_init(&out);
+    if (ctl_query(sock, cmd, &out) == 0 && out.data && strncmp(out.data, "ERR", 3) != 0) {
+        char *save = NULL;
+        for (char *l = strtok_r(out.data, "\n", &save); l && count < n;
+             l = strtok_r(NULL, "\n", &save))
+            dst[count++] = atof(l);
+    }
+    sb_free(&out);
+    return count;
+}
+
+static void spark(sb_t *o, const double *v, int n, double lo, double hi)
+{
+    static const char *blocks[] = { "▁", "▂", "▃", "▄",
+                                    "▅", "▆", "▇", "█" };
+    sb_puts(o, CYAN);
+    for (int i = 0; i < n; i++) {
+        double x = isnan(v[i]) ? lo : v[i];
+        int idx = hi > lo ? (int)((x - lo) / (hi - lo) * 7.0 + 0.5) : 0;
+        if (idx < 0)
+            idx = 0;
+        if (idx > 7)
+            idx = 7;
+        sb_puts(o, blocks[idx]);
+    }
+    sb_puts(o, RESET);
+}
+
 static void render(const char *sock, int interval_ms, int connected)
 {
     int rows, cols, used = 0;
@@ -189,11 +225,25 @@ static void render(const char *sock, int interval_ms, int connected)
     double cpu = val("cpu_usage_percent");
     sb_printf(&o, "  CPU   %5.1f%% ", isnan(cpu) ? 0.0 : cpu);
     bar(&o, cpu, barw);
+    double h[SPARK_MAX];
+    int sw = cols - barw - 18;
+    if (sw > SPARK_MAX)
+        sw = SPARK_MAX;
+    if (sw > 8) {
+        int n = history(sock, "cpu_usage_percent", sw, h);
+        sb_puts(&o, "  ");
+        spark(&o, h, n, 0, 100);
+    }
     sb_puts(&o, "\n");
 
     double mem = val("mem_used_percent");
     sb_printf(&o, "  MEM   %5.1f%% ", isnan(mem) ? 0.0 : mem);
     bar(&o, mem, barw);
+    if (sw > 8) {
+        int n = history(sock, "mem_used_percent", sw, h);
+        sb_puts(&o, "  ");
+        spark(&o, h, n, 0, 100);
+    }
     human_bytes(val("mem_used_bytes"), a, sizeof a);
     human_bytes(val("mem_total_bytes"), b, sizeof b);
     sb_printf(&o, "\n        " DIM "%s / %s" RESET "\n", a, b);
