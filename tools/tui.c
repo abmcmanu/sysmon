@@ -42,9 +42,14 @@ static int nkv;
 static struct termios saved_tio;
 static int raw_mode;
 static volatile sig_atomic_t quit;
+static volatile sig_atomic_t resized;
 
 static void on_signal(int sig)
 {
+    if (sig == SIGWINCH) {
+        resized = 1;
+        return;
+    }
     (void)sig;
     quit = 1;
 }
@@ -302,6 +307,7 @@ int tui_run(const char *sock, int interval_ms)
     sigemptyset(&sa.sa_mask);
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
+    sigaction(SIGWINCH, &sa, NULL);
 
     int connected = 1;
     while (!quit) {
@@ -309,6 +315,10 @@ int tui_run(const char *sock, int interval_ms)
 
         struct pollfd p = { STDIN_FILENO, POLLIN, 0 };
         int n = poll(&p, 1, interval_ms);
+        if (n < 0 && errno == EINTR && resized) {
+            resized = 0; /* redraw at the new size, data can wait */
+            continue;
+        }
         if (n > 0) {
             char c;
             if (read(STDIN_FILENO, &c, 1) == 1) {
