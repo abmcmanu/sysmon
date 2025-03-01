@@ -209,6 +209,7 @@ static void render(const char *sock, int interval_ms, int connected)
     sb_init(&o);
     sb_puts(&o, "\033[H\033[2J");
     sb_printf(&o, BOLD "sysmon top" RESET "  %s  %s  every %.1fs  " DIM "q quit"
+                  "  +/- speed"
                   RESET "\n\n",
               host, ts, interval_ms / 1000.0);
     used += 2;
@@ -324,6 +325,10 @@ int tui_run(const char *sock, int interval_ms)
             if (read(STDIN_FILENO, &c, 1) == 1) {
                 if (c == 'q' || c == 'Q')
                     break;
+                if (c == '+' && interval_ms > 250)
+                    interval_ms /= 2;
+                if (c == '-' && interval_ms < 10000)
+                    interval_ms *= 2;
             }
         }
         connected = fetch(sock) == 0;
