@@ -2,6 +2,10 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 3.0.0 - 2025-03-22
+
+- `sysmonctl top`: full-screen dashboard with bars and sparklines.
+
 ## 2.5.0 - 2024-05-04
 
 - `make install`, systemd unit, launchd plist, man page.
