@@ -266,6 +266,34 @@ static void render(const char *sock, int interval_ms, int connected)
     sb_printf(&o, "  LOAD  %.2f %.2f %.2f\n", val("load1"), val("load5"), val("load15"));
     used++;
 
+    sb_puts(&o, "\n");
+    used++;
+    for (int i = 0; i < nkv; i++) {
+        const char *n = kv[i].name;
+        size_t len = strlen(n);
+        const char *suffix = "_used_percent";
+        if (strncmp(n, "disk_", 5) != 0 || len <= 5 + strlen(suffix) ||
+            strcmp(n + len - strlen(suffix), suffix) != 0)
+            continue;
+        sb_printf(&o, "  %-6.*s%5.1f%% ", (int)(len - 5 - strlen(suffix)), n + 5, kv[i].value);
+        bar(&o, kv[i].value, barw);
+        sb_puts(&o, "\n");
+        used++;
+    }
+    double rx = val("net_rx_bytes_per_second"), tx = val("net_tx_bytes_per_second");
+    if (!isnan(rx) && !isnan(tx)) {
+        human_bytes(rx, a, sizeof a);
+        human_bytes(tx, b, sizeof b);
+        sb_printf(&o, "  NET   " GREEN "↓" RESET " %s/s   " CYAN "↑" RESET " %s/s\n", a, b);
+        used++;
+    }
+    double up = val("uptime_seconds");
+    if (!isnan(up)) {
+        long s = (long)up;
+        sb_printf(&o, "  UP    %ldd %02ld:%02ld\n", s / 86400, (s / 3600) % 24, (s / 60) % 60);
+        used++;
+    }
+
     double firing = val("alerts_firing");
     if (!isnan(firing) && firing > 0) {
         sb_printf(&o, "\n  " RED BOLD "%d alert(s) firing" RESET DIM "  (sysmonctl alerts)" RESET "\n",
