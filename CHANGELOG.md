@@ -2,6 +2,10 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 3.0.1 - 2025-09-06
+
+- `top` shows disks, network throughput and uptime.
+
 ## 3.0.0 - 2025-03-22
 
 - `sysmonctl top`: full-screen dashboard with bars and sparklines.
