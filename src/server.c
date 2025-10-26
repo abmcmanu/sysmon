@@ -167,6 +167,15 @@ static void handle_cmd(char *line, sb_t *out)
     }
 }
 
+void server_exec(const char *line, sb_t *out)
+{
+    char buf[512];
+
+    snprintf(buf, sizeof buf, "%s", line);
+    buf[strcspn(buf, "\r\n")] = '\0';
+    handle_cmd(buf, out);
+}
+
 static int write_all(int fd, const char *p, size_t n)
 {
     while (n > 0) {
