@@ -57,6 +57,7 @@ TESTS = $(BUILD)/tests/test_ring
 TESTS += $(BUILD)/tests/test_config
 TESTS += $(BUILD)/tests/test_sb
 TESTS += $(BUILD)/tests/test_alert
+TESTS += $(BUILD)/tests/test_server
 
 all: $(BUILD)/sysmond $(BUILD)/sysmonctl plugins
 
