@@ -21,6 +21,12 @@ int main(void)
     CHECK(strncmp(run(""), "ERR", 3) == 0);
     CHECK(strncmp(run("nope"), "ERR unknown command", 19) == 0);
 
+    metrics_set("load1", 0.5);
+    metrics_set("mem_used_bytes", 12345678901.0);
+    CHECK(strcmp(run("get load1"), "0.5\n") == 0);
+    CHECK(strncmp(run("get missing"), "ERR", 3) == 0);
+    CHECK(strstr(run("list"), "load1 0.5\n") != NULL);
+
     sb_free(&out);
     return test_report("server");
 }
