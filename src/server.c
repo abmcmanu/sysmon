@@ -93,7 +93,7 @@ static void cmd_list(sb_t *out)
 {
     for (size_t i = 0; i < metrics_count(); i++) {
         const metric_t *m = metrics_at(i);
-        sb_printf(out, "%s %.6g\n", m->name, m->value);
+        sb_printf(out, "%s %.15g\n", m->name, m->value);
     }
 }
 
@@ -135,7 +135,7 @@ static void handle_cmd(char *line, sb_t *out)
     } else if (strcmp(argv[0], "get") == 0) {
         const metric_t *m = argc > 1 ? metrics_get(argv[1]) : NULL;
         if (m)
-            sb_printf(out, "%.6g\n", m->value);
+            sb_printf(out, "%.15g\n", m->value);
         else
             sb_printf(out, "ERR unknown metric '%s'\n", argc > 1 ? argv[1] : "");
     } else if (strcmp(argv[0], "history") == 0) {
