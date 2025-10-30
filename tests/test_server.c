@@ -26,6 +26,7 @@ int main(void)
     CHECK(strcmp(run("get load1"), "0.5\n") == 0);
     CHECK(strncmp(run("get missing"), "ERR", 3) == 0);
     CHECK(strstr(run("list"), "load1 0.5\n") != NULL);
+    CHECK(strcmp(run("get mem_used_bytes"), "12345678901\n") == 0);
 
     sb_free(&out);
     return test_report("server");
