@@ -28,6 +28,12 @@ int main(void)
     CHECK(strstr(run("list"), "load1 0.5\n") != NULL);
     CHECK(strcmp(run("get mem_used_bytes"), "12345678901\n") == 0);
 
+    metrics_set("load1", 1.5);
+    metrics_set("load1", 2.5);
+    CHECK(strcmp(run("history load1 2"), "1.5\n2.5\n") == 0);
+    CHECK(strcmp(run("avg load1 2"), "2\n") == 0);
+    CHECK(strncmp(run("history"), "ERR usage", 9) == 0);
+
     sb_free(&out);
     return test_report("server");
 }
