@@ -34,6 +34,9 @@ int main(void)
     CHECK(strcmp(run("avg load1 2"), "2\n") == 0);
     CHECK(strncmp(run("history"), "ERR usage", 9) == 0);
 
+    CHECK(strstr(run("help"), "history METRIC") != NULL);
+    CHECK(strncmp(run("version"), "sysmond ", 8) == 0);
+
     sb_free(&out);
     return test_report("server");
 }
