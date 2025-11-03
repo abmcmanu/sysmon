@@ -13,6 +13,13 @@ int main(void)
     json_string(&o, "a\"b\\c\n\x01");
     CHECK(strcmp(o.data, "\"a\\\"b\\\\c\\n\\u0001\"") == 0);
 
+    sb_reset(&o);
+    json_number(&o, NAN);
+    CHECK(strcmp(o.data, "null") == 0);
+    sb_reset(&o);
+    json_number(&o, 0.25);
+    CHECK(strcmp(o.data, "0.25") == 0);
+
     sb_free(&o);
     return test_report("json");
 }
