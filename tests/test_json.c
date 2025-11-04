@@ -20,6 +20,12 @@ int main(void)
     json_number(&o, 0.25);
     CHECK(strcmp(o.data, "0.25") == 0);
 
+    sb_reset(&o);
+    metrics_set("x", 1);
+    json_metrics(&o);
+    CHECK(strncmp(o.data, "{\"version\":", 11) == 0);
+    CHECK(strstr(o.data, "\"metrics\":{\"x\":1}") != NULL);
+
     sb_free(&o);
     return test_report("json");
 }
