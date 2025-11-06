@@ -17,5 +17,12 @@ int main(void)
     CHECK(metrics_get("a")->value == 2);
     CHECK(ring_len(&metrics_get("a")->hist) == 2);
 
+    CHECK(metric_name_valid("cpu_usage_percent"));
+    CHECK(metric_name_valid("_x9"));
+    CHECK(!metric_name_valid("9x"));
+    CHECK(!metric_name_valid("a-b"));
+    CHECK(!metric_name_valid(""));
+    CHECK(metrics_set("bad name", 1) == NULL);
+
     return test_report("metrics");
 }
