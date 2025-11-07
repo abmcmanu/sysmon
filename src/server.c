@@ -134,10 +134,12 @@ static void handle_cmd(char *line, sb_t *out)
         cmd_list(out);
     } else if (strcmp(argv[0], "get") == 0) {
         const metric_t *m = argc > 1 ? metrics_get(argv[1]) : NULL;
-        if (m)
+        if (argc < 2)
+            sb_puts(out, "ERR usage: get METRIC\n");
+        else if (m)
             sb_printf(out, "%.15g\n", m->value);
         else
-            sb_printf(out, "ERR unknown metric '%s'\n", argc > 1 ? argv[1] : "");
+            sb_printf(out, "ERR unknown metric '%s'\n", argv[1]);
     } else if (strcmp(argv[0], "history") == 0) {
         cmd_history(out, argc, argv, 0);
     } else if (strcmp(argv[0], "avg") == 0) {
