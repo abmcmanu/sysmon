@@ -24,5 +24,9 @@ int main(void)
     CHECK(!metric_name_valid(""));
     CHECK(metrics_set("bad name", 1) == NULL);
 
+    metrics_set_help("b", "help text");
+    CHECK(isnan(metrics_get("b")->value));
+    CHECK(strcmp(metrics_get("b")->help, "help text") == 0);
+
     return test_report("metrics");
 }
