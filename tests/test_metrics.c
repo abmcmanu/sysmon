@@ -28,5 +28,12 @@ int main(void)
     CHECK(isnan(metrics_get("b")->value));
     CHECK(strcmp(metrics_get("b")->help, "help text") == 0);
 
+    char name[32];
+    for (int i = 0; i < METRICS_MAX + 10; i++) {
+        snprintf(name, sizeof name, "m%d", i);
+        metrics_set(name, i);
+    }
+    CHECK(metrics_count() == METRICS_MAX);
+
     return test_report("metrics");
 }
