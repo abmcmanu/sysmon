@@ -13,4 +13,9 @@ int collect_sample(void);
 /* Portable (statvfs) disk usage of the configured mount points. */
 int collect_disks(const config_t *cfg);
 
+#include <stddef.h>
+
+/* "/" -> "root", "/var/lib" -> "var_lib" */
+void disk_metric_name(const char *mnt, char *out, size_t size);
+
 #endif
