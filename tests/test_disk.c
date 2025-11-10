@@ -15,6 +15,8 @@ int main(void)
     CHECK(is("/", "root"));
     CHECK(is("/home", "home"));
     CHECK(is("/var/lib/docker", "var_lib_docker"));
+    CHECK(is("/mnt/USB-Key", "mnt_usb_key"));
+    CHECK(is("//", "root"));
 
     return test_report("disk");
 }
