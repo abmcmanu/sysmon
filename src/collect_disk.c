@@ -8,8 +8,7 @@
 #include "log.h"
 #include "metrics.h"
 
-/* "/" -> "root", "/var/lib" -> "var_lib" */
-static void mount_to_name(const char *mnt, char *out, size_t size)
+void disk_metric_name(const char *mnt, char *out, size_t size)
 {
     size_t j = 0;
 
@@ -42,7 +41,7 @@ int collect_disks(const config_t *cfg)
         /* same formula as df(1): reserved blocks do not count as free */
         double pct = used + avail > 0 ? 100.0 * used / (used + avail) : 0.0;
 
-        mount_to_name(cfg->mounts[i], name, sizeof name);
+        disk_metric_name(cfg->mounts[i], name, sizeof name);
         snprintf(metric, sizeof metric, "disk_%s_used_percent", name);
         metrics_set(metric, pct);
         snprintf(metric, sizeof metric, "disk_%s_free_bytes", name);
