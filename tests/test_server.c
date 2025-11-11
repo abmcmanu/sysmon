@@ -37,6 +37,8 @@ int main(void)
     CHECK(strstr(run("help"), "history METRIC") != NULL);
     CHECK(strncmp(run("version"), "sysmond ", 8) == 0);
     CHECK(strcmp(run("get"), "ERR usage: get METRIC\n") == 0);
+    CHECK(strcmp(run("ping\r\n"), "pong\n") == 0);
+    CHECK(strcmp(run("  ping  "), "pong\n") == 0);
 
     sb_free(&out);
     return test_report("server");
