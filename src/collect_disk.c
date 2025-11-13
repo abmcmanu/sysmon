@@ -20,6 +20,8 @@ void disk_metric_name(const char *mnt, char *out, size_t size)
     }
     for (; *mnt && j + 1 < size; mnt++)
         out[j++] = isalnum((unsigned char)*mnt) ? (char)tolower((unsigned char)*mnt) : '_';
+    while (j > 0 && out[j - 1] == '_')
+        j--;
     out[j] = '\0';
 }
 
