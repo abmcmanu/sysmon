@@ -22,6 +22,7 @@ int main(void)
     char small[8];
     disk_metric_name("/very/long/mount/point", small, sizeof small);
     CHECK(strlen(small) == 7);
+    CHECK(is("/srv/data/", "srv_data"));
 
     return test_report("disk");
 }
