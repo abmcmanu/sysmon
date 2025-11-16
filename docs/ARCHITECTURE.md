@@ -4,6 +4,24 @@ sysmon is a small daemon (`sysmond`) and its client (`sysmonctl`).
 This page is the map; the *why* of each choice lives in
 [`docs/adr/`](adr/).
 
+## Overview
+
+```
+                        ┌──────────────────────── sysmond ─────────────────────────┐
+                        │                                                          │
+   /proc, sysctl,  ───▶ │  collectors ──┐                                          │
+   mach, statvfs        │  (per OS)     │                    ┌──▶ server.c ────────┼──▶ unix socket ──▶ sysmonctl
+                        │               ├──▶ metrics.c ──────┤    (line protocol)  │                    (list, get, top...)
+   plugins/*.so    ───▶ │  plugins.c ───┘    registry +      │                     │
+   (dlopen)             │                    ring buffers    ├──▶ http.c ──────────┼──▶ :9273/metrics ──▶ Prometheus
+                        │                        │           │    (exposition)     │
+                        │                        ▼           └──▶ json.c           │
+                        │                    alert.c ──────────▶ log, exec hook    │
+                        │                                                          │
+                        │  main.c: config, signals, poll() loop                    │
+                        └──────────────────────────────────────────────────────────┘
+```
+
 ## The loop
 
 Everything happens on one thread ([ADR 0004](adr/0004-poll-loop.md)):
