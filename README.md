@@ -1,52 +1,65 @@
 # sysmon
 
-`sysmond` is a small system monitoring daemon written in C. It samples
-cpu, memory and load at a fixed interval and keeps them in memory.
-`sysmonctl` queries it over a unix socket.
+**A small, dependency-free system monitoring daemon for Linux and macOS.**
 
-The original bash version (2013-2015) lives in [`legacy/`](legacy/).
+`sysmond` samples cpu, memory, swap, load, disks and anything its
+plugins provide, keeps a short history in memory, evaluates alert rules
+and serves it all over a unix socket and a Prometheus endpoint.
+`sysmonctl` is the command line client, with a `top`-like dashboard.
 
-## Build
+```
+sysmon top  web01  21:42:07  every 1.0s  q quit  +/- speed
 
-Linux with any C11 compiler, no dependencies:
+  CPU    23.4% ███████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ▂▂▃▅▇▆▃▂▂▁▁▂▃▃▂▂▄▆▇▅▃
+  MEM    61.2% ██████████████████████████░░░░░░░░░░░░░░  ▅▅▅▅▅▅▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆
+        9.8 GiB / 16.0 GiB
+  LOAD  1.12 0.97 0.85
 
-    make
-    ./build/sysmond -f
-    ./build/sysmonctl list
+  root   48.0% ███████████████████░░░░░░░░░░░░░░░░░░░░░
+  NET   ↓ 1.2 MiB/s   ↑ 88.4 KiB/s
+  UP    12d 04:17
+```
 
-macOS is supported since 1.3 (Mach host statistics instead of `/proc`).
-Xcode command line tools are enough: `xcode-select --install && make`.
-Plugins are built as `.so` there too, `dlopen()` does not care.
+* ~3k lines of C11 + POSIX, no dependency beyond libc
+* one thread, one `poll()` loop, no allocation while sampling
+* plugin ABI (`dlopen`), Prometheus exporter, JSON, alert hooks
+* started in 2013 as a bash script, still around in [`legacy/`](legacy/)
 
-## Configuration
+## Quick start
 
-See [`contrib/sysmond.conf`](contrib/sysmond.conf) for every key.
+```sh
+make                       # build/sysmond, build/sysmonctl, build/plugins/*.so
+make test smoke            # unit + end-to-end tests
 
-    ./build/sysmond -c contrib/sysmond.conf
+./build/sysmond -f -c contrib/sysmond.conf &
+./build/sysmonctl top
+```
 
-## Querying
+Linux (glibc or musl) and macOS (Xcode command line tools) are tested in
+CI.
+systemd and launchd are in [`contrib/`](contrib/).
 
-    sysmonctl ping
-    sysmonctl list
-    sysmonctl get mem_used_percent
-    sysmonctl history cpu_usage_percent 30
-    sysmonctl json
-    sysmonctl alerts
+## Using it
 
-The protocol is plain text, see [docs/PROTOCOL.md](docs/PROTOCOL.md).
+```sh
+sysmonctl list                          # every metric
+sysmonctl get mem_used_percent          # one value, for scripts
+sysmonctl history cpu_usage_percent 60  # last 60 samples
+sysmonctl avg load1 12                  # average of the last 12
+sysmonctl json                          # everything, machine-readable
+sysmonctl alerts                        # rule states
+sysmonctl reload                        # same as kill -HUP
+```
 
-## Plugins
+No client needed if you prefer: `printf 'get load1\n' | nc -U /tmp/sysmond.sock`.
+The protocol is in [docs/PROTOCOL.md](docs/PROTOCOL.md).
 
-Extra metrics come from plugins, see [docs/PLUGINS.md](docs/PLUGINS.md).
+### Prometheus
 
-## Prometheus
-
-Enable the HTTP listener:
-
-    [http]
-    port = 9273
-
-then scrape it:
+```ini
+[http]
+port = 9273          ; bind defaults to 127.0.0.1
+```
 
 ```yaml
 scrape_configs:
@@ -55,11 +68,64 @@ scrape_configs:
       - targets: ['web01:9273', 'web02:9273']
 ```
 
-## Tests
+### Alerts
 
-    make test
-    make smoke
-    make asan
+```ini
+[alerts]
+rule = cpu_usage_percent > 90 for 6
+rule = disk_root_used_percent >= 90
+exec = /usr/local/bin/notify-me      ; gets SYSMON_ALERT, SYSMON_STATE, ...
+```
+
+### Plugins
+
+```ini
+[plugins]
+dir  = /usr/local/lib/sysmon/plugins
+load = net
+load = uptime
+```
+
+Writing one is ~30 lines of C against a single header,
+see [docs/PLUGINS.md](docs/PLUGINS.md).
+
+## Metrics
+
+| name | source |
+|---|---|
+| `cpu_usage_percent` | `/proc/stat`, Mach `HOST_CPU_LOAD_INFO` |
+| `mem_total_bytes`, `mem_used_bytes`, `mem_used_percent` | `/proc/meminfo` (`MemAvailable`), `HOST_VM_INFO64` |
+| `swap_total_bytes`, `swap_used_bytes` | `/proc/meminfo`, `vm.swapusage` |
+| `load1`, `load5`, `load15` | `getloadavg(3)` |
+| `disk_<mount>_used_percent`, `disk_<mount>_free_bytes` | `statvfs(3)` |
+| `alerts_firing` | alert engine |
+| `net_rx_bytes_per_second`, `net_tx_bytes_per_second` | `net` plugin |
+| `uptime_seconds` | `uptime` plugin |
+
+## Documentation
+
+* [Architecture](docs/ARCHITECTURE.md): modules, loop, boundaries
+* [Decision records](docs/adr/): why C, why a unix socket, the plugin
+  ABI, the poll loop, Prometheus, the TUI without ncurses
+* [Protocol](docs/PROTOCOL.md) and [plugins](docs/PLUGINS.md)
+* `man docs/sysmond.8`
+* [Changelog](CHANGELOG.md): thirteen years of it
+
+## History
+
+| | |
+|---|---|
+| 2013 | `sysmon.sh`: bars, colors, alerts, logging, CSV |
+| 2016 | rewrite as a C daemon (1.0) |
+| 2017 | unix socket protocol, `sysmonctl`, history ring buffers |
+| 2018 | macOS support |
+| 2019 | plugin ABI (2.0) |
+| 2020 | tests, sanitizers, CI, `poll()` event loop |
+| 2021 | Prometheus exporter |
+| 2022 | JSON, alert rules and hooks |
+| 2023 | live reload (SIGHUP) |
+| 2024 | packaging: systemd, launchd, man page |
+| 2025 | `sysmonctl top` (3.0) |
 
 ## License
 
