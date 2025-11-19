@@ -15,6 +15,7 @@ void config_defaults(config_t *cfg)
     snprintf(cfg->mounts[0], CFG_PATH_MAX, "/");
     cfg->nmounts = 1;
     snprintf(cfg->socket_path, sizeof cfg->socket_path, "/tmp/sysmond.sock");
+    cfg->socket_mode = 0660;
     snprintf(cfg->plugin_dir, CFG_PATH_MAX, "/usr/local/lib/sysmon/plugins");
     snprintf(cfg->http_bind, sizeof cfg->http_bind, "127.0.0.1");
 }
@@ -68,6 +69,8 @@ static int set_key(config_t *cfg, const char *section, const char *key, const ch
             return copy(cfg->pid_file, sizeof cfg->pid_file, val);
         if (strcmp(key, "socket") == 0)
             return copy(cfg->socket_path, sizeof cfg->socket_path, val);
+        if (strcmp(key, "socket_mode") == 0)
+            return to_int(val, 0, 0777, &cfg->socket_mode);
     }
     if (strcmp(section, "disk") == 0 && strcmp(key, "mount") == 0) {
         /* the first `mount` replaces the default "/" */

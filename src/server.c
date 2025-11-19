@@ -37,7 +37,7 @@ static int socket_in_use(const struct sockaddr_un *addr)
     return alive;
 }
 
-int server_open(const char *path)
+int server_open(const char *path, int mode)
 {
     struct sockaddr_un addr;
 
@@ -64,7 +64,8 @@ int server_open(const char *path)
         close(fd);
         return -1;
     }
-    chmod(path, 0660);
+    if (chmod(path, (mode_t)mode) < 0)
+        log_warn("chmod %s: %s", path, strerror(errno));
     fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
     fcntl(fd, F_SETFD, FD_CLOEXEC);
     log_info("listening on %s", path);

@@ -306,7 +306,7 @@ int main(int argc, char **argv)
 
     /* Open listeners and plugins before daemonizing: errors still reach
      * the terminal and relative paths still mean something. */
-    int srv = server_open(cfg.socket_path);
+    int srv = server_open(cfg.socket_path, cfg.socket_mode);
     if (srv < 0)
         return 1;
     server_on_reload(request_reload);
