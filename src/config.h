@@ -15,6 +15,7 @@ typedef struct config {
     char mounts[CFG_LIST_MAX][CFG_PATH_MAX];
     int nmounts;
     char socket_path[108]; /* sizeof(sun_path) on Linux */
+    int socket_mode;
     char plugin_dir[CFG_PATH_MAX];
     char plugins[CFG_LIST_MAX][64];
     int nplugins;
