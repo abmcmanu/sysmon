@@ -52,6 +52,7 @@ CTL_OBJ = $(CTL_SRC:%.c=$(BUILD)/obj/%.o)
 PLUGINS =
 PLUGINS += $(BUILD)/plugins/uptime.so
 PLUGINS += $(BUILD)/plugins/net.so
+PLUGINS += $(BUILD)/plugins/cpustat.so
 
 TESTS = $(BUILD)/tests/test_ring
 TESTS += $(BUILD)/tests/test_config
