@@ -18,6 +18,21 @@ static const sysmon_host_t *H;
 static times_t prev[MAX_CPUS + 1]; /* [0] is the aggregate */
 static int ncpu;
 
+static unsigned long long busy(const times_t *t)
+{
+    return t->user + t->nice + t->sys + t->irq + t->softirq + t->steal;
+}
+
+static unsigned long long total(const times_t *t)
+{
+    return busy(t) + t->idle + t->iowait;
+}
+
+static double pct(unsigned long long part, unsigned long long whole)
+{
+    return whole ? 100.0 * (double)part / (double)whole : 0.0;
+}
+
 static int read_times(times_t *cur)
 {
     char line[1024], name[16];
@@ -68,6 +83,14 @@ static int cpustat_collect(void)
 
     if (n <= 0)
         return -1;
+
+    char name[64];
+    for (int i = 1; i <= n; i++) {
+        if (total(&cur[i]) <= total(&prev[i]))
+            continue;
+        snprintf(name, sizeof name, "cpu%d_usage_percent", i - 1);
+        H->set(name, pct(busy(&cur[i]) - busy(&prev[i]), total(&cur[i]) - total(&prev[i])));
+    }
     memcpy(prev, cur, sizeof(times_t) * (size_t)(n + 1));
     return 0;
 }
