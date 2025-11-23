@@ -91,6 +91,16 @@ static int cpustat_collect(void)
         snprintf(name, sizeof name, "cpu%d_usage_percent", i - 1);
         H->set(name, pct(busy(&cur[i]) - busy(&prev[i]), total(&cur[i]) - total(&prev[i])));
     }
+
+    const times_t *c = &cur[0], *p = &prev[0];
+    if (total(c) > total(p)) {
+        unsigned long long dt = total(c) - total(p);
+        H->set("cpu_user_percent", pct((c->user + c->nice) - (p->user + p->nice), dt));
+        H->set("cpu_system_percent",
+               pct((c->sys + c->irq + c->softirq) - (p->sys + p->irq + p->softirq), dt));
+        H->set("cpu_iowait_percent", pct(c->iowait - p->iowait, dt));
+        H->set("cpu_steal_percent", pct(c->steal - p->steal, dt));
+    }
     memcpy(prev, cur, sizeof(times_t) * (size_t)(n + 1));
     return 0;
 }
