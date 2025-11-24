@@ -72,6 +72,11 @@ static int cpustat_init(const sysmon_host_t *host)
         H->log(SYSMON_LOG_WARN, "cpustat: cannot read cpu times");
         return -1;
     }
+    H->set_help("cpu_count", "Number of online cpus.");
+    H->set_help("cpu_user_percent", "Time spent in user space, including niced processes.");
+    H->set_help("cpu_system_percent", "Time spent in the kernel, including interrupts.");
+    H->set_help("cpu_iowait_percent", "Idle time with I/O outstanding.");
+    H->set_help("cpu_steal_percent", "Time stolen by the hypervisor.");
     H->set("cpu_count", ncpu);
     return 0;
 }
