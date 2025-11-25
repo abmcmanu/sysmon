@@ -88,6 +88,13 @@ static int cpustat_collect(void)
 
     if (n <= 0)
         return -1;
+    if (n != ncpu) {
+        H->log(SYSMON_LOG_INFO, "cpustat: %d cpus online, was %d", n, ncpu);
+        ncpu = n;
+        memcpy(prev, cur, sizeof(times_t) * (size_t)(n + 1));
+        H->set("cpu_count", n);
+        return 0;
+    }
 
     char name[64];
     for (int i = 1; i <= n; i++) {
