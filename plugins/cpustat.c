@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#ifdef __APPLE__
+#include <mach/mach.h>
+#endif
 
 #include "sysmon/plugin.h"
 
@@ -42,6 +45,35 @@ static double pct(unsigned long long part, unsigned long long whole)
     return whole ? 100.0 * (double)part / (double)whole : 0.0;
 }
 
+#ifdef __APPLE__
+static int read_times(times_t *cur)
+{
+    processor_info_array_t info;
+    mach_msg_type_number_t ninfo;
+    natural_t n;
+
+    if (host_processor_info(mach_host_self(), PROCESSOR_CPU_LOAD_INFO, &n, &info, &ninfo) !=
+        KERN_SUCCESS)
+        return -1;
+    processor_cpu_load_info_t load = (processor_cpu_load_info_t)info;
+    if (n > MAX_CPUS)
+        n = MAX_CPUS;
+    memset(cur, 0, sizeof(times_t) * (n + 1));
+    for (natural_t i = 0; i < n; i++) {
+        times_t *t = &cur[i + 1];
+        t->user = load[i].cpu_ticks[CPU_STATE_USER];
+        t->nice = load[i].cpu_ticks[CPU_STATE_NICE];
+        t->sys = load[i].cpu_ticks[CPU_STATE_SYSTEM];
+        t->idle = load[i].cpu_ticks[CPU_STATE_IDLE];
+        cur[0].user += t->user;
+        cur[0].nice += t->nice;
+        cur[0].sys += t->sys;
+        cur[0].idle += t->idle;
+    }
+    vm_deallocate(mach_task_self(), (vm_address_t)info, ninfo * sizeof(integer_t));
+    return (int)n;
+}
+#else
 static int read_times(times_t *cur)
 {
     char line[1024], name[16];
@@ -77,6 +109,7 @@ static int read_times(times_t *cur)
     fclose(f);
     return n;
 }
+#endif
 
 static int cpustat_init(const sysmon_host_t *host)
 {
