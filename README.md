@@ -101,6 +101,7 @@ see [docs/PLUGINS.md](docs/PLUGINS.md).
 | `alerts_firing` | alert engine |
 | `net_rx_bytes_per_second`, `net_tx_bytes_per_second` | `net` plugin |
 | `uptime_seconds` | `uptime` plugin |
+| `cpuN_usage_percent`, `cpu_*_percent`, `context_switches_per_second` | `cpustat` plugin |
 
 ## Documentation
 
