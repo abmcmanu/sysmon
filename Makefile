@@ -53,6 +53,7 @@ PLUGINS =
 PLUGINS += $(BUILD)/plugins/uptime.so
 PLUGINS += $(BUILD)/plugins/net.so
 PLUGINS += $(BUILD)/plugins/cpustat.so
+PLUGINS += $(BUILD)/plugins/procs.so
 
 TESTS = $(BUILD)/tests/test_ring
 TESTS += $(BUILD)/tests/test_config
