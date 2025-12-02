@@ -44,6 +44,20 @@ static int read_stat(unsigned long long *running, unsigned long long *blocked,
     return 0;
 }
 
+/* 4th field of /proc/loadavg: runnable/total scheduling entities */
+static int read_threads(unsigned long long *threads)
+{
+    double l1, l5, l15;
+    unsigned long long runnable;
+    FILE *f = fopen("/proc/loadavg", "r");
+
+    if (!f)
+        return -1;
+    int n = fscanf(f, "%lf %lf %lf %llu/%llu", &l1, &l5, &l15, &runnable, threads);
+    fclose(f);
+    return n == 5 ? 0 : -1;
+}
+
 static int procs_init(const sysmon_host_t *host)
 {
     H = host;
@@ -66,6 +80,10 @@ static int procs_collect(void)
         H->set("procs_running", (double)running);
         H->set("procs_blocked", (double)blocked);
     }
+
+    unsigned long long threads;
+    if (read_threads(&threads) == 0)
+        H->set("threads_total", (double)threads);
     return 0;
 }
 
