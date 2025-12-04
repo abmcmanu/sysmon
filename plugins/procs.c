@@ -74,6 +74,11 @@ static int procs_init(const sysmon_host_t *host)
         H->log(SYSMON_LOG_WARN, "procs: cannot list processes");
         return -1;
     }
+    H->set_help("procs_total", "Number of processes.");
+    H->set_help("procs_running", "Processes in the run queue.");
+    H->set_help("procs_blocked", "Processes blocked on I/O.");
+    H->set_help("threads_total", "Number of threads.");
+    H->set_help("forks_per_second", "Processes created per second.");
     prev_forks = 0;
     prev_t = now();
     return 0;
