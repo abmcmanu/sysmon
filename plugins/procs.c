@@ -1,8 +1,13 @@
 /*
  * procs plugin: process and thread counts.
  */
+#ifdef __APPLE__
+#include <sys/sysctl.h>
+#include <sys/types.h>
+#else
 #include <ctype.h>
 #include <dirent.h>
+#endif
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -20,6 +25,17 @@ static double now(void)
     return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
 }
 
+#ifdef __APPLE__
+static int count_procs(void)
+{
+    int mib[3] = { CTL_KERN, KERN_PROC, KERN_PROC_ALL };
+    size_t len = 0;
+
+    if (sysctl(mib, 3, NULL, &len, NULL, 0) < 0)
+        return -1;
+    return (int)(len / sizeof(struct kinfo_proc));
+}
+#else
 static int count_procs(void)
 {
     DIR *d = opendir("/proc");
@@ -66,6 +82,7 @@ static int read_threads(unsigned long long *threads)
     fclose(f);
     return n == 5 ? 0 : -1;
 }
+#endif
 
 static int procs_init(const sysmon_host_t *host)
 {
@@ -75,10 +92,12 @@ static int procs_init(const sysmon_host_t *host)
         return -1;
     }
     H->set_help("procs_total", "Number of processes.");
+#ifndef __APPLE__
     H->set_help("procs_running", "Processes in the run queue.");
     H->set_help("procs_blocked", "Processes blocked on I/O.");
     H->set_help("threads_total", "Number of threads.");
     H->set_help("forks_per_second", "Processes created per second.");
+#endif
     prev_forks = 0;
     prev_t = now();
     return 0;
@@ -90,6 +109,7 @@ static int procs_collect(void)
     if (n < 0)
         return -1;
     H->set("procs_total", n);
+#ifndef __APPLE__
 
     unsigned long long running = 0, blocked = 0, forks = 0;
     if (read_stat(&running, &blocked, &forks) == 0) {
@@ -105,6 +125,7 @@ static int procs_collect(void)
     unsigned long long threads;
     if (read_threads(&threads) == 0)
         H->set("threads_total", (double)threads);
+#endif
     return 0;
 }
 
