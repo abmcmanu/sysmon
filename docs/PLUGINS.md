@@ -62,3 +62,4 @@ and enable it:
 | `uptime` | `uptime_seconds` | Linux, macOS |
 | `net` | `net_rx_bytes_per_second`, `net_tx_bytes_per_second` | Linux, macOS |
 | `cpustat` | `cpu_count`, `cpuN_usage_percent`, `cpu_{user,system,iowait,steal}_percent`, `context_switches_per_second`, `interrupts_per_second` | Linux, macOS (no iowait, steal, context switches) |
+| `procs` | `procs_total`, `procs_running`, `procs_blocked`, `threads_total`, `forks_per_second` | Linux, macOS (`procs_total` only) |
