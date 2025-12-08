@@ -44,6 +44,8 @@ static int fd_collect(void)
         return -1;
     H->set("fd_used", used);
     H->set("fd_max", max);
+    if (max > 0)
+        H->set("fd_used_percent", 100.0 * used / max);
     return 0;
 }
 
