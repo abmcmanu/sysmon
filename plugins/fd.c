@@ -33,6 +33,9 @@ static int fd_init(const sysmon_host_t *host)
         H->log(SYSMON_LOG_WARN, "fd: cannot read the file handle counters");
         return -1;
     }
+    H->set_help("fd_used", "Open file handles, system wide.");
+    H->set_help("fd_max", "Maximum number of file handles.");
+    H->set_help("fd_used_percent", "fd_used / fd_max, in percent.");
     return 0;
 }
 
