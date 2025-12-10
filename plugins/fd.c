@@ -2,11 +2,31 @@
  * fd plugin: system-wide open file handles.
  */
 #include <stdio.h>
+#ifdef __APPLE__
+#include <sys/sysctl.h>
+#include <sys/types.h>
+#endif
 
 #include "sysmon/plugin.h"
 
 static const sysmon_host_t *H;
 
+#ifdef __APPLE__
+static int read_fds(double *used, double *max)
+{
+    int n, m;
+    size_t len = sizeof n;
+
+    if (sysctlbyname("kern.num_files", &n, &len, NULL, 0) < 0)
+        return -1;
+    len = sizeof m;
+    if (sysctlbyname("kern.maxfiles", &m, &len, NULL, 0) < 0)
+        return -1;
+    *used = n;
+    *max = m;
+    return 0;
+}
+#else
 /* /proc/sys/fs/file-nr: allocated, allocated but unused (always 0 since 2.6), max */
 static int read_fds(double *used, double *max)
 {
@@ -23,6 +43,7 @@ static int read_fds(double *used, double *max)
     *max = (double)m;
     return 0;
 }
+#endif
 
 static int fd_init(const sysmon_host_t *host)
 {
