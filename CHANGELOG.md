@@ -2,6 +2,14 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 3.1.0 - 2025-12-12
+
+- `cpustat`, `procs` and `fd` plugins.
+- `[core] socket_mode`.
+- Values in `list` and `get` keep 15 significant digits.
+- `get` without a metric name now answers with a usage error.
+- Disk metric names no longer end with `_` for mount points with a trailing slash.
+
 ## 3.0.1 - 2025-09-06
 
 - `top` shows disks, network throughput and uptime.
