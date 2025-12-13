@@ -48,6 +48,11 @@ int collect_disks(const config_t *cfg)
         metrics_set(metric, pct);
         snprintf(metric, sizeof metric, "disk_%s_free_bytes", name);
         metrics_set(metric, avail);
+        if (st.f_files > 0) { /* btrfs and zfs have no fixed inode table */
+            double iused = (double)st.f_files - (double)st.f_ffree;
+            snprintf(metric, sizeof metric, "disk_%s_inodes_used_percent", name);
+            metrics_set(metric, 100.0 * iused / (double)st.f_files);
+        }
     }
     return errors ? -1 : 0;
 }
