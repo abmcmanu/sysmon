@@ -28,6 +28,7 @@ void disk_metric_name(const char *mnt, char *out, size_t size)
 int collect_disks(const config_t *cfg)
 {
     char name[48], metric[96];
+    char help[128 + CFG_PATH_MAX];
     int errors = 0;
 
     for (int i = 0; i < cfg->nmounts; i++) {
@@ -46,12 +47,16 @@ int collect_disks(const config_t *cfg)
         disk_metric_name(cfg->mounts[i], name, sizeof name);
         snprintf(metric, sizeof metric, "disk_%s_used_percent", name);
         metrics_set(metric, pct);
+        snprintf(help, sizeof help, "Space in use on %s, in percent (like df).", cfg->mounts[i]);
+        metrics_set_help(metric, help);
         snprintf(metric, sizeof metric, "disk_%s_free_bytes", name);
         metrics_set(metric, avail);
         if (st.f_files > 0) { /* btrfs and zfs have no fixed inode table */
             double iused = (double)st.f_files - (double)st.f_ffree;
             snprintf(metric, sizeof metric, "disk_%s_inodes_used_percent", name);
             metrics_set(metric, 100.0 * iused / (double)st.f_files);
+            snprintf(help, sizeof help, "Inodes in use on %s, in percent.", cfg->mounts[i]);
+            metrics_set_help(metric, help);
         }
     }
     return errors ? -1 : 0;
