@@ -23,3 +23,14 @@ These come from the daemon itself, on every platform.
 | `mem_used_percent` | the same in percent |
 | `swap_total_bytes`, `swap_used_bytes` | swap space |
 | `load1`, `load5`, `load15` | load averages |
+
+## Disks
+
+For every `[disk] mount`, the mount point becomes part of the name:
+`/` is `root`, `/var/lib` is `var_lib`.
+
+| metric | meaning |
+|---|---|
+| `disk_<mount>_used_percent` | used space, like the `Use%` column of `df` |
+| `disk_<mount>_free_bytes` | space available to unprivileged users |
+| `disk_<mount>_inodes_used_percent` | inodes in use; absent on file systems without an inode table (btrfs, zfs) |
