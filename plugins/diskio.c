@@ -18,6 +18,16 @@ static const sysmon_host_t *H;
 static disk_t devs[MAX_DEVS];
 static int ndevs;
 
+static int ignored(const char *name)
+{
+    static const char *const skip[] = { "loop", "ram", "zram", "fd", "sr" };
+
+    for (size_t i = 0; i < sizeof skip / sizeof skip[0]; i++)
+        if (strncmp(name, skip[i], strlen(skip[i])) == 0)
+            return 1;
+    return 0;
+}
+
 static int read_stats(disk_t *out, int max)
 {
     char line[512];
@@ -35,6 +45,8 @@ static int read_stats(disk_t *out, int max)
         if (sscanf(line, "%u %u %31s %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu", &major,
                    &minor, d.name, &d.rd_ios, &rd_merged, &d.rd_sectors, &rd_ms, &d.wr_ios,
                    &wr_merged, &d.wr_sectors, &wr_ms, &inflight, &d.io_ms) != 13)
+            continue;
+        if (ignored(d.name))
             continue;
         out[n++] = d;
     }
