@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "sysmon/plugin.h"
 
@@ -25,7 +26,13 @@ static int ignored(const char *name)
     for (size_t i = 0; i < sizeof skip / sizeof skip[0]; i++)
         if (strncmp(name, skip[i], strlen(skip[i])) == 0)
             return 1;
-    return 0;
+    /* partitions have no /sys/block entry; '/' in names becomes '!' there */
+    char path[96];
+    snprintf(path, sizeof path, "/sys/block/%s", name);
+    for (char *p = path + strlen("/sys/block/"); *p; p++)
+        if (*p == '/')
+            *p = '!';
+    return access(path, F_OK) != 0;
 }
 
 static int read_stats(disk_t *out, int max)
