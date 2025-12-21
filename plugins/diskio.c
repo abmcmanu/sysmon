@@ -18,6 +18,14 @@ typedef struct disk {
 static const sysmon_host_t *H;
 static disk_t devs[MAX_DEVS];
 static int ndevs;
+static double prev_t;
+
+static double now(void)
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
+}
 
 static int ignored(const char *name)
 {
@@ -61,6 +69,22 @@ static int read_stats(disk_t *out, int max)
     return n;
 }
 
+static const disk_t *find(const char *name)
+{
+    for (int i = 0; i < ndevs; i++)
+        if (strcmp(devs[i].name, name) == 0)
+            return &devs[i];
+    return NULL;
+}
+
+static void metric(const char *dev, const char *what, double v)
+{
+    char name[96];
+    if (snprintf(name, sizeof name, "disk_%s_%s", dev, what) >= (int)sizeof name)
+        return;
+    H->set(name, v);
+}
+
 static int diskio_init(const sysmon_host_t *host)
 {
     H = host;
@@ -69,6 +93,7 @@ static int diskio_init(const sysmon_host_t *host)
         H->log(SYSMON_LOG_WARN, "diskio: /proc/diskstats not available");
         return -1;
     }
+    prev_t = now();
     return 0;
 }
 
@@ -80,6 +105,19 @@ static int diskio_collect(void)
     if (n < 0)
         return -1;
     H->set("disk_devices", n);
+
+    double t = now(), dt = t - prev_t;
+    for (int i = 0; i < n; i++) {
+        const disk_t *c = &cur[i], *p = find(c->name);
+        if (!p || dt <= 0 || c->rd_sectors < p->rd_sectors || c->wr_sectors < p->wr_sectors)
+            continue;
+        /* diskstats counts 512-byte sectors whatever the device's sector size */
+        double rd = (double)(c->rd_sectors - p->rd_sectors) * 512.0 / dt;
+        double wr = (double)(c->wr_sectors - p->wr_sectors) * 512.0 / dt;
+        metric(c->name, "read_bytes_per_second", rd);
+        metric(c->name, "write_bytes_per_second", wr);
+    }
+    prev_t = t;
     memcpy(devs, cur, sizeof(disk_t) * (size_t)n);
     ndevs = n;
     return 0;
