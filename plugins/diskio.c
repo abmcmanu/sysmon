@@ -116,6 +116,7 @@ static int diskio_collect(void)
         double wr = (double)(c->wr_sectors - p->wr_sectors) * 512.0 / dt;
         metric(c->name, "read_bytes_per_second", rd);
         metric(c->name, "write_bytes_per_second", wr);
+        metric(c->name, "iops", (double)((c->rd_ios - p->rd_ios) + (c->wr_ios - p->wr_ios)) / dt);
     }
     prev_t = t;
     memcpy(devs, cur, sizeof(disk_t) * (size_t)n);
