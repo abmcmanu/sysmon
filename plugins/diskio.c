@@ -117,6 +117,8 @@ static int diskio_collect(void)
         metric(c->name, "read_bytes_per_second", rd);
         metric(c->name, "write_bytes_per_second", wr);
         metric(c->name, "iops", (double)((c->rd_ios - p->rd_ios) + (c->wr_ios - p->wr_ios)) / dt);
+        double busy = (double)(c->io_ms - p->io_ms) / (dt * 10.0);
+        metric(c->name, "busy_percent", busy > 100.0 ? 100.0 : busy);
     }
     prev_t = t;
     memcpy(devs, cur, sizeof(disk_t) * (size_t)n);
