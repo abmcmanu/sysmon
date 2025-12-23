@@ -1,6 +1,7 @@
 /*
  * diskio plugin: block device throughput from /proc/diskstats (Linux).
  */
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -80,7 +81,13 @@ static const disk_t *find(const char *name)
 static void metric(const char *dev, const char *what, double v)
 {
     char name[96];
-    if (snprintf(name, sizeof name, "disk_%s_%s", dev, what) >= (int)sizeof name)
+    char clean[32];
+    size_t j = 0;
+
+    for (; *dev && j + 1 < sizeof clean; dev++)
+        clean[j++] = isalnum((unsigned char)*dev) ? *dev : '_';
+    clean[j] = '\0';
+    if (snprintf(name, sizeof name, "disk_%s_%s", clean, what) >= (int)sizeof name)
         return;
     H->set(name, v);
 }
