@@ -114,6 +114,7 @@ static int diskio_collect(void)
     H->set("disk_devices", n);
 
     double t = now(), dt = t - prev_t;
+    double total_rd = 0, total_wr = 0;
     for (int i = 0; i < n; i++) {
         const disk_t *c = &cur[i], *p = find(c->name);
         if (!p || dt <= 0 || c->rd_sectors < p->rd_sectors || c->wr_sectors < p->wr_sectors)
@@ -126,7 +127,11 @@ static int diskio_collect(void)
         metric(c->name, "iops", (double)((c->rd_ios - p->rd_ios) + (c->wr_ios - p->wr_ios)) / dt);
         double busy = (double)(c->io_ms - p->io_ms) / (dt * 10.0);
         metric(c->name, "busy_percent", busy > 100.0 ? 100.0 : busy);
+        total_rd += rd;
+        total_wr += wr;
     }
+    H->set("disk_read_bytes_per_second", total_rd);
+    H->set("disk_write_bytes_per_second", total_wr);
     prev_t = t;
     memcpy(devs, cur, sizeof(disk_t) * (size_t)n);
     ndevs = n;
