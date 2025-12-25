@@ -101,6 +101,9 @@ static int diskio_init(const sysmon_host_t *host)
         return -1;
     }
     prev_t = now();
+    H->set_help("disk_devices", "Block devices being watched.");
+    H->set_help("disk_read_bytes_per_second", "Bytes read per second, all devices.");
+    H->set_help("disk_write_bytes_per_second", "Bytes written per second, all devices.");
     return 0;
 }
 
