@@ -104,6 +104,7 @@ see [docs/PLUGINS.md](docs/PLUGINS.md).
 | `cpuN_usage_percent`, `cpu_*_percent`, `context_switches_per_second` | `cpustat` plugin |
 | `procs_total`, `procs_running`, `threads_total`, `forks_per_second` | `procs` plugin |
 | `fd_used`, `fd_max`, `fd_used_percent` | `fd` plugin |
+| `disk_<dev>_read_bytes_per_second`, `disk_<dev>_iops`, ... | `diskio` plugin |
 
 ## Documentation
 
