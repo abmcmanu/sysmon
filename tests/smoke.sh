@@ -40,6 +40,7 @@ load = net
 load = cpustat
 load = procs
 load = fd
+load = diskio
 
 [http]
 port = $PORT
@@ -69,6 +70,9 @@ ctl list | grep -q '^uptime_seconds ' || fail "list: no plugin metric"
 ctl list | grep -q '^cpu0_usage_percent ' || fail "list: no per-core cpu"
 ctl list | grep -q '^procs_total ' || fail "list: no process count"
 ctl list | grep -q '^fd_used ' || fail "list: no fd count"
+if [ "$(uname -s)" = Linux ]; then
+    ctl list | grep -q '^disk_devices ' || fail "list: no diskio metrics"
+fi
 ctl get mem_used_percent > /dev/null || fail "get"
 ! ctl get no_such_metric > /dev/null 2>&1 || fail "get: unknown metric accepted"
 [ "$(ctl history load1 2 | wc -l)" -eq 2 ] || fail "history"
