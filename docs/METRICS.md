@@ -34,3 +34,9 @@ For every `[disk] mount`, the mount point becomes part of the name:
 | `disk_<mount>_used_percent` | used space, like the `Use%` column of `df` |
 | `disk_<mount>_free_bytes` | space available to unprivileged users |
 | `disk_<mount>_inodes_used_percent` | inodes in use; absent on file systems without an inode table (btrfs, zfs) |
+
+## Alerts
+
+| metric | meaning |
+|---|---|
+| `alerts_firing` | number of rules currently firing |
