@@ -1,0 +1,55 @@
+/*
+ * psi plugin: Linux pressure stall information (4.20+, CONFIG_PSI).
+ *
+ * "some" is the share of time at least one task was stalled on the
+ * resource, "full" the share of time all non-idle tasks were.
+ */
+#include <stdio.h>
+#include <string.h>
+
+#include "sysmon/plugin.h"
+
+static const sysmon_host_t *H;
+
+static int read_pressure(const char *res)
+{
+    char path[64], line[256], kind[8];
+    double avg10, avg60, avg300;
+
+    snprintf(path, sizeof path, "/proc/pressure/%s", res);
+    FILE *f = fopen(path, "r");
+    if (!f)
+        return -1;
+    while (fgets(line, sizeof line, f)) {
+        if (sscanf(line, "%7s avg10=%lf avg60=%lf avg300=%lf", kind, &avg10, &avg60, &avg300) != 4)
+            continue;
+        if (strcmp(kind, "some") == 0) {
+            char name[64];
+            snprintf(name, sizeof name, "psi_%s_some_avg10", res);
+            H->set(name, avg10);
+        }
+    }
+    fclose(f);
+    return 0;
+}
+
+static int psi_init(const sysmon_host_t *host)
+{
+    H = host;
+    if (read_pressure("cpu") < 0) {
+        H->log(SYSMON_LOG_WARN, "psi: /proc/pressure not available");
+        return -1;
+    }
+    return 0;
+}
+
+static int psi_collect(void)
+{
+    return read_pressure("cpu");
+}
+
+static const sysmon_plugin_t plugin = {
+    SYSMON_PLUGIN_ABI, "psi", "1.0", psi_init, psi_collect, NULL,
+};
+
+SYSMON_PLUGIN_EXPORT(plugin)
