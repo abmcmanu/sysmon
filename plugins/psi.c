@@ -10,6 +10,7 @@
 #include "sysmon/plugin.h"
 
 static const sysmon_host_t *H;
+static const char *const resources[] = { "cpu", "memory", "io" };
 
 static int read_pressure(const char *res)
 {
@@ -45,7 +46,11 @@ static int psi_init(const sysmon_host_t *host)
 
 static int psi_collect(void)
 {
-    return read_pressure("cpu");
+    int errors = 0;
+    for (size_t i = 0; i < sizeof resources / sizeof resources[0]; i++)
+        if (read_pressure(resources[i]) < 0)
+            errors++;
+    return errors == (int)(sizeof resources / sizeof resources[0]) ? -1 : 0;
 }
 
 static const sysmon_plugin_t plugin = {
