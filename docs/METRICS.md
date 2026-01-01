@@ -40,3 +40,7 @@ For every `[disk] mount`, the mount point becomes part of the name:
 | metric | meaning |
 |---|---|
 | `alerts_firing` | number of rules currently firing |
+
+## Plugins
+
+Each plugin documents its metrics in [PLUGINS.md](PLUGINS.md).
