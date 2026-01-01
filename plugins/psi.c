@@ -16,6 +16,7 @@ static int read_pressure(const char *res)
 {
     char path[64], line[256], kind[8];
     double avg10, avg60, avg300;
+    int found = 0;
 
     snprintf(path, sizeof path, "/proc/pressure/%s", res);
     FILE *f = fopen(path, "r");
@@ -24,14 +25,13 @@ static int read_pressure(const char *res)
     while (fgets(line, sizeof line, f)) {
         if (sscanf(line, "%7s avg10=%lf avg60=%lf avg300=%lf", kind, &avg10, &avg60, &avg300) != 4)
             continue;
-        if (strcmp(kind, "some") == 0) {
-            char name[64];
-            snprintf(name, sizeof name, "psi_%s_some_avg10", res);
-            H->set(name, avg10);
-        }
+        char name[64];
+        snprintf(name, sizeof name, "psi_%s_%s_avg10", res, kind);
+        H->set(name, avg10);
+        found++;
     }
     fclose(f);
-    return 0;
+    return found ? 0 : -1;
 }
 
 static int psi_init(const sysmon_host_t *host)
