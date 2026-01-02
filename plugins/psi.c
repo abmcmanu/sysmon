@@ -28,6 +28,8 @@ static int read_pressure(const char *res)
         char name[64];
         snprintf(name, sizeof name, "psi_%s_%s_avg10", res, kind);
         H->set(name, avg10);
+        snprintf(name, sizeof name, "psi_%s_%s_avg60", res, kind);
+        H->set(name, avg60);
         found++;
     }
     fclose(f);
