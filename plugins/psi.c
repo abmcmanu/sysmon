@@ -43,6 +43,11 @@ static int psi_init(const sysmon_host_t *host)
         H->log(SYSMON_LOG_WARN, "psi: /proc/pressure not available");
         return -1;
     }
+    H->set_help("psi_cpu_some_avg10", "Share of time some tasks waited for cpu, last 10 s, percent.");
+    H->set_help("psi_memory_some_avg10", "Share of time some tasks waited for memory, last 10 s, percent.");
+    H->set_help("psi_memory_full_avg10", "Share of time all tasks waited for memory, last 10 s, percent.");
+    H->set_help("psi_io_some_avg10", "Share of time some tasks waited for I/O, last 10 s, percent.");
+    H->set_help("psi_io_full_avg10", "Share of time all tasks waited for I/O, last 10 s, percent.");
     return 0;
 }
 
