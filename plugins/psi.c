@@ -40,7 +40,8 @@ static int psi_init(const sysmon_host_t *host)
 {
     H = host;
     if (read_pressure("cpu") < 0) {
-        H->log(SYSMON_LOG_WARN, "psi: /proc/pressure not available");
+        H->log(SYSMON_LOG_WARN, "psi: /proc/pressure not available "
+                                "(kernel < 4.20, CONFIG_PSI off, or booted without psi=1)");
         return -1;
     }
     H->set_help("psi_cpu_some_avg10", "Share of time some tasks waited for cpu, last 10 s, percent.");
