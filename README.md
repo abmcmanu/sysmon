@@ -105,6 +105,7 @@ see [docs/PLUGINS.md](docs/PLUGINS.md).
 | `procs_total`, `procs_running`, `threads_total`, `forks_per_second` | `procs` plugin |
 | `fd_used`, `fd_max`, `fd_used_percent` | `fd` plugin |
 | `disk_<dev>_read_bytes_per_second`, `disk_<dev>_iops`, ... | `diskio` plugin |
+| `psi_*_avg10`, `psi_*_avg60` | `psi` plugin |
 
 ## Documentation
 
