@@ -1,0 +1,74 @@
+/*
+ * thermal plugin: temperatures from /sys/class/thermal (Linux).
+ */
+#include <stdio.h>
+#include <string.h>
+
+#include "sysmon/plugin.h"
+
+#define MAX_ZONES 32
+
+static const sysmon_host_t *H;
+
+static int read_zone(int i, char *type, size_t size, double *celsius)
+{
+    char path[96];
+    long milli;
+    FILE *f;
+
+    snprintf(path, sizeof path, "/sys/class/thermal/thermal_zone%d/temp", i);
+    if (!(f = fopen(path, "r")))
+        return -1;
+    int n = fscanf(f, "%ld", &milli);
+    fclose(f);
+    if (n != 1)
+        return -1;
+    *celsius = milli / 1000.0;
+
+    snprintf(path, sizeof path, "/sys/class/thermal/thermal_zone%d/type", i);
+    if (!(f = fopen(path, "r")) || !fgets(type, (int)size, f))
+        snprintf(type, size, "zone%d", i);
+    if (f)
+        fclose(f);
+    type[strcspn(type, "\n")] = '\0';
+    return 0;
+}
+
+static int scan(int set)
+{
+    char type[64];
+    double c, max = -1000;
+    int zones = 0;
+
+    for (int i = 0; i < MAX_ZONES; i++) {
+        if (read_zone(i, type, sizeof type, &c) < 0)
+            continue;
+        if (c > max)
+            max = c;
+        zones++;
+    }
+    if (zones && set)
+        H->set("temp_max_celsius", max);
+    return zones;
+}
+
+static int thermal_init(const sysmon_host_t *host)
+{
+    H = host;
+    if (scan(0) == 0) {
+        H->log(SYSMON_LOG_WARN, "thermal: no thermal zones");
+        return -1;
+    }
+    return 0;
+}
+
+static int thermal_collect(void)
+{
+    return scan(1) ? 0 : -1;
+}
+
+static const sysmon_plugin_t plugin = {
+    SYSMON_PLUGIN_ABI, "thermal", "1.0", thermal_init, thermal_collect, NULL,
+};
+
+SYSMON_PLUGIN_EXPORT(plugin)
