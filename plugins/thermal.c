@@ -37,6 +37,7 @@ static int read_zone(int i, char *type, size_t size, double *celsius)
 static int scan(int set)
 {
     char type[64];
+    char name[96];
     double c, max = -1000;
     int zones = 0;
 
@@ -45,6 +46,9 @@ static int scan(int set)
             continue;
         if (c > max)
             max = c;
+        snprintf(name, sizeof name, "temp_%s_celsius", type);
+        if (set)
+            H->set(name, c);
         zones++;
     }
     if (zones && set)
