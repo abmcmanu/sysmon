@@ -1,6 +1,7 @@
 /*
  * thermal plugin: temperatures from /sys/class/thermal (Linux).
  */
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -34,6 +35,12 @@ static int read_zone(int i, char *type, size_t size, double *celsius)
     return 0;
 }
 
+static void clean_name(char *s)
+{
+    for (; *s; s++)
+        *s = isalnum((unsigned char)*s) ? (char)tolower((unsigned char)*s) : '_';
+}
+
 static int scan(int set)
 {
     char type[64];
@@ -46,6 +53,7 @@ static int scan(int set)
             continue;
         if (c > max)
             max = c;
+        clean_name(type);
         snprintf(name, sizeof name, "temp_%s_celsius", type);
         if (set)
             H->set(name, c);
