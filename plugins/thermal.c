@@ -45,6 +45,7 @@ static int scan(int set)
 {
     char type[64];
     char name[96];
+    char seen[MAX_ZONES][64];
     double c, max = -1000;
     int zones = 0;
 
@@ -54,7 +55,15 @@ static int scan(int set)
         if (c > max)
             max = c;
         clean_name(type);
-        snprintf(name, sizeof name, "temp_%s_celsius", type);
+        int dup = 0;
+        for (int j = 0; j < zones; j++)
+            if (strcmp(seen[j], type) == 0)
+                dup++;
+        snprintf(seen[zones], sizeof seen[0], "%s", type);
+        if (dup)
+            snprintf(name, sizeof name, "temp_%s_%d_celsius", type, dup);
+        else
+            snprintf(name, sizeof name, "temp_%s_celsius", type);
         if (set)
             H->set(name, c);
         zones++;
