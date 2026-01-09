@@ -52,6 +52,8 @@ static int scan(int set)
     for (int i = 0; i < MAX_ZONES; i++) {
         if (read_zone(i, type, sizeof type, &c) < 0)
             continue;
+        if (c <= -40 || c >= 200) /* disconnected sensors report garbage */
+            continue;
         if (c > max)
             max = c;
         clean_name(type);
