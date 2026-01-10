@@ -82,6 +82,7 @@ static int thermal_init(const sysmon_host_t *host)
         H->log(SYSMON_LOG_WARN, "thermal: no thermal zones");
         return -1;
     }
+    H->set_help("temp_max_celsius", "Hottest thermal zone, degrees Celsius.");
     return 0;
 }
 
