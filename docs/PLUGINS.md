@@ -66,3 +66,4 @@ and enable it:
 | `fd` | `fd_used`, `fd_max`, `fd_used_percent` | Linux, macOS |
 | `diskio` | `disk_<dev>_{read,write}_bytes_per_second`, `disk_<dev>_iops`, `disk_<dev>_busy_percent`, totals | Linux |
 | `psi` | `psi_{cpu,memory,io}_{some,full}_avg{10,60}` | Linux 4.20+ |
+| `thermal` | `temp_<zone>_celsius`, `temp_max_celsius` | Linux |

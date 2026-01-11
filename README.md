@@ -106,6 +106,7 @@ see [docs/PLUGINS.md](docs/PLUGINS.md).
 | `fd_used`, `fd_max`, `fd_used_percent` | `fd` plugin |
 | `disk_<dev>_read_bytes_per_second`, `disk_<dev>_iops`, ... | `diskio` plugin |
 | `psi_*_avg10`, `psi_*_avg60` | `psi` plugin |
+| `temp_*_celsius` | `thermal` plugin |
 
 ## Documentation
 
