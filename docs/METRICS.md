@@ -44,3 +44,10 @@ For every `[disk] mount`, the mount point becomes part of the name:
 ## Plugins
 
 Each plugin documents its metrics in [PLUGINS.md](PLUGINS.md).
+
+## Units and precision
+
+Values are doubles. Rates (`_per_second`) are computed from counter
+differences over the real elapsed time, not the configured interval, so
+a late tick does not create a spike. Counters that go backwards (reboot,
+wrap, device removed) skip one sample instead of reporting garbage.
