@@ -51,11 +51,35 @@ static int to_int(const char *s, int min, int max, int *out)
 
 static int seen_mount;
 
+/* "30", "30s", "5m", "1h" -> seconds */
+static int to_seconds(const char *s, int min, int max, int *out)
+{
+    char *end;
+
+    errno = 0;
+    long v = strtol(s, &end, 10);
+    if (errno || end == s || v < 0)
+        return -1;
+    if (*end == 's') {
+        end++;
+    } else if (*end == 'm') {
+        v *= 60;
+        end++;
+    } else if (*end == 'h') {
+        v *= 3600;
+        end++;
+    }
+    if (*end || v < min || v > max)
+        return -1;
+    *out = (int)v;
+    return 0;
+}
+
 static int set_key(config_t *cfg, const char *section, const char *key, const char *val)
 {
     if (strcmp(section, "core") == 0) {
         if (strcmp(key, "interval") == 0)
-            return to_int(val, 1, 3600, &cfg->interval);
+            return to_seconds(val, 1, 3600, &cfg->interval);
         if (strcmp(key, "log_level") == 0) {
             int l = log_level_from_str(val);
             if (l < 0)
