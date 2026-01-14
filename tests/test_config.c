@@ -80,5 +80,16 @@ int main(void)
 
     CHECK(config_load(&cfg, "/nonexistent/sysmond.conf") < 0);
 
+    p = write_tmp("[core]\ninterval = 2m\n");
+    config_defaults(&cfg);
+    CHECK(config_load(&cfg, p) == 0 && cfg.interval == 120);
+    unlink(p);
+    p = write_tmp("[core]\ninterval = 10x\n");
+    CHECK(config_load(&cfg, p) < 0);
+    unlink(p);
+    p = write_tmp("[core]\ninterval = 2h\n");
+    CHECK(config_load(&cfg, p) < 0); /* more than an hour */
+    unlink(p);
+
     return test_report("config");
 }
