@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <errno.h>
+#include <glob.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -133,12 +134,36 @@ static int set_key(config_t *cfg, const char *section, const char *key, const ch
     return 1; /* unknown key */
 }
 
-int config_load(config_t *cfg, const char *path)
+static int load_file(config_t *cfg, const char *path, int depth);
+
+static int include(config_t *cfg, const char *from, const char *pattern, int depth)
+{
+    glob_t g;
+    int errors = 0;
+    (void)from;
+    if (depth >= 4) {
+        log_err("config: includes nested too deep at %s", pattern);
+        return -1;
+    }
+    int rc = glob(pattern, 0, NULL, &g);
+    if (rc == GLOB_NOMATCH)
+        return 0;
+    if (rc != 0) {
+        log_err("config: include %s: glob failed", pattern);
+        return -1;
+    }
+    for (size_t i = 0; i < g.gl_pathc; i++)
+        if (load_file(cfg, g.gl_pathv[i], depth + 1) < 0)
+            errors++;
+    globfree(&g);
+    return errors ? -1 : 0;
+}
+
+static int load_file(config_t *cfg, const char *path, int depth)
 {
     char line[512], section[32] = "core";
     int lineno = 0, errors = 0;
 
-    seen_mount = 0;
     FILE *f = fopen(path, "r");
     if (!f) {
         log_err("config: %s: %s", path, strerror(errno));
@@ -172,6 +197,11 @@ int config_load(config_t *cfg, const char *path)
         *eq = '\0';
         char *key = trim(s);
         char *val = trim(eq + 1);
+        if (strcmp(key, "include") == 0) {
+            if (include(cfg, path, val, depth) < 0)
+                errors++;
+            continue;
+        }
 
         int rc = set_key(cfg, section, key, val);
         if (rc > 0) {
@@ -184,4 +214,10 @@ int config_load(config_t *cfg, const char *path)
     }
     fclose(f);
     return errors ? -1 : 0;
+}
+
+int config_load(config_t *cfg, const char *path)
+{
+    seen_mount = 0;
+    return load_file(cfg, path, 0);
 }
