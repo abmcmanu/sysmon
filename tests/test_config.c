@@ -91,5 +91,21 @@ int main(void)
     CHECK(config_load(&cfg, p) < 0); /* more than an hour */
     unlink(p);
 
+    char inc[64];
+    p = write_tmp("[core]\ninterval = 7\n");
+    snprintf(inc, sizeof inc, "%s", p);
+    char main_conf[128];
+    snprintf(main_conf, sizeof main_conf, "[disk]\nmount = /a\ninclude = %s\n", inc);
+    p = write_tmp(main_conf);
+    config_defaults(&cfg);
+    CHECK(config_load(&cfg, p) == 0);
+    CHECK(cfg.interval == 7 && cfg.nmounts == 1);
+    unlink(p);
+    unlink(inc);
+
+    p = write_tmp("[core]\ninclude = /nonexistent/sysmond.d/*.conf\n");
+    CHECK(config_load(&cfg, p) == 0); /* an empty conf.d is fine */
+    unlink(p);
+
     return test_report("config");
 }
