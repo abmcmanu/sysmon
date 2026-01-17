@@ -140,7 +140,18 @@ static int include(config_t *cfg, const char *from, const char *pattern, int dep
 {
     glob_t g;
     int errors = 0;
-    (void)from;
+    char buf[CFG_PATH_MAX * 2];
+
+    /* relative patterns are relative to the including file */
+    const char *slash = strrchr(from, '/');
+    if (pattern[0] != '/' && slash) {
+        if (snprintf(buf, sizeof buf, "%.*s/%s", (int)(slash - from), from, pattern) >=
+            (int)sizeof buf) {
+            log_err("config: include %s: path too long", pattern);
+            return -1;
+        }
+        pattern = buf;
+    }
     if (depth >= 4) {
         log_err("config: includes nested too deep at %s", pattern);
         return -1;
