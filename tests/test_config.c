@@ -107,5 +107,14 @@ int main(void)
     CHECK(config_load(&cfg, p) == 0); /* an empty conf.d is fine */
     unlink(p);
 
+    char self[128];
+    p = write_tmp("");
+    snprintf(self, sizeof self, "include = %s\n", p);
+    FILE *f = fopen(p, "w");
+    fputs(self, f);
+    fclose(f);
+    CHECK(config_load(&cfg, p) < 0); /* includes itself */
+    unlink(p);
+
     return test_report("config");
 }
