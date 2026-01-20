@@ -50,6 +50,44 @@ static int to_int(const char *s, int min, int max, int *out)
     return 0;
 }
 
+/* ${NAME} and ${NAME:-default}; NAME unset without a default is an error */
+static int expand(const char *in, char *out, size_t size)
+{
+    size_t j = 0;
+
+    while (*in) {
+        if (in[0] != '$' || in[1] != '{') {
+            if (j + 1 >= size)
+                return -1;
+            out[j++] = *in++;
+            continue;
+        }
+        const char *end = strchr(in, '}');
+        char name[64], def[64] = "";
+        int has_def = 0;
+        size_t len = end ? (size_t)(end - in - 2) : 0;
+
+        if (!end || len == 0 || len >= sizeof name)
+            return -1;
+        memcpy(name, in + 2, len);
+        name[len] = '\0';
+        const char *v = getenv(name);
+        if (!v) {
+            if (!has_def)
+                return -1;
+            v = def;
+        }
+        size_t vl = strlen(v);
+        if (j + vl >= size)
+            return -1;
+        memcpy(out + j, v, vl);
+        j += vl;
+        in = end + 1;
+    }
+    out[j] = '\0';
+    return 0;
+}
+
 static int seen_mount;
 
 /* "30", "30s", "5m", "1h" -> seconds */
@@ -208,6 +246,13 @@ static int load_file(config_t *cfg, const char *path, int depth)
         *eq = '\0';
         char *key = trim(s);
         char *val = trim(eq + 1);
+        char expanded[512];
+        if (expand(val, expanded, sizeof expanded) < 0) {
+            log_err("%s:%d: cannot expand '%s'", path, lineno, val);
+            errors++;
+            continue;
+        }
+        val = expanded;
         if (strcmp(key, "include") == 0) {
             if (include(cfg, path, val, depth) < 0)
                 errors++;
