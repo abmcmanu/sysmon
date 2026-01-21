@@ -71,6 +71,12 @@ static int expand(const char *in, char *out, size_t size)
             return -1;
         memcpy(name, in + 2, len);
         name[len] = '\0';
+        char *sep = strstr(name, ":-");
+        if (sep) {
+            *sep = '\0';
+            snprintf(def, sizeof def, "%s", sep + 2);
+            has_def = 1;
+        }
         const char *v = getenv(name);
         if (!v) {
             if (!has_def)
