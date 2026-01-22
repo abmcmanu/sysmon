@@ -91,6 +91,19 @@ int main(void)
     CHECK(config_load(&cfg, p) < 0); /* more than an hour */
     unlink(p);
 
+    setenv("SYSMON_TEST_SOCK", "/run/x.sock", 1);
+    unsetenv("SYSMON_TEST_UNSET");
+    p = write_tmp("[core]\nsocket = ${SYSMON_TEST_SOCK}\n"
+                  "log_file = ${SYSMON_TEST_UNSET:-/tmp/fallback.log}\n");
+    config_defaults(&cfg);
+    CHECK(config_load(&cfg, p) == 0);
+    CHECK(strcmp(cfg.socket_path, "/run/x.sock") == 0);
+    CHECK(strcmp(cfg.log_file, "/tmp/fallback.log") == 0);
+    unlink(p);
+    p = write_tmp("[core]\nsocket = ${SYSMON_TEST_UNSET}\n");
+    CHECK(config_load(&cfg, p) < 0);
+    unlink(p);
+
     char inc[64];
     p = write_tmp("[core]\ninterval = 7\n");
     snprintf(inc, sizeof inc, "%s", p);
