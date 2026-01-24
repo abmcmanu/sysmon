@@ -23,5 +23,7 @@ double ring_at(const ring_t *r, size_t i);
 double ring_last(const ring_t *r);
 /* average of the newest n samples */
 double ring_avg(const ring_t *r, size_t n);
+double ring_min(const ring_t *r, size_t n);
+double ring_max(const ring_t *r, size_t n);
 
 #endif

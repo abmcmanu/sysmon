@@ -40,3 +40,29 @@ double ring_avg(const ring_t *r, size_t n)
         sum += ring_at(r, i);
     return sum / (double)n;
 }
+
+double ring_min(const ring_t *r, size_t n)
+{
+    if (n > r->len)
+        n = r->len;
+    if (n == 0)
+        return NAN;
+    double m = INFINITY;
+    for (size_t i = r->len - n; i < r->len; i++)
+        if (ring_at(r, i) < m)
+            m = ring_at(r, i);
+    return m;
+}
+
+double ring_max(const ring_t *r, size_t n)
+{
+    if (n > r->len)
+        n = r->len;
+    if (n == 0)
+        return NAN;
+    double m = -INFINITY;
+    for (size_t i = r->len - n; i < r->len; i++)
+        if (ring_at(r, i) > m)
+            m = ring_at(r, i);
+    return m;
+}
