@@ -21,6 +21,9 @@ int main(void)
     CHECK(ring_min(&r, 3) == 1);
     CHECK(ring_max(&r, 2) == 3);
     CHECK(isnan(ring_min(&r, 0)));
+    CHECK(ring_percentile(&r, 3, 50) == 2);
+    CHECK(ring_percentile(&r, 3, 100) == 3);
+    CHECK(ring_percentile(&r, 3, 0) == 1);
 
     /* wrap around: only the newest RING_CAP samples survive */
     for (int i = 4; i <= RING_CAP + 10; i++)
