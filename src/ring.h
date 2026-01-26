@@ -25,5 +25,7 @@ double ring_last(const ring_t *r);
 double ring_avg(const ring_t *r, size_t n);
 double ring_min(const ring_t *r, size_t n);
 double ring_max(const ring_t *r, size_t n);
+/* nearest-rank percentile of the newest n samples, p in [0, 100] */
+double ring_percentile(const ring_t *r, size_t n, double p);
 
 #endif

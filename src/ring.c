@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdlib.h>
 
 #include "ring.h"
 
@@ -65,4 +66,33 @@ double ring_max(const ring_t *r, size_t n)
         if (ring_at(r, i) > m)
             m = ring_at(r, i);
     return m;
+}
+
+static int cmp_double(const void *a, const void *b)
+{
+    double x = *(const double *)a, y = *(const double *)b;
+    return (x > y) - (x < y);
+}
+
+double ring_percentile(const ring_t *r, size_t n, double p)
+{
+    double tmp[RING_CAP];
+
+    if (n > r->len)
+        n = r->len;
+    if (n == 0)
+        return NAN;
+    for (size_t i = 0; i < n; i++)
+        tmp[i] = ring_at(r, r->len - n + i);
+    qsort(tmp, n, sizeof tmp[0], cmp_double);
+
+    double exact = p / 100.0 * (double)n;
+    size_t rank = (size_t)exact;
+    if ((double)rank < exact)
+        rank++;
+    if (rank < 1)
+        rank = 1;
+    if (rank > n)
+        rank = n;
+    return tmp[rank - 1];
 }
