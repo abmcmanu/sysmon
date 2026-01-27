@@ -98,6 +98,26 @@ static void cmd_list(sb_t *out)
     }
 }
 
+static void cmd_stats(sb_t *out, int argc, char **argv)
+{
+    if (argc < 2) {
+        sb_puts(out, "ERR usage: stats METRIC [N]\n");
+        return;
+    }
+    const metric_t *m = metrics_get(argv[1]);
+    if (!m) {
+        sb_printf(out, "ERR unknown metric '%s'\n", argv[1]);
+        return;
+    }
+    long n = argc > 2 ? strtol(argv[2], NULL, 10) : 60;
+    if (n <= 0)
+        n = 60;
+    const ring_t *r = &m->hist;
+    sb_printf(out, "min %.15g\nmax %.15g\navg %.15g\np50 %.15g\np95 %.15g\nlast %.15g\n",
+              ring_min(r, (size_t)n), ring_max(r, (size_t)n), ring_avg(r, (size_t)n),
+              ring_percentile(r, (size_t)n, 50), ring_percentile(r, (size_t)n, 95), m->value);
+}
+
 static void cmd_history(sb_t *out, int argc, char **argv, int avg)
 {
     if (argc < 2) {
@@ -141,6 +161,8 @@ static void handle_cmd(char *line, sb_t *out)
             sb_printf(out, "%.15g\n", m->value);
         else
             sb_printf(out, "ERR unknown metric '%s'\n", argv[1]);
+    } else if (strcmp(argv[0], "stats") == 0) {
+        cmd_stats(out, argc, argv);
     } else if (strcmp(argv[0], "history") == 0) {
         cmd_history(out, argc, argv, 0);
     } else if (strcmp(argv[0], "avg") == 0) {
