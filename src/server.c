@@ -183,6 +183,7 @@ static void handle_cmd(char *line, sb_t *out)
     } else if (strcmp(argv[0], "help") == 0) {
         sb_puts(out, "ping | version | list | get METRIC"
                      " | history METRIC [N] | avg METRIC [N]"
+                     " | stats METRIC [N]"
                      " | json"
                      " | alerts"
                      " | reload"
