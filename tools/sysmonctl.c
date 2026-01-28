@@ -30,6 +30,7 @@ static void usage(FILE *out)
             "  get METRIC             one metric\n"
             "  history METRIC [N]     the last N samples (default 60)\n"
             "  avg METRIC [N]         average of the last N samples\n"
+            "  stats METRIC [N]       min, max, avg, p50, p95 of the last N samples\n"
             "  json                   all metrics as JSON\n"
             "  alerts                 alert rules and their state\n"
             "  reload                 re-read the configuration file\n"
