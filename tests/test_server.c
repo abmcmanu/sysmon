@@ -37,6 +37,12 @@ int main(void)
     CHECK(strstr(run("help"), "history METRIC") != NULL);
     CHECK(strncmp(run("version"), "sysmond ", 8) == 0);
     CHECK(strcmp(run("get"), "ERR usage: get METRIC\n") == 0);
+
+    metrics_set("s", 10);
+    metrics_set("s", 20);
+    metrics_set("s", 30);
+    CHECK(strcmp(run("stats s 3"), "min 10\nmax 30\navg 20\np50 20\np95 30\nlast 30\n") == 0);
+    CHECK(strncmp(run("stats"), "ERR usage", 9) == 0);
     CHECK(strcmp(run("ping\r\n"), "pong\n") == 0);
     CHECK(strcmp(run("  ping  "), "pong\n") == 0);
 
