@@ -23,6 +23,7 @@ Any tool that speaks unix sockets works:
 | `get METRIC` | the current value |
 | `history METRIC [N]` | the last N samples, oldest first, one per line (default 60, max 300) |
 | `avg METRIC [N]` | average of the last N samples |
+| `stats METRIC [N]` | `min`, `max`, `avg`, `p50`, `p95` of the last N samples and the `last` value, one `KEY VALUE` per line |
 | `json` | all metrics as one JSON object: `{"version":..., "timestamp":..., "metrics":{...}}` |
 | `alerts` | one line per rule: `FIRING` or `ok`, the rule, last value, seconds since last change |
 | `reload` | re-read the configuration file, same as `SIGHUP`; replies `reloading` |
