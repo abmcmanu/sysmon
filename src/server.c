@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <fcntl.h>
+#include <fnmatch.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -90,10 +91,12 @@ static int split(char *line, char **argv)
     return argc;
 }
 
-static void cmd_list(sb_t *out)
+static void cmd_list(sb_t *out, const char *pattern)
 {
     for (size_t i = 0; i < metrics_count(); i++) {
         const metric_t *m = metrics_at(i);
+        if (pattern && fnmatch(pattern, m->name, 0) != 0)
+            continue;
         sb_printf(out, "%s %.15g\n", m->name, m->value);
     }
 }
@@ -152,7 +155,7 @@ static void handle_cmd(char *line, sb_t *out)
     } else if (strcmp(argv[0], "ping") == 0) {
         sb_puts(out, "pong\n");
     } else if (strcmp(argv[0], "list") == 0) {
-        cmd_list(out);
+        cmd_list(out, argc > 1 ? argv[1] : NULL);
     } else if (strcmp(argv[0], "get") == 0) {
         const metric_t *m = argc > 1 ? metrics_get(argv[1]) : NULL;
         if (argc < 2)
