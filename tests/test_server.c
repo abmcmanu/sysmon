@@ -43,6 +43,10 @@ int main(void)
     metrics_set("s", 30);
     CHECK(strcmp(run("stats s 3"), "min 10\nmax 30\navg 20\np50 20\np95 30\nlast 30\n") == 0);
     CHECK(strncmp(run("stats"), "ERR usage", 9) == 0);
+
+    CHECK(strstr(run("list load*"), "load1 ") != NULL);
+    CHECK(strstr(run("list load*"), "mem_used_bytes") == NULL);
+    CHECK(strcmp(run("list nothing_matches_*"), "") == 0);
     CHECK(strcmp(run("ping\r\n"), "pong\n") == 0);
     CHECK(strcmp(run("  ping  "), "pong\n") == 0);
 
