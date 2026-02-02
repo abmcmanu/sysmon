@@ -184,7 +184,7 @@ static void handle_cmd(char *line, sb_t *out)
     } else if (strcmp(argv[0], "version") == 0) {
         sb_printf(out, "sysmond %s\n", SYSMON_VERSION);
     } else if (strcmp(argv[0], "help") == 0) {
-        sb_puts(out, "ping | version | list | get METRIC"
+        sb_puts(out, "ping | version | list [PATTERN] | get METRIC"
                      " | history METRIC [N] | avg METRIC [N]"
                      " | stats METRIC [N]"
                      " | json"

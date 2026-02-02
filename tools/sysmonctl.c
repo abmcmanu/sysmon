@@ -26,7 +26,7 @@ static void usage(FILE *out)
             "\n"
             "commands:\n"
             "  ping                   check that sysmond is alive\n"
-            "  list                   all metrics with their current value\n"
+            "  list [PATTERN]         metrics with their current value (glob: 'disk_*')\n"
             "  get METRIC             one metric\n"
             "  history METRIC [N]     the last N samples (default 60)\n"
             "  avg METRIC [N]         average of the last N samples\n"
