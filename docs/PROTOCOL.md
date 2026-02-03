@@ -19,7 +19,7 @@ Any tool that speaks unix sockets works:
 | command | reply |
 |---|---|
 | `ping` | `pong` |
-| `list` | one `NAME VALUE` line per metric |
+| `list [PATTERN]` | one `NAME VALUE` line per metric, optionally filtered with a shell glob (`disk_*`) |
 | `get METRIC` | the current value |
 | `history METRIC [N]` | the last N samples, oldest first, one per line (default 60, max 300) |
 | `avg METRIC [N]` | average of the last N samples |
