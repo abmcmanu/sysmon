@@ -46,6 +46,7 @@ sysmonctl list                          # every metric
 sysmonctl get mem_used_percent          # one value, for scripts
 sysmonctl history cpu_usage_percent 60  # last 60 samples
 sysmonctl avg load1 12                  # average of the last 12
+sysmonctl stats cpu_usage_percent 300   # min/max/avg/p50/p95
 sysmonctl list 'disk_*'                 # filter with a glob
 sysmonctl json                          # everything, machine-readable
 sysmonctl alerts                        # rule states
