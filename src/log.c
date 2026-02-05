@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <syslog.h>
 #include <time.h>
 
 #include "log.h"
@@ -9,14 +10,24 @@
 static FILE *out;
 static int threshold = SM_LOG_INFO;
 static const char *const names[] = { "error", "warn", "info", "debug" };
+static int use_syslog;
 
 int log_open(const char *path)
 {
     if (out && out != stderr)
         fclose(out);
     out = stderr;
+    if (use_syslog) {
+        closelog();
+        use_syslog = 0;
+    }
     if (!path)
         return 0;
+    if (strcmp(path, "syslog") == 0) {
+        openlog("sysmond", LOG_PID | LOG_NDELAY, LOG_DAEMON);
+        use_syslog = 1;
+        return 0;
+    }
 
     FILE *f = fopen(path, "a");
     if (!f) {
@@ -56,6 +67,11 @@ void log_vmsg(int level, const char *fmt, va_list ap)
         level = SM_LOG_DEBUG;
     if (level > threshold)
         return;
+    if (use_syslog) {
+        static const int prio[] = { LOG_ERR, LOG_WARNING, LOG_INFO, LOG_DEBUG };
+        vsyslog(prio[level], fmt, ap);
+        return;
+    }
 
     FILE *o = out ? out : stderr;
     char ts[32];
