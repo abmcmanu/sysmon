@@ -12,6 +12,7 @@ typedef struct config {
     int print;     /* -p: print samples to stdout */
     char log_file[CFG_PATH_MAX];
     char pid_file[CFG_PATH_MAX];
+    char user[64]; /* switch to this user once listeners are open */
     char mounts[CFG_LIST_MAX][CFG_PATH_MAX];
     int nmounts;
     char socket_path[108]; /* sizeof(sun_path) on Linux */

@@ -19,6 +19,8 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <poll.h>
+#include <grp.h>
+#include <pwd.h>
 
 #include "collector.h"
 #include "config.h"
@@ -113,6 +115,23 @@ static int write_pidfile(const char *path)
     }
     fprintf(f, "%ld\n", (long)getpid());
     fclose(f);
+    return 0;
+}
+
+static int drop_privileges(const config_t *cfg)
+{
+    struct passwd *pw = getpwnam(cfg->user);
+
+    if (!pw) {
+        log_err("user %s: no such user", cfg->user);
+        return -1;
+    }
+    if (initgroups(pw->pw_name, pw->pw_gid) < 0 || setgid(pw->pw_gid) < 0 ||
+        setuid(pw->pw_uid) < 0) {
+        log_err("cannot switch to user %s: %s", cfg->user, strerror(errno));
+        return -1;
+    }
+    log_info("running as %s", cfg->user);
     return 0;
 }
 
@@ -325,6 +344,8 @@ int main(int argc, char **argv)
         return 1;
     }
     if (!foreground && cfg.pid_file[0] && write_pidfile(cfg.pid_file) < 0)
+        return 1;
+    if (cfg.user[0] && drop_privileges(&cfg) < 0)
         return 1;
 
     log_info("sysmond %s started (pid %ld, interval %ds)", SYSMON_VERSION, (long)getpid(),
