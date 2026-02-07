@@ -136,6 +136,8 @@ static int set_key(config_t *cfg, const char *section, const char *key, const ch
             return copy(cfg->log_file, sizeof cfg->log_file, val);
         if (strcmp(key, "pid_file") == 0)
             return copy(cfg->pid_file, sizeof cfg->pid_file, val);
+        if (strcmp(key, "user") == 0)
+            return copy(cfg->user, sizeof cfg->user, val);
         if (strcmp(key, "socket") == 0)
             return copy(cfg->socket_path, sizeof cfg->socket_path, val);
         if (strcmp(key, "socket_mode") == 0)
