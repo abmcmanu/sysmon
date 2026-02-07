@@ -126,6 +126,9 @@ static int drop_privileges(const config_t *cfg)
         log_err("user %s: no such user", cfg->user);
         return -1;
     }
+    /* so that we can still remove it on exit */
+    if (chown(cfg->socket_path, pw->pw_uid, pw->pw_gid) < 0)
+        log_warn("chown %s: %s", cfg->socket_path, strerror(errno));
     if (initgroups(pw->pw_name, pw->pw_gid) < 0 || setgid(pw->pw_gid) < 0 ||
         setuid(pw->pw_uid) < 0) {
         log_err("cannot switch to user %s: %s", cfg->user, strerror(errno));
