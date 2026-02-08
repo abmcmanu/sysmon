@@ -134,6 +134,10 @@ static int drop_privileges(const config_t *cfg)
         log_err("cannot switch to user %s: %s", cfg->user, strerror(errno));
         return -1;
     }
+    if (pw->pw_uid != 0 && setuid(0) == 0) {
+        log_err("could get root back after dropping privileges, refusing to run");
+        return -1;
+    }
     log_info("running as %s", cfg->user);
     return 0;
 }
