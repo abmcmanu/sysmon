@@ -354,6 +354,8 @@ int main(int argc, char **argv)
         return 1;
     if (cfg.user[0] && drop_privileges(&cfg) < 0)
         return 1;
+    if (!cfg.user[0] && geteuid() == 0)
+        log_warn("running as root; set [core] user to drop privileges");
 
     log_info("sysmond %s started (pid %ld, interval %ds)", SYSMON_VERSION, (long)getpid(),
              cfg.interval);
