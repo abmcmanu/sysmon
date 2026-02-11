@@ -2,6 +2,16 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 3.2.0 - 2026-02-11
+
+- Configuration: durations (`5m`), `${VAR}` expansion, `include` with globs.
+- `stats` command (min, max, avg, p50, p95).
+- `list PATTERN`.
+- `diskio`, `psi` and `thermal` plugins
+- inode usage for disks.
+- `log_file = syslog`
+- `[core] user` to drop privileges.
+
 ## 3.1.0 - 2025-12-12
 
 - `cpustat`, `procs` and `fd` plugins.
