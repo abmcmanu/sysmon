@@ -14,3 +14,15 @@ key = value
 * Unknown keys and invalid values are errors: the daemon refuses to start,
   and a reload keeps the previous configuration.
 * `mount`, `load` and `rule` may be repeated; the others keep the last value.
+
+## [core]
+
+| key | default | |
+|---|---|---|
+| `interval` | `5` | time between two samples |
+| `log_level` | `info` | `error`, `warn`, `info` or `debug` |
+| `log_file` | stderr | a path, or `syslog` |
+| `pid_file` | none | written when daemonized |
+| `socket` | `/tmp/sysmond.sock` | control socket |
+| `socket_mode` | `0660` | permissions of the socket |
+| `user` | none | user to switch to after startup (when started as root) |
