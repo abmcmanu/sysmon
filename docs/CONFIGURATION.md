@@ -26,3 +26,9 @@ key = value
 | `socket` | `/tmp/sysmond.sock` | control socket |
 | `socket_mode` | `0660` | permissions of the socket |
 | `user` | none | user to switch to after startup (when started as root) |
+
+## [disk]
+
+| key | default | |
+|---|---|---|
+| `mount` | `/` | mount point to watch; repeat for several |
