@@ -39,3 +39,10 @@ key = value
 |---|---|---|
 | `dir` | `/usr/local/lib/sysmon/plugins` | where `NAME.so` files are |
 | `load` | none | plugin to load; repeat for several |
+
+## [http]
+
+| key | default | |
+|---|---|---|
+| `port` | `0` (disabled) | Prometheus / API port |
+| `bind` | `127.0.0.1` | address to listen on |
