@@ -32,3 +32,10 @@ key = value
 | key | default | |
 |---|---|---|
 | `mount` | `/` | mount point to watch; repeat for several |
+
+## [plugins]
+
+| key | default | |
+|---|---|---|
+| `dir` | `/usr/local/lib/sysmon/plugins` | where `NAME.so` files are |
+| `load` | none | plugin to load; repeat for several |
