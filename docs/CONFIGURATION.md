@@ -46,3 +46,13 @@ key = value
 |---|---|---|
 | `port` | `0` (disabled) | Prometheus / API port |
 | `bind` | `127.0.0.1` | address to listen on |
+
+## [alerts]
+
+| key | default | |
+|---|---|---|
+| `rule` | none | `METRIC OP THRESHOLD [for N]`, repeat for several |
+| `exec` | none | program run on every state change |
+
+`OP` is one of `>`, `>=`, `<`, `<=`. `for N` requires N consecutive
+samples before firing.
