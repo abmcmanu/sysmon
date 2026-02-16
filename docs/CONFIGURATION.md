@@ -15,6 +15,31 @@ key = value
   and a reload keeps the previous configuration.
 * `mount`, `load` and `rule` may be repeated; the others keep the last value.
 
+### Durations
+
+`interval` accepts a number of seconds or a suffix: `30`, `30s`, `5m`,
+`1h`.
+
+### Environment variables
+
+`${NAME}` is replaced by the variable's value; `${NAME:-default}` uses
+`default` when it is unset. An unset variable without a default is an
+error, so typos do not silently turn into empty strings.
+
+```ini
+socket = ${RUNTIME_DIRECTORY:-/tmp}/sysmond.sock
+```
+
+### Includes
+
+`include = PATTERN` reads every file matching the glob, in alphabetical
+order, as if its content was pasted there. Relative patterns are
+relative to the including file. A pattern matching nothing is fine.
+
+```ini
+include = sysmond.d/*.conf
+```
+
 ## [core]
 
 | key | default | |
