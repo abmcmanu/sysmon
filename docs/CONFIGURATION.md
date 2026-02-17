@@ -81,3 +81,11 @@ include = sysmond.d/*.conf
 
 `OP` is one of `>`, `>=`, `<`, `<=`. `for N` requires N consecutive
 samples before firing.
+
+## Reloading
+
+`SIGHUP` or `sysmonctl reload` re-reads the file.
+
+| applied on reload | needs a restart |
+|---|---|
+| `interval`, `log_level`, `log_file`, `mount`, `rule`, `exec` | `socket`, `socket_mode`, `user`, `[plugins]`, `[http]` |
