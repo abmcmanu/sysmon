@@ -14,6 +14,7 @@
 #include "metrics.h"
 #include "sb.h"
 #include "version.h"
+#include "json.h"
 
 int http_open(const char *bind_addr, int port)
 {
@@ -135,6 +136,9 @@ void http_handle(int listen_fd)
                          "<h1>sysmond %s</h1>"
                          "<p><a href=\"/metrics\">metrics</a></p>"
                          "</body></html>\n", SYSMON_VERSION);
+    } else if (strcmp(path, "/api/metrics") == 0) {
+        ctype = "application/json";
+        json_metrics(&body);
     } else if (strcmp(path, "/metrics") == 0) {
         ctype = "text/plain; version=0.0.4; charset=utf-8";
         render_prometheus(&body);
