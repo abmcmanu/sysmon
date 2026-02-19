@@ -50,3 +50,19 @@ void json_metrics(sb_t *out)
     }
     sb_puts(out, "}}\n");
 }
+
+void json_history(sb_t *out, const metric_t *m, size_t n)
+{
+    size_t len = ring_len(&m->hist);
+    size_t from = n < len ? len - n : 0;
+
+    sb_puts(out, "{\"metric\":");
+    json_string(out, m->name);
+    sb_puts(out, ",\"values\":[");
+    for (size_t i = from; i < len; i++) {
+        if (i > from)
+            sb_puts(out, ",");
+        json_number(out, ring_at(&m->hist, i));
+    }
+    sb_puts(out, "]}\n");
+}
