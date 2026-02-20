@@ -4,6 +4,7 @@
 #include <math.h>
 #include <netinet/in.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -79,6 +80,27 @@ static int write_all(int fd, const char *p, size_t n)
     return 0;
 }
 
+static const char *query_param(const char *query, const char *key, char *out, size_t size)
+{
+    size_t klen = strlen(key);
+
+    for (const char *p = query; p && *p;) {
+        if (strncmp(p, key, klen) == 0 && p[klen] == '=') {
+            p += klen + 1;
+            size_t n = strcspn(p, "&");
+            if (n >= size)
+                n = size - 1;
+            memcpy(out, p, n);
+            out[n] = '\0';
+            return out;
+        }
+        p = strchr(p, '&');
+        if (p)
+            p++;
+    }
+    return NULL;
+}
+
 static const char *reason(int status)
 {
     switch (status) {
@@ -118,6 +140,10 @@ void http_handle(int listen_fd)
         close(fd);
         return;
     }
+    char query[256] = "";
+    char *q = strchr(path, '?');
+    if (q)
+        snprintf(query, sizeof query, "%s", q + 1);
     path[strcspn(path, "?")] = '\0';
     log_debug("http: %s %s", method, path);
 
@@ -139,6 +165,18 @@ void http_handle(int listen_fd)
     } else if (strcmp(path, "/api/metrics") == 0) {
         ctype = "application/json";
         json_metrics(&body);
+    } else if (strcmp(path, "/api/history") == 0) {
+        char metric[64], nbuf[16];
+        const metric_t *m =
+            query_param(query, "metric", metric, sizeof metric) ? metrics_get(metric) : NULL;
+        ctype = "application/json";
+        if (!m) {
+            status = 404;
+            sb_puts(&body, "{\"error\":\"unknown metric\"}\n");
+        } else {
+            long n = query_param(query, "n", nbuf, sizeof nbuf) ? strtol(nbuf, NULL, 10) : 60;
+            json_history(&body, m, n > 0 ? (size_t)n : 60);
+        }
     } else if (strcmp(path, "/metrics") == 0) {
         ctype = "text/plain; version=0.0.4; charset=utf-8";
         render_prometheus(&body);
