@@ -149,6 +149,7 @@ void http_handle(int listen_fd)
 
     int status = 200;
     const char *ctype = "text/plain; charset=utf-8";
+    const char *extra = strncmp(path, "/api/", 5) == 0 ? "Cache-Control: no-store\r\n" : "";
     sb_t body;
     sb_init(&body);
 
@@ -191,9 +192,10 @@ void http_handle(int listen_fd)
     int n = snprintf(hdr, sizeof hdr,
                      "HTTP/1.0 %d %s\r\n"
                      "Content-Type: %s\r\n"
+                     "%s"
                      "Content-Length: %zu\r\n"
                      "Connection: close\r\n\r\n",
-                     status, reason(status), ctype, body.len);
+                     status, reason(status), ctype, extra, body.len);
     if (write_all(fd, hdr, (size_t)n) == 0 && body.len)
         write_all(fd, body.data, body.len);
     sb_free(&body);
