@@ -1,0 +1,53 @@
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+#include "http.h"
+#include "log.h"
+#include "metrics.h"
+#include "sb.h"
+#include "test.h"
+
+static int lfd;
+static struct sockaddr_in addr;
+static char reply[65536];
+
+/* Send one request through a real socket and let http_handle() answer it. */
+static const char *get(const char *request)
+{
+    int c = socket(AF_INET, SOCK_STREAM, 0);
+    if (connect(c, (struct sockaddr *)&addr, sizeof addr) < 0)
+        return "";
+    if (write(c, request, strlen(request)) < 0)
+        return "";
+    http_handle(lfd);
+
+    size_t len = 0;
+    ssize_t n;
+    while (len < sizeof reply - 1 && (n = read(c, reply + len, sizeof reply - 1 - len)) > 0)
+        len += (size_t)n;
+    reply[len] = '\0';
+    close(c);
+    return reply;
+}
+
+int main(void)
+{
+    socklen_t alen = sizeof addr;
+
+    log_set_level(-1);
+    lfd = http_open("127.0.0.1", 0);
+    CHECK(lfd >= 0);
+    getsockname(lfd, (struct sockaddr *)&addr, &alen);
+    metrics_set("load1", 0.5);
+
+    CHECK(strncmp(get("GET /nope HTTP/1.0\r\n\r\n"), "HTTP/1.0 404", 12) == 0);
+    CHECK(strstr(get("GET /metrics HTTP/1.0\r\n\r\n"), "\nsysmon_load1 0.5\n") != NULL);
+    CHECK(strstr(reply, "sysmon_build_info{version=") != NULL);
+    CHECK(strstr(get("GET /healthz HTTP/1.1\r\nHost: x\r\n\r\n"), "\r\n\r\nok\n") != NULL);
+
+    close(lfd);
+    return test_report("http");
+}
