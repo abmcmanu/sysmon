@@ -178,6 +178,9 @@ void http_handle(int listen_fd)
             long n = query_param(query, "n", nbuf, sizeof nbuf) ? strtol(nbuf, NULL, 10) : 60;
             json_history(&body, m, n > 0 ? (size_t)n : 60);
         }
+    } else if (strcmp(path, "/api/version") == 0) {
+        ctype = "application/json";
+        sb_printf(&body, "{\"version\":\"%s\"}\n", SYSMON_VERSION);
     } else if (strcmp(path, "/metrics") == 0) {
         ctype = "text/plain; version=0.0.4; charset=utf-8";
         render_prometheus(&body);
