@@ -47,6 +47,13 @@ int main(void)
     CHECK(strstr(get("GET /metrics HTTP/1.0\r\n\r\n"), "\nsysmon_load1 0.5\n") != NULL);
     CHECK(strstr(reply, "sysmon_build_info{version=") != NULL);
     CHECK(strstr(get("GET /healthz HTTP/1.1\r\nHost: x\r\n\r\n"), "\r\n\r\nok\n") != NULL);
+    CHECK(strstr(get("GET /api/metrics HTTP/1.0\r\n\r\n"), "\"load1\":0.5") != NULL);
+    CHECK(strstr(reply, "Content-Type: application/json") != NULL);
+    CHECK(strstr(reply, "Cache-Control: no-store") != NULL);
+    metrics_set("load1", 1.5);
+    CHECK(strstr(get("GET /api/history?metric=load1&n=2 HTTP/1.0\r\n\r\n"),
+                 "{\"metric\":\"load1\",\"values\":[0.5,1.5]}") != NULL);
+    CHECK(strncmp(get("GET /api/history?metric=zzz HTTP/1.0\r\n\r\n"), "HTTP/1.0 404", 12) == 0);
 
     close(lfd);
     return test_report("http");
