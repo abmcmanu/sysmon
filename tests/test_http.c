@@ -54,6 +54,9 @@ int main(void)
     CHECK(strstr(get("GET /api/history?metric=load1&n=2 HTTP/1.0\r\n\r\n"),
                  "{\"metric\":\"load1\",\"values\":[0.5,1.5]}") != NULL);
     CHECK(strncmp(get("GET /api/history?metric=zzz HTTP/1.0\r\n\r\n"), "HTTP/1.0 404", 12) == 0);
+    CHECK(strncmp(get("POST /metrics HTTP/1.0\r\n\r\n"), "HTTP/1.0 405", 12) == 0);
+    CHECK(strstr(get("GET /api/version HTTP/1.0\r\n\r\n"), "{\"version\":\"") != NULL);
+    CHECK(strstr(get("GET /metrics?x=1 HTTP/1.0\r\n\r\n"), "sysmon_load1") != NULL);
 
     close(lfd);
     return test_report("http");
