@@ -83,6 +83,7 @@ if command -v curl > /dev/null 2>&1; then
     curl -fsS "http://127.0.0.1:$PORT/metrics" | grep -q '^sysmon_cpu_usage_percent ' ||
         fail "http /metrics"
     curl -fsS "http://127.0.0.1:$PORT/healthz" | grep -qx ok || fail "http /healthz"
+    curl -fsS "http://127.0.0.1:$PORT/api/metrics" | grep -q '"metrics":{' || fail "http /api/metrics"
 else
     echo "smoke: curl not found, skipping http checks"
 fi
