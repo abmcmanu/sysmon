@@ -14,3 +14,10 @@ reverse proxy in front.
 | `/api/version` | `{"version": "X.Y.Z"}` |
 
 `/api/*` answers carry `Cache-Control: no-store`.
+
+## Examples
+
+```sh
+curl -s localhost:9273/api/metrics | jq .metrics.load1
+curl -s 'localhost:9273/api/history?metric=cpu_usage_percent&n=10'
+```
