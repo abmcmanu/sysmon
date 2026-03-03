@@ -16,6 +16,7 @@
 #include "sb.h"
 #include "version.h"
 #include "json.h"
+#include "web_index.h"
 
 int http_open(const char *bind_addr, int port)
 {
@@ -159,10 +160,7 @@ void http_handle(int listen_fd)
     } else
     if (strcmp(path, "/") == 0) {
         ctype = "text/html; charset=utf-8";
-        sb_printf(&body, "<html><head><title>sysmond</title></head><body>"
-                         "<h1>sysmond %s</h1>"
-                         "<p><a href=\"/metrics\">metrics</a></p>"
-                         "</body></html>\n", SYSMON_VERSION);
+        sb_append(&body, (const char *)web_index, web_index_len);
     } else if (strcmp(path, "/api/metrics") == 0) {
         ctype = "application/json";
         json_metrics(&body);

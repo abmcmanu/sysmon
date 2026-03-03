@@ -84,6 +84,14 @@ $(BUILD)/plugins/%.so: plugins/%.c include/sysmon/plugin.h
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -fPIC -shared -o $@ $< $(LDFLAGS)
 
+CFLAGS += -I$(BUILD)/gen
+
+$(BUILD)/gen/web_index.h: web/index.html scripts/embed.sh
+	@mkdir -p $(@D)
+	sh scripts/embed.sh web_index web/index.html > $@
+
+$(BUILD)/obj/src/http.o: $(BUILD)/gen/web_index.h
+
 $(BUILD)/obj/%.o: %.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<

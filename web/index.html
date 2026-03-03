@@ -14,6 +14,41 @@
   <div class="cards" id="cards"></div>
 </main>
 <script>
+const $ = (id) => document.getElementById(id);
+const every = 2000;
+
+const cards = [
+  { key: 'cpu_usage_percent', label: 'CPU', pct: true },
+  { key: 'mem_used_percent', label: 'Memory', pct: true },
+  { key: 'load1', label: 'Load 1m' },
+];
+
+function fmt(v, c) {
+  if (v === null || v === undefined) return '–';
+  if (c && c.pct) return v.toFixed(1) + ' %';
+  return Math.abs(v) >= 1e6 ? v.toExponential(3) : +v.toFixed(3) + '';
+}
+
+function renderCards(m) {
+  $('cards').innerHTML = cards.filter((c) => c.key in m).map((c) => `
+    <div class="card">
+      <div class="label">${c.label}</div>
+      <div class="value">${fmt(m[c.key], c)}</div>
+    </div>`).join('');
+}
+
+async function refresh() {
+  const data = await (await fetch('/api/metrics')).json();
+  apply(data);
+}
+
+function apply(data) {
+  $('meta').textContent = 'v' + data.version + ' · ' + new Date(data.timestamp * 1000).toLocaleTimeString();
+  renderCards(data.metrics);
+}
+
+refresh();
+setInterval(refresh, every);
 </script>
 </body>
 </html>
