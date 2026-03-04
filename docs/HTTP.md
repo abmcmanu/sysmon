@@ -6,7 +6,7 @@ reverse proxy in front.
 
 | path | content |
 |---|---|
-| `/` | a small HTML page |
+| `/` | the web dashboard |
 | `/metrics` | Prometheus text format, every metric prefixed with `sysmon_` |
 | `/healthz` | `ok`, for load balancers and container probes |
 | `/api/metrics` | all metrics as JSON, same shape as `sysmonctl json` |
