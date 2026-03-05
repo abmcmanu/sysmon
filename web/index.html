@@ -23,6 +23,7 @@ main { padding: 20px; max-width: 1100px; margin: 0 auto; }
 .bar > div { height: 100%; background: var(--ok); transition: width .3s; }
 .bar > div.warn { background: var(--warn); }
 .bar > div.bad { background: var(--bad); }
+canvas.spark { width: 100%; height: 36px; margin-top: 8px; display: block; }
 </style>
 </head>
 <body>
@@ -59,7 +60,30 @@ function renderCards(m) {
       <div class="label">${c.label}</div>
       <div class="value">${fmt(m[c.key], c)}</div>
       ${c.pct ? `<div class="bar"><div class="${level(m[c.key])}" style="width:${Math.min(100, m[c.key] || 0)}%"></div></div>` : ''}
+      <canvas class="spark" data-key="${c.key}"></canvas>
     </div>`).join('');
+}
+
+async function sparks() {
+  for (const cv of document.querySelectorAll('canvas.spark')) {
+    const r = await fetch('/api/history?metric=' + cv.dataset.key + '&n=120');
+    if (!r.ok) continue;
+    const vals = (await r.json()).values.filter((v) => v !== null);
+    const ctx = cv.getContext('2d');
+    const w = cv.width = cv.clientWidth * devicePixelRatio;
+    const h = cv.height = cv.clientHeight * devicePixelRatio;
+    const max = Math.max(...vals, 1e-9), min = Math.min(...vals, 0);
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--accent');
+    ctx.lineWidth = 1.5 * devicePixelRatio;
+    ctx.beginPath();
+    vals.forEach((v, i) => {
+      const x = vals.length > 1 ? i * w / (vals.length - 1) : 0;
+      const y = h - (v - min) / (max - min || 1) * (h - 2) - 1;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    });
+    ctx.stroke();
+  }
 }
 
 async function refresh() {
@@ -70,6 +94,7 @@ async function refresh() {
 function apply(data) {
   $('meta').textContent = 'v' + data.version + ' · ' + new Date(data.timestamp * 1000).toLocaleTimeString();
   renderCards(data.metrics);
+  sparks();
 }
 
 refresh();
