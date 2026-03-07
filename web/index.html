@@ -27,6 +27,9 @@ canvas.spark { width: 100%; height: 36px; margin-top: 8px; display: block; }
 table { width: 100%; border-collapse: collapse; margin-top: 20px; background: var(--card); border: 1px solid var(--line); border-radius: 8px; }
 td { padding: 6px 12px; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
 td:last-child { text-align: right; }
+.tools { display: flex; gap: 8px; margin-top: 20px; }
+input, select { font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--fg); }
+input { flex: 1; }
 </style>
 </head>
 <body>
@@ -36,11 +39,19 @@ td:last-child { text-align: right; }
 </header>
 <main>
   <div class="cards" id="cards"></div>
+  <div class="tools">
+    <input id="filter" placeholder="filter metrics" autocomplete="off">
+    <select id="every">
+      <option value="1000">1 s</option>
+      <option value="2000" selected>2 s</option>
+      <option value="5000">5 s</option>
+      <option value="10000">10 s</option>
+    </select>
+  </div>
   <table id="all"></table>
 </main>
 <script>
 const $ = (id) => document.getElementById(id);
-const every = 2000;
 
 const cards = [
   { key: 'cpu_usage_percent', label: 'CPU', pct: true },
@@ -91,7 +102,7 @@ async function sparks() {
 }
 
 function renderTable(m) {
-  const f = '';
+  const f = $('filter').value.trim();
   $('all').innerHTML = Object.keys(m).sort()
     .filter((k) => !f || k.includes(f))
     .map((k) => `<tr><td>${k}</td><td>${fmt(m[k])}</td></tr>`).join('');
@@ -109,8 +120,15 @@ function apply(data) {
   renderTable(data.metrics);
 }
 
+let timer;
+function schedule() {
+  clearInterval(timer);
+  timer = setInterval(refresh, +$('every').value);
+}
+$('every').addEventListener('change', schedule);
+$('filter').addEventListener('input', refresh);
 refresh();
-setInterval(refresh, every);
+schedule();
 </script>
 </body>
 </html>
