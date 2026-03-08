@@ -30,6 +30,7 @@ td:last-child { text-align: right; }
 .tools { display: flex; gap: 8px; margin-top: 20px; }
 input, select { font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--fg); }
 input { flex: 1; }
+.error { display: none; margin-bottom: 12px; padding: 10px 12px; border-radius: 6px; background: var(--bad); color: #fff; }
 </style>
 </head>
 <body>
@@ -38,6 +39,7 @@ input { flex: 1; }
   <span class="meta" id="meta"></span>
 </header>
 <main>
+  <div class="error" id="error"></div>
   <div class="cards" id="cards"></div>
   <div class="tools">
     <input id="filter" placeholder="filter metrics" autocomplete="off">
@@ -109,8 +111,16 @@ function renderTable(m) {
 }
 
 async function refresh() {
-  const data = await (await fetch('/api/metrics')).json();
-  apply(data);
+  try {
+    const r = await fetch('/api/metrics');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    $('error').style.display = 'none';
+    apply(data);
+  } catch (e) {
+    $('error').textContent = 'sysmond unreachable: ' + e.message;
+    $('error').style.display = 'block';
+  }
 }
 
 function apply(data) {
