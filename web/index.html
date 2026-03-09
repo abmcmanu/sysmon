@@ -9,6 +9,9 @@
   --bg: #f6f7f9; --fg: #1d232b; --muted: #6b7480; --card: #fff; --line: #e3e6ea;
   --ok: #2e9e5b; --warn: #d39a1c; --bad: #d64545; --accent: #3a6ee8;
 }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #111418; --fg: #e6e9ed; --muted: #8b949e; --card: #1a1f25; --line: #2a3038; }
+}
 * { box-sizing: border-box; }
 body { margin: 0; font: 14px/1.4 system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--fg); }
 header { display: flex; align-items: baseline; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
