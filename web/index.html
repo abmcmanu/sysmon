@@ -62,12 +62,23 @@ const cards = [
   { key: 'cpu_usage_percent', label: 'CPU', pct: true },
   { key: 'mem_used_percent', label: 'Memory', pct: true },
   { key: 'load1', label: 'Load 1m' },
+  { key: 'disk_root_used_percent', label: 'Disk /', pct: true },
+  { key: 'net_rx_bytes_per_second', label: 'Net in', bytes: true },
+  { key: 'net_tx_bytes_per_second', label: 'Net out', bytes: true },
 ];
 
 function fmt(v, c) {
   if (v === null || v === undefined) return '–';
   if (c && c.pct) return v.toFixed(1) + ' %';
+  if (c && c.bytes) return human(v) + '/s';
   return Math.abs(v) >= 1e6 ? v.toExponential(3) : +v.toFixed(3) + '';
+}
+
+function human(b) {
+  const u = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
+  let i = 0;
+  while (b >= 1024 && i < u.length - 1) { b /= 1024; i++; }
+  return (i ? b.toFixed(1) : b.toFixed(0)) + ' ' + u[i];
 }
 
 function level(p) {
