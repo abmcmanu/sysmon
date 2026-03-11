@@ -151,6 +151,9 @@ function schedule() {
 }
 $('every').addEventListener('change', schedule);
 $('filter').addEventListener('input', refresh);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) clearInterval(timer); else { refresh(); schedule(); }
+});
 refresh();
 schedule();
 </script>
