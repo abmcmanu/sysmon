@@ -84,6 +84,7 @@ if command -v curl > /dev/null 2>&1; then
         fail "http /metrics"
     curl -fsS "http://127.0.0.1:$PORT/healthz" | grep -qx ok || fail "http /healthz"
     curl -fsS "http://127.0.0.1:$PORT/api/metrics" | grep -q '"metrics":{' || fail "http /api/metrics"
+    curl -fsS "http://127.0.0.1:$PORT/" | grep -q '<title>sysmond</title>' || fail "http dashboard"
 else
     echo "smoke: curl not found, skipping http checks"
 fi
