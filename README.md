@@ -56,6 +56,12 @@ sysmonctl reload                        # same as kill -HUP
 No client needed if you prefer: `printf 'get load1\n' | nc -U /tmp/sysmond.sock`.
 The protocol is in [docs/PROTOCOL.md](docs/PROTOCOL.md).
 
+### Web dashboard
+
+With `[http] port` set, open `http://localhost:9273/` for a live
+dashboard: no build step, no external assets, a few KB of HTML embedded
+in the daemon.
+
 ### Prometheus
 
 ```ini
