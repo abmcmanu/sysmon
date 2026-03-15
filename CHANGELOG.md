@@ -2,6 +2,12 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 3.3.0 - 2026-03-15
+
+- Web dashboard at `/` (`[http] port`).
+- JSON API: `/api/metrics`, `/api/history`, `/api/version`.
+- HTTP responses for `/api` are not cached.
+
 ## 3.2.0 - 2026-02-11
 
 - Configuration: durations (`5m`), `${VAR}` expansion, `include` with globs.
