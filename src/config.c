@@ -162,6 +162,16 @@ static int set_key(config_t *cfg, const char *section, const char *key, const ch
             return copy(cfg->plugins[cfg->nplugins++], sizeof cfg->plugins[0], val);
         }
     }
+    if (strncmp(section, "plugin.", 7) == 0 && section[7]) {
+        if (cfg->nopts == CFG_OPTS_MAX)
+            return -1;
+        plugin_opt_t *o = &cfg->opts[cfg->nopts];
+        if (copy(o->plugin, sizeof o->plugin, section + 7) < 0 ||
+            copy(o->key, sizeof o->key, key) < 0 || copy(o->value, sizeof o->value, val) < 0)
+            return -1;
+        cfg->nopts++;
+        return 0;
+    }
     if (strcmp(section, "http") == 0) {
         if (strcmp(key, "port") == 0)
             return to_int(val, 0, 65535, &cfg->http_port);
