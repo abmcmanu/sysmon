@@ -3,6 +3,14 @@
 
 #define CFG_PATH_MAX 256
 #define CFG_LIST_MAX 16
+#define CFG_OPTS_MAX 64
+
+/* key = value lines of a [plugin.NAME] section */
+typedef struct plugin_opt {
+    char plugin[32];
+    char key[32];
+    char value[128];
+} plugin_opt_t;
 #define CFG_ALERTS_MAX 32
 #define CFG_RULE_MAX 256
 
@@ -20,6 +28,8 @@ typedef struct config {
     char plugin_dir[CFG_PATH_MAX];
     char plugins[CFG_LIST_MAX][64];
     int nplugins;
+    plugin_opt_t opts[CFG_OPTS_MAX];
+    int nopts;
     char http_bind[64];
     int http_port; /* 0 = disabled */
     char alerts[CFG_ALERTS_MAX][CFG_RULE_MAX];
