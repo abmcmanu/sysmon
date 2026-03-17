@@ -80,6 +80,15 @@ int main(void)
 
     CHECK(config_load(&cfg, "/nonexistent/sysmond.conf") < 0);
 
+    p = write_tmp("[plugin.net]\ninterfaces = eth0, wlan0\n[plugin.cpustat]\nper_core = no\n");
+    config_defaults(&cfg);
+    CHECK(config_load(&cfg, p) == 0);
+    CHECK(cfg.nopts == 2);
+    CHECK(strcmp(cfg.opts[0].plugin, "net") == 0);
+    CHECK(strcmp(cfg.opts[0].value, "eth0, wlan0") == 0);
+    CHECK(strcmp(cfg.opts[1].key, "per_core") == 0);
+    unlink(p);
+
     p = write_tmp("[core]\ninterval = 2m\n");
     config_defaults(&cfg);
     CHECK(config_load(&cfg, p) == 0 && cfg.interval == 120);
