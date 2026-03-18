@@ -19,6 +19,7 @@ typedef struct loaded {
 
 static loaded_t loaded[CFG_LIST_MAX];
 static int nloaded;
+static const config_t *config;
 
 static void host_set(const char *name, double value)
 {
@@ -38,8 +39,16 @@ static void host_log(int level, const char *fmt, ...)
     va_end(ap);
 }
 
+static const char *host_option(const char *plugin, const char *key)
+{
+    for (int i = 0; config && i < config->nopts; i++)
+        if (strcmp(config->opts[i].plugin, plugin) == 0 && strcmp(config->opts[i].key, key) == 0)
+            return config->opts[i].value;
+    return NULL;
+}
+
 static const sysmon_host_t host = {
-    SYSMON_PLUGIN_ABI, host_set, host_set_help, host_log,
+    SYSMON_PLUGIN_ABI, host_set, host_set_help, host_log, host_option,
 };
 
 static int load_one(const char *dir, const char *name)
@@ -62,8 +71,8 @@ static int load_one(const char *dir, const char *name)
         dlclose(h);
         return -1;
     }
-    if (p->abi != SYSMON_PLUGIN_ABI) {
-        log_err("plugin %s: ABI %d, daemon speaks %d", name, p->abi, SYSMON_PLUGIN_ABI);
+    if (p->abi < 1 || p->abi > SYSMON_PLUGIN_ABI) {
+        log_err("plugin %s: ABI %d, daemon speaks 1 to %d", name, p->abi, SYSMON_PLUGIN_ABI);
         dlclose(h);
         return -1;
     }
@@ -84,6 +93,7 @@ static int load_one(const char *dir, const char *name)
 int plugins_load(const config_t *cfg)
 {
     int errors = 0;
+    config = cfg;
     for (int i = 0; i < cfg->nplugins && nloaded < CFG_LIST_MAX; i++)
         if (load_one(cfg->plugin_dir, cfg->plugins[i]) < 0)
             errors++;
