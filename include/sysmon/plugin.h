@@ -14,11 +14,15 @@
  * function pointers in sysmon_host_t, so the daemon's internals can
  * change freely as long as this header does not. Any incompatible
  * change to these structs bumps SYSMON_PLUGIN_ABI.
+ *
+ * ABI 2 appended option() to the host table. The daemon still loads
+ * ABI 1 plugins; an ABI 2 plugin must check host->abi >= 2 before
+ * calling option(), so that it also runs on older daemons.
  */
 #ifndef SYSMON_PLUGIN_H
 #define SYSMON_PLUGIN_H
 
-#define SYSMON_PLUGIN_ABI 1
+#define SYSMON_PLUGIN_ABI 2
 
 enum {
     SYSMON_LOG_ERR,
@@ -34,6 +38,8 @@ typedef struct sysmon_host {
     void (*set_help)(const char *name, const char *help);
     void (*log)(int level, const char *fmt, ...)
         __attribute__((format(printf, 2, 3)));
+    /* ABI 2: value of `key` in the [plugin.NAME] section, or NULL */
+    const char *(*option)(const char *plugin, const char *key);
 } sysmon_host_t;
 
 typedef struct sysmon_plugin {
