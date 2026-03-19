@@ -20,6 +20,7 @@ typedef struct times {
 static const sysmon_host_t *H;
 static times_t prev[MAX_CPUS + 1]; /* [0] is the aggregate */
 static int ncpu;
+static int per_core = 1;
 static unsigned long long cur_ctxt, cur_intr, prev_ctxt, prev_intr;
 static double prev_t;
 
@@ -114,6 +115,9 @@ static int read_times(times_t *cur)
 static int cpustat_init(const sysmon_host_t *host)
 {
     H = host;
+    const char *v = H->abi >= 2 ? H->option("cpustat", "per_core") : NULL;
+    if (v && (strcmp(v, "no") == 0 || strcmp(v, "false") == 0 || strcmp(v, "0") == 0))
+        per_core = 0;
     ncpu = read_times(prev);
     if (ncpu <= 0) {
         H->log(SYSMON_LOG_WARN, "cpustat: cannot read cpu times");
@@ -149,7 +153,7 @@ static int cpustat_collect(void)
     }
 
     char name[64];
-    for (int i = 1; i <= n; i++) {
+    for (int i = 1; per_core && i <= n; i++) {
         if (total(&cur[i]) <= total(&prev[i]))
             continue;
         snprintf(name, sizeof name, "cpu%d_usage_percent", i - 1);
