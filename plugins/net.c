@@ -16,6 +16,25 @@
 static const sysmon_host_t *H;
 static unsigned long long prev_rx, prev_tx;
 static double prev_t;
+static char only[256];
+
+/* is `name` in the comma separated list `only`? An empty list means all. */
+static int wanted(const char *name)
+{
+    size_t n = strlen(name);
+
+    if (!only[0])
+        return 1;
+    for (const char *p = only; *p;) {
+        while (*p == ' ' || *p == ',')
+            p++;
+        size_t len = strcspn(p, ", ");
+        if (len == n && strncmp(p, name, n) == 0)
+            return 1;
+        p += len;
+    }
+    return 0;
+}
 
 static double now(void)
 {
@@ -35,6 +54,8 @@ static int read_counters(unsigned long long *rx, unsigned long long *tx)
         if (!i->ifa_addr || i->ifa_addr->sa_family != AF_LINK || !i->ifa_data)
             continue;
         if (i->ifa_flags & IFF_LOOPBACK)
+            continue;
+        if (!wanted(i->ifa_name))
             continue;
         const struct if_data *d = i->ifa_data;
         *rx += d->ifi_ibytes;
@@ -61,6 +82,8 @@ static int read_counters(unsigned long long *rx, unsigned long long *tx)
             name++;
         if (strcmp(name, "lo") == 0)
             continue;
+        if (!wanted(name))
+            continue;
         unsigned long long r, t, skip[7];
         if (sscanf(colon + 1, "%llu %llu %llu %llu %llu %llu %llu %llu %llu",
                    &r, &skip[0], &skip[1], &skip[2], &skip[3], &skip[4], &skip[5],
@@ -77,6 +100,9 @@ static int read_counters(unsigned long long *rx, unsigned long long *tx)
 static int net_init(const sysmon_host_t *host)
 {
     H = host;
+    const char *v = H->abi >= 2 ? H->option("net", "interfaces") : NULL;
+    if (v)
+        snprintf(only, sizeof only, "%s", v);
     if (read_counters(&prev_rx, &prev_tx) < 0) {
         H->log(SYSMON_LOG_WARN, "net: interface counters not available");
         return -1;
