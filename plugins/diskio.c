@@ -19,6 +19,25 @@ typedef struct disk {
 static const sysmon_host_t *H;
 static disk_t devs[MAX_DEVS];
 static int ndevs;
+static char only[256];
+
+/* is `name` in the comma separated list `only`? An empty list means all. */
+static int wanted(const char *name)
+{
+    size_t n = strlen(name);
+
+    if (!only[0])
+        return 1;
+    for (const char *p = only; *p;) {
+        while (*p == ' ' || *p == ',')
+            p++;
+        size_t len = strcspn(p, ", ");
+        if (len == n && strncmp(p, name, n) == 0)
+            return 1;
+        p += len;
+    }
+    return 0;
+}
 static double prev_t;
 
 static double now(void)
@@ -64,6 +83,8 @@ static int read_stats(disk_t *out, int max)
             continue;
         if (ignored(d.name))
             continue;
+        if (!wanted(d.name))
+            continue;
         out[n++] = d;
     }
     fclose(f);
@@ -95,6 +116,9 @@ static void metric(const char *dev, const char *what, double v)
 static int diskio_init(const sysmon_host_t *host)
 {
     H = host;
+    const char *v = H->abi >= 2 ? H->option("diskio", "devices") : NULL;
+    if (v)
+        snprintf(only, sizeof only, "%s", v);
     ndevs = read_stats(devs, MAX_DEVS);
     if (ndevs < 0) {
         H->log(SYSMON_LOG_WARN, "diskio: /proc/diskstats not available");
