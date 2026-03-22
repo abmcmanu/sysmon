@@ -68,6 +68,7 @@ TESTS += $(BUILD)/tests/test_json
 TESTS += $(BUILD)/tests/test_metrics
 TESTS += $(BUILD)/tests/test_disk
 TESTS += $(BUILD)/tests/test_http
+TESTS += $(BUILD)/tests/test_plugins
 
 all: $(BUILD)/sysmond $(BUILD)/sysmonctl plugins
 
@@ -100,8 +101,14 @@ $(BUILD)/tests/%: tests/%.c $(LIB_OBJ)
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(LDFLAGS) -Itests -o $@ $^ $(LDLIBS)
 
-test: $(TESTS)
-	@for t in $(TESTS); do $$t || exit 1; done
+TEST_PLUGINS = $(BUILD)/tests/plugin_test.so
+
+$(BUILD)/tests/%.so: tests/%.c include/sysmon/plugin.h
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -fPIC -shared -o $@ $< $(LDFLAGS)
+
+test: $(TESTS) $(TEST_PLUGINS)
+	@for t in $(TESTS); do $$t $(BUILD)/tests || exit 1; done
 
 smoke: all
 	BUILD=$(BUILD) sh tests/smoke.sh
