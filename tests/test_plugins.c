@@ -14,6 +14,7 @@ int main(int argc, char **argv)
     config_defaults(&cfg);
     snprintf(cfg.plugin_dir, sizeof cfg.plugin_dir, "%s", argc > 1 ? argv[1] : "build/tests");
     snprintf(cfg.plugins[cfg.nplugins++], sizeof cfg.plugins[0], "plugin_test");
+    snprintf(cfg.plugins[cfg.nplugins++], sizeof cfg.plugins[0], "plugin_bad");
     snprintf(cfg.plugins[cfg.nplugins++], sizeof cfg.plugins[0], "does_not_exist");
     snprintf(cfg.opts[0].plugin, sizeof cfg.opts[0].plugin, "plugin_test");
     snprintf(cfg.opts[0].key, sizeof cfg.opts[0].key, "value");

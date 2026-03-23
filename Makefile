@@ -102,6 +102,7 @@ $(BUILD)/tests/%: tests/%.c $(LIB_OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -Itests -o $@ $^ $(LDLIBS)
 
 TEST_PLUGINS = $(BUILD)/tests/plugin_test.so
+TEST_PLUGINS += $(BUILD)/tests/plugin_bad.so
 
 $(BUILD)/tests/%.so: tests/%.c include/sysmon/plugin.h
 	@mkdir -p $(@D)
