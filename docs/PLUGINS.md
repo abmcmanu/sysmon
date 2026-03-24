@@ -55,6 +55,36 @@ and enable it:
   `_seconds`, `_percent`).
 * Do not call `exit()`, install signal handlers or spawn threads.
 
+## Options (ABI 2)
+
+A `[plugin.NAME]` section passes settings to a plugin:
+
+```ini
+[plugin.hello]
+greeting = salut
+```
+
+```c
+static int hello_init(const sysmon_host_t *host)
+{
+    H = host;
+    const char *g = H->abi >= 2 ? H->option("hello", "greeting") : NULL;
+    ...
+}
+```
+
+Check `host->abi` first: the same plugin then still loads in a 3.x
+daemon, which has no `option()`. The daemon loads plugins built for
+ABI 1 and 2.
+
+Options of the bundled plugins:
+
+| plugin | key | |
+|---|---|---|
+| `cpustat` | `per_core` | `no` to skip the `cpuN_usage_percent` metrics on big machines |
+| `net` | `interfaces` | comma-separated list of interfaces to sum, default all but loopback |
+| `diskio` | `devices` | comma-separated list of devices, default all whole disks |
+
 ## Bundled plugins
 
 | plugin | metrics | platforms |
