@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <math.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,31 +21,37 @@
 
 int http_open(const char *bind_addr, int port)
 {
-    struct sockaddr_in addr;
+    struct addrinfo hints, *res;
+    char service[8];
     int one = 1;
 
-    memset(&addr, 0, sizeof addr);
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons((unsigned short)port);
-    if (inet_pton(AF_INET, bind_addr, &addr.sin_addr) != 1) {
-        log_err("http: invalid bind address '%s'", bind_addr);
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE | AI_NUMERICHOST | AI_NUMERICSERV;
+    snprintf(service, sizeof service, "%d", port);
+    int rc = getaddrinfo(bind_addr, service, &hints, &res);
+    if (rc != 0) {
+        log_err("http: invalid bind address '%s': %s", bind_addr, gai_strerror(rc));
         return -1;
     }
-
-    int fd = socket(AF_INET, SOCK_STREAM, 0);
+    int fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (fd < 0) {
         log_err("http: socket: %s", strerror(errno));
+        freeaddrinfo(res);
         return -1;
     }
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof one);
-    if (bind(fd, (struct sockaddr *)&addr, sizeof addr) < 0 || listen(fd, 16) < 0) {
-        log_err("http: %s:%d: %s", bind_addr, port, strerror(errno));
+    if (bind(fd, res->ai_addr, res->ai_addrlen) < 0 || listen(fd, 16) < 0) {
+        log_err("http: [%s]:%d: %s", bind_addr, port, strerror(errno));
         close(fd);
+        freeaddrinfo(res);
         return -1;
     }
+    freeaddrinfo(res);
     fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
     fcntl(fd, F_SETFD, FD_CLOEXEC);
-    log_info("http: listening on %s:%d", bind_addr, port);
+    log_info("http: listening on [%s]:%d", bind_addr, port);
     return fd;
 }
 
