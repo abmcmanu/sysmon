@@ -42,6 +42,10 @@ int http_open(const char *bind_addr, int port)
         return -1;
     }
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof one);
+    if (res->ai_family == AF_INET6) {
+        int off = 0; /* "::" also accepts IPv4 clients */
+        setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, &off, sizeof off);
+    }
     if (bind(fd, res->ai_addr, res->ai_addrlen) < 0 || listen(fd, 16) < 0) {
         log_err("http: [%s]:%d: %s", bind_addr, port, strerror(errno));
         close(fd);
