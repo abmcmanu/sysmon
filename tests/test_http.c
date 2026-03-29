@@ -41,6 +41,8 @@ int main(void)
     lfd = http_open("127.0.0.1", 0);
     CHECK(lfd >= 0);
     getsockname(lfd, (struct sockaddr *)&addr, &alen);
+    CHECK(http_open("not-an-address", 0) < 0);
+    CHECK(http_open("999.1.1.1", 0) < 0);
     metrics_set("load1", 0.5);
 
     CHECK(strncmp(get("GET /nope HTTP/1.0\r\n\r\n"), "HTTP/1.0 404", 12) == 0);
