@@ -47,8 +47,18 @@ int alert_parse(const char *rule, alert_t *a)
         rest++;
     if (*rest) {
         int ticks;
-        char extra;
-        if (sscanf(rest, "for %d %c", &ticks, &extra) != 1 || ticks < 1)
+        int used = 0;
+        if (sscanf(rest, "for %d%n", &ticks, &used) != 1 || ticks < 1)
+            return -1;
+        rest += used;
+        int mult = *rest == 's' ? 1 : *rest == 'm' ? 60 : *rest == 'h' ? 3600 : 0;
+        if (mult) {
+            a->for_seconds = ticks * mult;
+            rest++;
+        }
+        while (isspace((unsigned char)*rest))
+            rest++;
+        if (*rest)
             return -1;
         a->for_ticks = ticks;
     }
