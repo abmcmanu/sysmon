@@ -22,6 +22,7 @@ typedef struct alert {
     int op;
     double threshold;
     int for_ticks;
+    int for_seconds; /* "for 30s": converted to ticks with the interval */
     int count;     /* consecutive samples matching */
     int firing;
     time_t since;  /* last state change */
