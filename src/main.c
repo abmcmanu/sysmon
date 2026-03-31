@@ -215,6 +215,7 @@ static void reload(config_t *cfg, const char *path)
         log_warn("reload: %s has errors, keeping the current configuration", path);
         return;
     }
+    alerts_set_interval(fresh.interval);
     if (alerts_load(fresh.alerts, fresh.nalerts, fresh.alert_exec) < 0) {
         log_warn("reload: invalid alert rules, keeping the current configuration");
         return;
@@ -327,6 +328,7 @@ int main(int argc, char **argv)
 
     if (collect_init() < 0)
         return 1;
+    alerts_set_interval(cfg.interval);
     if (alerts_load(cfg.alerts, cfg.nalerts, cfg.alert_exec) < 0)
         return 1;
 
