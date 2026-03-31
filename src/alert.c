@@ -16,6 +16,18 @@
 
 static alert_t alerts[ALERTS_MAX];
 static int nalerts;
+static int interval = 1;
+
+void alerts_set_interval(int seconds)
+{
+    interval = seconds > 0 ? seconds : 1;
+}
+
+int alert_ticks(int seconds, int every)
+{
+    int t = (seconds + every - 1) / every;
+    return t > 0 ? t : 1;
+}
 static char hook[256];
 
 int alert_parse(const char *rule, alert_t *a)
@@ -111,6 +123,8 @@ int alerts_load(char rules[][256], int n, const char *exec_path)
             log_err("alerts: cannot parse rule '%s'", rules[i]);
             return -1;
         }
+        if (parsed[count].for_seconds)
+            parsed[count].for_ticks = alert_ticks(parsed[count].for_seconds, interval);
         /* keep the state of rules that survive a reload */
         for (int j = 0; j < nalerts; j++) {
             if (strcmp(alerts[j].rule, parsed[count].rule) == 0) {

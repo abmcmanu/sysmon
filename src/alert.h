@@ -36,6 +36,9 @@ int alert_update(alert_t *a, double value);
 
 int alerts_load(char rules[][256], int n, const char *exec_path);
 void alerts_eval(void);
+/* sampling interval, used to turn "for 30s" into a number of samples */
+void alerts_set_interval(int seconds);
+int alert_ticks(int seconds, int interval);
 int alerts_firing(void);
 void alerts_dump(sb_t *out);
 
