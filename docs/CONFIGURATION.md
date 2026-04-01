@@ -81,6 +81,8 @@ include = sysmond.d/*.conf
 
 `OP` is one of `>`, `>=`, `<`, `<=`. `for N` requires N consecutive
 samples before firing.
+`for 30s`, `for 5m` give the same as a duration, rounded up to whole
+samples.
 
 ## Reloading
 
