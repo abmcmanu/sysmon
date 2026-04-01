@@ -20,6 +20,13 @@ int main(void)
     CHECK(alert_parse("load1 > 1 for", &a) < 0);
     CHECK(alert_parse("load1 > 1 for 0", &a) < 0);
     CHECK(alert_parse("load1 > 1 for 2 minutes", &a) < 0);
+    CHECK(alert_parse("load1 > 1 for 30s", &a) == 0 && a.for_seconds == 30);
+    CHECK(alert_parse("load1 > 1 for 5m", &a) == 0 && a.for_seconds == 300);
+    CHECK(alert_parse("load1 > 1 for 3 ", &a) == 0 && a.for_seconds == 0 && a.for_ticks == 3);
+    CHECK(alert_parse("load1 > 1 for 5x", &a) < 0);
+    CHECK(alert_ticks(30, 5) == 6);
+    CHECK(alert_ticks(31, 5) == 7);
+    CHECK(alert_ticks(1, 60) == 1);
 
     /* state machine: fires after 3 consecutive hits, resolves on the first miss */
     CHECK(alert_parse("x > 10 for 3", &a) == 0);
