@@ -2,6 +2,13 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 4.0.0 - 2026-04-02
+
+- Plugin ABI 2: `[plugin.NAME]` options passed to plugins. ABI 1 plugins keep working.
+- `cpustat per_core`, `net interfaces`, `diskio devices` options.
+- HTTP listener on IPv6 addresses.
+- Alert rules accept durations: `for 30s`, `for 5m`.
+
 ## 3.3.0 - 2026-03-15
 
 - Web dashboard at `/` (`[http] port`).
