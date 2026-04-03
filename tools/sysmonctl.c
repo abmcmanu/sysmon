@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "sb.h"
@@ -22,7 +23,7 @@
 static void usage(FILE *out)
 {
     fprintf(out,
-            "usage: sysmonctl [-s SOCKET] COMMAND [ARGS...]\n"
+            "usage: sysmonctl [-s SOCKET] [-w SEC] COMMAND [ARGS...]\n"
             "\n"
             "commands:\n"
             "  ping                   check that sysmond is alive\n"
@@ -43,15 +44,23 @@ int main(int argc, char **argv)
 {
     const char *sock = DEFAULT_SOCKET;
     int opt;
+    double watch = 0;
     const char *env = getenv("SYSMON_SOCKET");
 
     if (env && *env)
         sock = env;
 
-    while ((opt = getopt(argc, argv, "+s:hV")) != -1) {
+    while ((opt = getopt(argc, argv, "+s:w:hV")) != -1) {
         switch (opt) {
         case 's':
             sock = optarg;
+            break;
+        case 'w':
+            watch = atof(optarg);
+            if (watch < 0.1) {
+                fprintf(stderr, "sysmonctl: -w needs at least 0.1 seconds\n");
+                return 2;
+            }
             break;
         case 'V':
             printf("sysmonctl %s\n", SYSMON_VERSION);
@@ -81,6 +90,20 @@ int main(int argc, char **argv)
         if (i > optind)
             sb_puts(&cmd, " ");
         sb_puts(&cmd, argv[i]);
+    }
+
+    while (watch > 0) {
+        sb_reset(&out);
+        if (ctl_query(sock, cmd.data, &out) < 0) {
+            fprintf(stderr, "sysmonctl: cannot reach sysmond at %s: %s\n", sock, strerror(errno));
+            return 1;
+        }
+        fputs("\033[H\033[2J", stdout);
+        if (out.len)
+            fwrite(out.data, 1, out.len, stdout);
+        fflush(stdout);
+        struct timespec ts_sleep = { (time_t)watch, (long)((watch - (double)(time_t)watch) * 1e9) };
+        nanosleep(&ts_sleep, NULL);
     }
 
     if (ctl_query(sock, cmd.data, &out) < 0) {
