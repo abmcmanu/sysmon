@@ -99,6 +99,10 @@ int main(int argc, char **argv)
             return 1;
         }
         fputs("\033[H\033[2J", stdout);
+        char ts[16];
+        time_t t = time(NULL);
+        strftime(ts, sizeof ts, "%H:%M:%S", localtime(&t));
+        printf("every %gs: %s%*s\n\n", watch, cmd.data, 20, ts);
         if (out.len)
             fwrite(out.data, 1, out.len, stdout);
         fflush(stdout);
