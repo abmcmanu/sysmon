@@ -37,6 +37,7 @@ static void usage(FILE *out)
             "  reload                 re-read the configuration file\n"
             "  top [SEC]              interactive dashboard\n"
             "\n"
+            "-w SEC repeats the command every SEC seconds, like watch(1).\n"
             "SOCKET defaults to $SYSMON_SOCKET, then " DEFAULT_SOCKET ".\n");
 }
 
