@@ -51,6 +51,7 @@ sysmonctl list 'disk_*'                 # filter with a glob
 sysmonctl json                          # everything, machine-readable
 sysmonctl alerts                        # rule states
 sysmonctl reload                        # same as kill -HUP
+sysmonctl -w 2 list 'cpu*'              # refresh every 2 s, like watch(1)
 ```
 
 No client needed if you prefer: `printf 'get load1\n' | nc -U /tmp/sysmond.sock`.
