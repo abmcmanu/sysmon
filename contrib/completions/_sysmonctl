@@ -1,0 +1,33 @@
+#compdef sysmonctl
+# zsh completion: put this file in a directory of your $fpath
+
+_sysmonctl() {
+    local -a commands
+    commands=(
+        'ping:check that sysmond is alive'
+        'version:daemon version'
+        'help:list the commands'
+        'list:metrics and their values'
+        'get:one metric'
+        'history:last N samples of a metric'
+        'avg:average of the last N samples'
+        'stats:min, max, avg, p50, p95'
+        'json:all metrics as JSON'
+        'alerts:alert rules and their state'
+        'reload:re-read the configuration'
+        'top:interactive dashboard'
+    )
+    _arguments -C \
+        '-s[control socket]:socket:_files' \
+        '-w[repeat every SEC seconds]:seconds:' \
+        '-h[help]' \
+        '-V[version]' \
+        '1:command:->command' \
+        '*::argument:->argument'
+
+    case $state in
+        command) _describe 'command' commands ;;
+    esac
+}
+
+_sysmonctl "$@"
