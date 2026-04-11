@@ -1,6 +1,12 @@
 #compdef sysmonctl
 # zsh completion: put this file in a directory of your $fpath
 
+_sysmonctl_metrics() {
+    local -a metrics
+    metrics=(${(f)"$(sysmonctl list 2> /dev/null | cut -d' ' -f1)"})
+    _describe 'metric' metrics
+}
+
 _sysmonctl() {
     local -a commands
     commands=(
@@ -27,6 +33,11 @@ _sysmonctl() {
 
     case $state in
         command) _describe 'command' commands ;;
+        argument)
+            case $words[1] in
+                get | history | avg | stats) _sysmonctl_metrics ;;
+            esac
+            ;;
     esac
 }
 
