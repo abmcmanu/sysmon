@@ -123,11 +123,22 @@ install: all
 	install -m 644 $(PLUGINS) $(DESTDIR)$(PREFIX)/lib/sysmon/plugins/
 	install -d $(DESTDIR)$(PREFIX)/share/man/man8
 	install -m 644 docs/sysmond.8 $(DESTDIR)$(PREFIX)/share/man/man8/
+	install -d $(DESTDIR)$(PREFIX)/share/bash-completion/completions \
+	    $(DESTDIR)$(PREFIX)/share/zsh/site-functions \
+	    $(DESTDIR)$(PREFIX)/share/fish/vendor_completions.d
+	install -m 644 contrib/completions/sysmonctl.bash \
+	    $(DESTDIR)$(PREFIX)/share/bash-completion/completions/sysmonctl
+	install -m 644 contrib/completions/_sysmonctl $(DESTDIR)$(PREFIX)/share/zsh/site-functions/
+	install -m 644 contrib/completions/sysmonctl.fish \
+	    $(DESTDIR)$(PREFIX)/share/fish/vendor_completions.d/
 
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/sysmond $(DESTDIR)$(PREFIX)/bin/sysmonctl
 	rm -rf $(DESTDIR)$(PREFIX)/lib/sysmon
 	rm -f $(DESTDIR)$(PREFIX)/share/man/man8/sysmond.8
+	rm -f $(DESTDIR)$(PREFIX)/share/bash-completion/completions/sysmonctl \
+	    $(DESTDIR)$(PREFIX)/share/zsh/site-functions/_sysmonctl \
+	    $(DESTDIR)$(PREFIX)/share/fish/vendor_completions.d/sysmonctl.fish
 
 clean:
 	rm -rf $(BUILD) build-asan
