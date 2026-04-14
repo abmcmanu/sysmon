@@ -54,6 +54,10 @@ sysmonctl reload                        # same as kill -HUP
 sysmonctl -w 2 list 'cpu*'              # refresh every 2 s, like watch(1)
 ```
 
+Shell completions for bash, zsh and fish are in
+[`contrib/completions/`](contrib/completions/) and installed by
+`make install`; they complete metric names too.
+
 No client needed if you prefer: `printf 'get load1\n' | nc -U /tmp/sysmond.sock`.
 The protocol is in [docs/PROTOCOL.md](docs/PROTOCOL.md).
 
