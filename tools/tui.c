@@ -43,6 +43,7 @@ static struct termios saved_tio;
 static int raw_mode;
 static volatile sig_atomic_t quit;
 static volatile sig_atomic_t resized;
+static int show_help;
 
 static void on_signal(int sig)
 {
@@ -210,6 +211,7 @@ static void render(const char *sock, int interval_ms, int connected)
     sb_puts(&o, "\033[H\033[2J");
     sb_printf(&o, BOLD "sysmon top" RESET "  %s  %s  every %.1fs  " DIM "q quit"
                   "  +/- speed"
+                  "  h help"
                   RESET "\n\n",
               host, ts, interval_ms / 1000.0);
     used += 2;
@@ -301,6 +303,18 @@ static void render(const char *sock, int interval_ms, int connected)
         used += 2;
     }
 
+    if (show_help) {
+        sb_puts(&o, "\n  " BOLD "keys" RESET "\n"
+                    "  q        quit\n"
+                    "  h ?      show / hide this help\n"
+                    "  + -      faster / slower refresh\n"
+        );
+        fwrite(o.data, 1, o.len, stdout);
+        fflush(stdout);
+        sb_free(&o);
+        return;
+    }
+
     /* everything else, in as many columns as fit */
     sb_puts(&o, "\n  " DIM "all metrics" RESET "\n");
     used += 2;
@@ -353,6 +367,8 @@ int tui_run(const char *sock, int interval_ms)
             if (read(STDIN_FILENO, &c, 1) == 1) {
                 if (c == 'q' || c == 'Q')
                     break;
+                if (c == 'h' || c == '?')
+                    show_help = !show_help;
                 if (c == '+' && interval_ms > 250)
                     interval_ms /= 2;
                 if (c == '-' && interval_ms < 10000)
