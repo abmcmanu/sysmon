@@ -44,6 +44,7 @@ static int raw_mode;
 static volatile sig_atomic_t quit;
 static volatile sig_atomic_t resized;
 static int show_help;
+static int paused;
 
 static void on_signal(int sig)
 {
@@ -215,6 +216,10 @@ static void render(const char *sock, int interval_ms, int connected)
                   RESET "\n\n",
               host, ts, interval_ms / 1000.0);
     used += 2;
+    if (paused) {
+        sb_puts(&o, YELLOW "  paused, space to resume" RESET "\n");
+        used++;
+    }
 
     if (!connected) {
         sb_printf(&o, RED "  cannot reach sysmond at %s, retrying..." RESET "\n", sock);
@@ -307,6 +312,7 @@ static void render(const char *sock, int interval_ms, int connected)
         sb_puts(&o, "\n  " BOLD "keys" RESET "\n"
                     "  q        quit\n"
                     "  h ?      show / hide this help\n"
+                    "  space    pause / resume\n"
                     "  + -      faster / slower refresh\n"
         );
         fwrite(o.data, 1, o.len, stdout);
@@ -369,13 +375,16 @@ int tui_run(const char *sock, int interval_ms)
                     break;
                 if (c == 'h' || c == '?')
                     show_help = !show_help;
+                if (c == ' ')
+                    paused = !paused;
                 if (c == '+' && interval_ms > 250)
                     interval_ms /= 2;
                 if (c == '-' && interval_ms < 10000)
                     interval_ms *= 2;
             }
         }
-        connected = fetch(sock) == 0;
+        if (!paused)
+            connected = fetch(sock) == 0;
     }
     term_restore();
     return 0;
