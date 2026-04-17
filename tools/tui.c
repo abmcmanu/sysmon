@@ -98,6 +98,11 @@ static void term_size(int *rows, int *cols)
     }
 }
 
+static int cmp_kv(const void *a, const void *b)
+{
+    return strcmp(((const kv_t *)a)->name, ((const kv_t *)b)->name);
+}
+
 static int fetch(const char *sock)
 {
     sb_t out;
@@ -114,6 +119,7 @@ static int fetch(const char *sock)
             nkv++;
     }
     sb_free(&out);
+    qsort(kv, (size_t)nkv, sizeof kv[0], cmp_kv);
     return 0;
 }
 
