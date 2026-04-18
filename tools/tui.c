@@ -5,6 +5,7 @@
  * build anywhere sysmond builds (see docs/adr/0006-tui-without-ncurses.md).
  * The screen is redrawn in one write() per refresh to avoid flicker.
  */
+#include <ctype.h>
 #include <errno.h>
 #include <math.h>
 #include <poll.h>
@@ -45,6 +46,7 @@ static volatile sig_atomic_t quit;
 static volatile sig_atomic_t resized;
 static int show_help;
 static int paused;
+static int no_color;
 
 static void on_signal(int sig)
 {
@@ -96,6 +98,29 @@ static void term_size(int *rows, int *cols)
         *rows = 24;
         *cols = 80;
     }
+}
+
+/* NO_COLOR (https://no-color.org): drop SGR sequences, keep cursor control */
+static void emit(sb_t *o)
+{
+    if (no_color && o->data) {
+        size_t j = 0;
+        for (size_t i = 0; i < o->len; i++) {
+            if (o->data[i] == '\033' && i + 1 < o->len && o->data[i + 1] == '[') {
+                size_t k = i + 2;
+                while (k < o->len && (isdigit((unsigned char)o->data[k]) || o->data[k] == ';'))
+                    k++;
+                if (k < o->len && o->data[k] == 'm') {
+                    i = k;
+                    continue;
+                }
+            }
+            o->data[j++] = o->data[i];
+        }
+        o->len = j;
+    }
+    fwrite(o->data, 1, o->len, stdout);
+    fflush(stdout);
 }
 
 static int cmp_kv(const void *a, const void *b)
@@ -229,8 +254,7 @@ static void render(const char *sock, int interval_ms, int connected)
 
     if (!connected) {
         sb_printf(&o, RED "  cannot reach sysmond at %s, retrying..." RESET "\n", sock);
-        fwrite(o.data, 1, o.len, stdout);
-        fflush(stdout);
+        emit(&o);
         sb_free(&o);
         return;
     }
@@ -321,8 +345,7 @@ static void render(const char *sock, int interval_ms, int connected)
                     "  space    pause / resume\n"
                     "  + -      faster / slower refresh\n"
         );
-        fwrite(o.data, 1, o.len, stdout);
-        fflush(stdout);
+        emit(&o);
         sb_free(&o);
         return;
     }
@@ -340,8 +363,7 @@ static void render(const char *sock, int interval_ms, int connected)
             sb_puts(&o, "\n");
     }
 
-    fwrite(o.data, 1, o.len, stdout);
-    fflush(stdout);
+    emit(&o);
     sb_free(&o);
 }
 
@@ -353,6 +375,8 @@ int tui_run(const char *sock, int interval_ms)
         fprintf(stderr, "sysmonctl: cannot reach sysmond at %s: %s\n", sock, strerror(errno));
         return -1;
     }
+    const char *nc = getenv("NO_COLOR");
+    no_color = nc && *nc;
     if (term_raw() < 0)
         return -1;
 
