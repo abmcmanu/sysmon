@@ -47,6 +47,8 @@ static volatile sig_atomic_t resized;
 static int show_help;
 static int paused;
 static int no_color;
+static char filter[64];
+static int typing;
 
 static void on_signal(int sig)
 {
@@ -344,6 +346,7 @@ static void render(const char *sock, int interval_ms, int connected)
                     "  h ?      show / hide this help\n"
                     "  space    pause / resume\n"
                     "  + -      faster / slower refresh\n"
+                    "  /        filter metrics, Enter to keep, Esc to clear\n"
         );
         emit(&o);
         sb_free(&o);
@@ -351,17 +354,27 @@ static void render(const char *sock, int interval_ms, int connected)
     }
 
     /* everything else, in as many columns as fit */
-    sb_puts(&o, "\n  " DIM "all metrics" RESET "\n");
+    if (typing)
+        sb_printf(&o, "\n  filter: %s\u2588\n", filter);
+    else if (filter[0])
+        sb_printf(&o, "\n  " DIM "metrics matching" RESET " %s\n", filter);
+    else
+        sb_puts(&o, "\n  " DIM "all metrics" RESET "\n");
     used += 2;
     int colw = 46, ncol = (cols - 2) / colw;
     if (ncol < 1)
         ncol = 1;
     int room = (rows - used - 1) * ncol;
-    for (int i = 0; i < nkv && i < room; i++) {
+    int shown = 0;
+    for (int i = 0; i < nkv && shown < room; i++) {
+        if (filter[0] && !strstr(kv[i].name, filter))
+            continue;
         sb_printf(&o, "  %-30.30s %12.4g", kv[i].name, kv[i].value);
-        if ((i + 1) % ncol == 0 || i + 1 == nkv || i + 1 == room)
+        if (++shown % ncol == 0)
             sb_puts(&o, "\n");
     }
+    if (shown % ncol)
+        sb_puts(&o, "\n");
 
     emit(&o);
     sb_free(&o);
@@ -401,6 +414,26 @@ int tui_run(const char *sock, int interval_ms)
         if (n > 0) {
             char c;
             if (read(STDIN_FILENO, &c, 1) == 1) {
+                size_t l = strlen(filter);
+                if (typing) {
+                    if (c == '\r' || c == '\n')
+                        typing = 0;
+                    else if (c == 27) {
+                        typing = 0;
+                        filter[0] = '\0';
+                    } else if ((c == 127 || c == 8) && l)
+                        filter[l - 1] = '\0';
+                    else if (c >= 32 && c < 127 && l + 1 < sizeof filter) {
+                        filter[l] = c;
+                        filter[l + 1] = '\0';
+                    }
+                    continue;
+                }
+                if (c == '/') {
+                    typing = 1;
+                    filter[0] = '\0';
+                    continue;
+                }
                 if (c == 'q' || c == 'Q')
                     break;
                 if (c == 'h' || c == '?')
