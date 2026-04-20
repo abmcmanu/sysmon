@@ -49,6 +49,7 @@ static int paused;
 static int no_color;
 static char filter[64];
 static int typing;
+static char daemon_version[32];
 
 static void on_signal(int sig)
 {
@@ -249,6 +250,10 @@ static void render(const char *sock, int interval_ms, int connected)
                   RESET "\n\n",
               host, ts, interval_ms / 1000.0);
     used += 2;
+    if (daemon_version[0]) {
+        sb_printf(&o, DIM "  %s" RESET "\n", daemon_version);
+        used++;
+    }
     if (paused) {
         sb_puts(&o, YELLOW "  paused, space to resume" RESET "\n");
         used++;
@@ -390,6 +395,13 @@ int tui_run(const char *sock, int interval_ms)
     }
     const char *nc = getenv("NO_COLOR");
     no_color = nc && *nc;
+    sb_t v;
+    sb_init(&v);
+    if (ctl_query(sock, "version", &v) == 0 && v.data) {
+        v.data[strcspn(v.data, "\n")] = '\0';
+        snprintf(daemon_version, sizeof daemon_version, "%s", v.data);
+    }
+    sb_free(&v);
     if (term_raw() < 0)
         return -1;
 
