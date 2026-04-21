@@ -58,6 +58,9 @@ Shell completions for bash, zsh and fish are in
 [`contrib/completions/`](contrib/completions/) and installed by
 `make install`; they complete metric names too.
 
+In `sysmonctl top`: `h` for help, `space` to pause, `/` to filter,
+`+`/`-` to change the refresh rate. `NO_COLOR=1` turns colors off.
+
 No client needed if you prefer: `printf 'get load1\n' | nc -U /tmp/sysmond.sock`.
 The protocol is in [docs/PROTOCOL.md](docs/PROTOCOL.md).
 
