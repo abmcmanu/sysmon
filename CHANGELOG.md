@@ -2,6 +2,12 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 4.1.0 - 2026-04-22
+
+- `sysmonctl -w SEC` refreshes a command like watch(1).
+- Shell completions for bash, zsh and fish, installed by `make install`.
+- `top`: help screen, pause, filter, sorted list, `NO_COLOR`.
+
 ## 4.0.0 - 2026-04-02
 
 - Plugin ABI 2: `[plugin.NAME]` options passed to plugins. ABI 1 plugins keep working.
