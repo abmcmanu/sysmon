@@ -114,6 +114,16 @@ test: $(TESTS) $(TEST_PLUGINS)
 smoke: all
 	BUILD=$(BUILD) sh tests/smoke.sh
 
+FUZZ_TARGETS = $(BUILD)-fuzz/fuzz/fuzz_config
+FUZZ_CFLAGS = -g -O1 -std=c11 -fsanitize=fuzzer,address,undefined -Isrc -Iinclude -I$(BUILD)/gen
+
+# needs clang with libFuzzer; see fuzz/run.sh
+fuzz: $(FUZZ_TARGETS)
+
+$(BUILD)-fuzz/fuzz/%: fuzz/%.c $(LIB_SRC) $(BUILD)/gen/web_index.h
+	@mkdir -p $(@D)
+	clang $(FUZZ_CFLAGS) $(filter -D%,$(CFLAGS)) -o $@ $< $(LIB_SRC) $(LDLIBS)
+
 asan:
 	$(MAKE) BUILD=build-asan SANITIZE=1 all test
 
@@ -141,7 +151,7 @@ uninstall:
 	    $(DESTDIR)$(PREFIX)/share/fish/vendor_completions.d/sysmonctl.fish
 
 clean:
-	rm -rf $(BUILD) build-asan
+	rm -rf $(BUILD) build-asan build-fuzz
 
 -include $(shell find $(BUILD) -name '*.d' 2>/dev/null)
 
