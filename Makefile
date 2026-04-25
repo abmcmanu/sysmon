@@ -116,6 +116,7 @@ smoke: all
 
 FUZZ_TARGETS = $(BUILD)-fuzz/fuzz/fuzz_config
 FUZZ_TARGETS += $(BUILD)-fuzz/fuzz/fuzz_command
+FUZZ_TARGETS += $(BUILD)-fuzz/fuzz/fuzz_alert
 FUZZ_CFLAGS = -g -O1 -std=c11 -fsanitize=fuzzer,address,undefined -Isrc -Iinclude -I$(BUILD)/gen
 
 # needs clang with libFuzzer; see fuzz/run.sh
