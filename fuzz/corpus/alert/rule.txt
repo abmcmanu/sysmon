@@ -1,0 +1,1 @@
+cpu_usage_percent >= 90.5 for 5m
