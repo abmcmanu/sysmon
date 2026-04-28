@@ -126,6 +126,13 @@ $(BUILD)-fuzz/fuzz/%: fuzz/%.c $(LIB_SRC) $(BUILD)/gen/web_index.h
 	@mkdir -p $(@D)
 	clang $(FUZZ_CFLAGS) $(filter -D%,$(CFLAGS)) -o $@ $< $(LIB_SRC) $(LDLIBS)
 
+$(BUILD)/bench/bench: bench/bench.c $(LIB_OBJ)
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+bench: $(BUILD)/bench/bench
+	$(BUILD)/bench/bench
+
 asan:
 	$(MAKE) BUILD=build-asan SANITIZE=1 all test
 
