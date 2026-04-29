@@ -33,5 +33,12 @@ int main(void)
 {
     log_set_level(-1);
     BENCH("ring_push", 50000000L, ring_push(&r, (double)i_));
+
+    char name[32];
+    for (int i = 0; i < 200; i++) {
+        snprintf(name, sizeof name, "metric_%d", i);
+        metrics_set(name, i);
+    }
+    BENCH("metrics_set (200 metrics)", 5000000L, metrics_set("metric_199", (double)i_));
     return 0;
 }
