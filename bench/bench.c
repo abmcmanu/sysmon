@@ -9,6 +9,8 @@
 #include "log.h"
 #include "metrics.h"
 #include "ring.h"
+#include "sb.h"
+#include "server.h"
 
 static double now(void)
 {
@@ -40,5 +42,10 @@ int main(void)
         metrics_set(name, i);
     }
     BENCH("metrics_set (200 metrics)", 5000000L, metrics_set("metric_199", (double)i_));
+
+    sb_t out;
+    sb_init(&out);
+    BENCH("server list (200 metrics)", 20000L, sb_reset(&out); server_exec("list", &out));
+    sb_free(&out);
     return 0;
 }
