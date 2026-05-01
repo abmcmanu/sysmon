@@ -11,6 +11,7 @@
 #include "ring.h"
 #include "sb.h"
 #include "server.h"
+#include "json.h"
 
 static double now(void)
 {
@@ -46,6 +47,7 @@ int main(void)
     sb_t out;
     sb_init(&out);
     BENCH("server list (200 metrics)", 20000L, sb_reset(&out); server_exec("list", &out));
+    BENCH("json_metrics (200 metrics)", 20000L, sb_reset(&out); json_metrics(&out));
     sb_free(&out);
     return 0;
 }
