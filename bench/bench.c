@@ -31,11 +31,14 @@ static double now(void)
     } while (0)
 
 static ring_t r;
+static volatile double sink;
 
 int main(void)
 {
     log_set_level(-1);
     BENCH("ring_push", 50000000L, ring_push(&r, (double)i_));
+    BENCH("ring_avg(300)", 200000L, sink = ring_avg(&r, 300));
+    BENCH("ring_percentile(300)", 20000L, sink = ring_percentile(&r, 300, 95));
 
     char name[32];
     for (int i = 0; i < 200; i++) {
