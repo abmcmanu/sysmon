@@ -131,6 +131,7 @@ see [docs/PLUGINS.md](docs/PLUGINS.md).
 * [Decision records](docs/adr/): why C, why a unix socket, the plugin
   ABI, the poll loop, Prometheus, the TUI without ncurses
 * [Metrics](docs/METRICS.md): names, units, where they come from
+* [Performance](docs/PERFORMANCE.md): footprint and benchmarks
 * [Protocol](docs/PROTOCOL.md) and [plugins](docs/PLUGINS.md)
 * [HTTP endpoints](docs/HTTP.md): Prometheus, JSON API, dashboard
 * `man docs/sysmond.8`
