@@ -26,6 +26,15 @@ jobs:
       - name: smoke test
         run: make smoke
 
+  musl:
+    runs-on: ubuntu-latest
+    container: alpine:3.20
+    steps:
+      - run: apk add --no-cache build-base curl
+      - uses: actions/checkout@v4
+      - run: make WERROR=1
+      - run: make test smoke
+
   sanitizers:
     runs-on: ubuntu-latest
     steps:
