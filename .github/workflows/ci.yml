@@ -10,7 +10,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
+        cc: [gcc, clang]
+        exclude:
+          - os: macos-latest
+            cc: gcc
     runs-on: ${{ matrix.os }}
+    env:
+      CC: ${{ matrix.cc }}
     steps:
       - uses: actions/checkout@v4
       - name: build
