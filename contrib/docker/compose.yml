@@ -1,0 +1,10 @@
+services:
+  sysmond:
+    build: ../..
+    pid: host
+    network_mode: host
+    environment:
+      SYSMON_DISK: /rootfs
+    volumes:
+      - /:/rootfs:ro
+    restart: unless-stopped
