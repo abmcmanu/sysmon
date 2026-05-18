@@ -1,0 +1,17 @@
+{
+  "title": "sysmon",
+  "uid": "sysmon",
+  "schemaVersion": 39,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "CPU",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "percent" } },
+      "targets": [ { "expr": "sysmon_cpu_usage_percent", "legendFormat": "{{instance}}" } ]
+    }
+  ]
+}
