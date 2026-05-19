@@ -13,5 +13,14 @@
       "fieldConfig": { "defaults": { "unit": "percent" } },
       "targets": [ { "expr": "sysmon_cpu_usage_percent", "legendFormat": "{{instance}}" } ]
     }
+,
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Memory",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "percent" } },
+      "targets": [ { "expr": "sysmon_mem_used_percent", "legendFormat": "{{instance}}" } ]
+    }
   ]
 }
