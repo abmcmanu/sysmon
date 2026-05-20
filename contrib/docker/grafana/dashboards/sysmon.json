@@ -22,5 +22,14 @@
       "fieldConfig": { "defaults": { "unit": "percent" } },
       "targets": [ { "expr": "sysmon_mem_used_percent", "legendFormat": "{{instance}}" } ]
     }
+,
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Load",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "targets": [ { "expr": "sysmon_load1", "legendFormat": "{{instance}}" } ]
+    }
   ]
 }
