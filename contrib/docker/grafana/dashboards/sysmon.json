@@ -40,5 +40,14 @@
       "fieldConfig": { "defaults": { "unit": "percent" } },
       "targets": [ { "expr": "sysmon_disk_root_used_percent", "legendFormat": "{{instance}}" } ]
     }
+,
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Network",
+      "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "Bps" } },
+      "targets": [ { "expr": "sysmon_net_rx_bytes_per_second", "legendFormat": "{{instance}}" } ]
+    }
   ]
 }
