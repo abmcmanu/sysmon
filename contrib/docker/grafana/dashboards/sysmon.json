@@ -58,5 +58,14 @@
       "fieldConfig": { "defaults": { "unit": "Bps" } },
       "targets": [ { "expr": "sysmon_disk_read_bytes_per_second", "legendFormat": "{{instance}}" } ]
     }
+,
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Alerts firing",
+      "gridPos": { "x": 0, "y": 24, "w": 24, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "targets": [ { "expr": "sysmon_alerts_firing", "legendFormat": "{{instance}}" } ]
+    }
   ]
 }
