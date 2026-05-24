@@ -16,3 +16,13 @@ Run it against the host, not against its own container:
   [sysmond.conf](sysmond.conf).
 
 Then `curl localhost:9273/metrics`, or open `http://localhost:9273/`.
+
+## With Prometheus and Grafana
+
+[`compose.yml`](compose.yml) starts sysmond, Prometheus scraping it every
+15 seconds and Grafana with a ready-made dashboard:
+
+    docker compose -f contrib/docker/compose.yml up -d
+
+Grafana is on http://localhost:3000 (admin / admin), the dashboard is
+"sysmon".

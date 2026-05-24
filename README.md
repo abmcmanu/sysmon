@@ -35,6 +35,13 @@ make test smoke            # unit + end-to-end tests
 ./build/sysmonctl top
 ```
 
+Or with Docker, see [`contrib/docker/`](contrib/docker/) (includes a
+Prometheus + Grafana compose file):
+
+```sh
+docker build -t sysmon . && docker run --pid=host --network=host sysmon
+```
+
 Linux (glibc or musl) and macOS (Xcode command line tools) are tested in
 CI.
 systemd and launchd are in [`contrib/`](contrib/).
