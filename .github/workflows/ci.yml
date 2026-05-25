@@ -38,6 +38,18 @@ jobs:
       - run: make WERROR=1
       - run: make test smoke
 
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t sysmon .
+      - name: container answers
+        run: |
+          docker run -d --name s -p 9273:9273 sysmon
+          sleep 3
+          curl -fsS localhost:9273/healthz
+          docker exec s sysmonctl -s /tmp/sysmond.sock list | grep -q cpu_usage_percent
+
   sanitizers:
     runs-on: ubuntu-latest
     steps:
