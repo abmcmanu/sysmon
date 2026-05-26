@@ -1,0 +1,9 @@
+# Prometheus alerting rules for sysmon. Load with rule_files: in prometheus.yml.
+groups:
+  - name: sysmon
+    rules:
+      - alert: SysmonDown
+        expr: up{job="sysmon"} == 0
+        for: 2m
+        annotations:
+          summary: "sysmond on {{ $labels.instance }} is not answering"
