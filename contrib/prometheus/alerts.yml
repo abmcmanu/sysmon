@@ -7,3 +7,8 @@ groups:
         for: 2m
         annotations:
           summary: "sysmond on {{ $labels.instance }} is not answering"
+      - alert: HighCpu
+        expr: avg_over_time(sysmon_cpu_usage_percent[10m]) > 90
+        for: 5m
+        annotations:
+          summary: "{{ $labels.instance }}: cpu above 90% for 15 minutes"
