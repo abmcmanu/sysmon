@@ -12,3 +12,8 @@ groups:
         for: 5m
         annotations:
           summary: "{{ $labels.instance }}: cpu above 90% for 15 minutes"
+      - alert: MemoryPressure
+        expr: sysmon_mem_used_percent > 95
+        for: 5m
+        annotations:
+          summary: "{{ $labels.instance }}: memory {{ $value | humanize }}% used"
