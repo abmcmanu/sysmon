@@ -22,3 +22,8 @@ groups:
         for: 30m
         annotations:
           summary: "{{ $labels.instance }}: / will be full within a day"
+      - alert: SysmonAlertFiring
+        expr: sysmon_alerts_firing > 0
+        for: 1m
+        annotations:
+          summary: "{{ $labels.instance }}: {{ $value }} local alert(s), see sysmonctl alerts"
