@@ -1,0 +1,16 @@
+Source: sysmon
+Section: admin
+Priority: optional
+Maintainer: abmcmanu <abmcmanu@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Homepage: https://github.com/abmcmanu/sysmon
+Rules-Requires-Root: no
+
+Package: sysmon
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: small system monitoring daemon
+ sysmond samples cpu, memory, load, disks and plugin metrics, keeps a
+ short history in memory and serves it over a unix socket, a Prometheus
+ endpoint and a small web dashboard. sysmonctl is its client.
