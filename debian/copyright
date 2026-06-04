@@ -1,0 +1,7 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: sysmon
+Source: https://github.com/abmcmanu/sysmon
+
+Files: *
+Copyright: 2013-2026 abmcmanu
+License: MIT
