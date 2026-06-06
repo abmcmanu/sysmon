@@ -1,0 +1,13 @@
+[Unit]
+Description=sysmon system monitoring daemon
+Documentation=man:sysmond(8)
+
+[Service]
+ExecStart=/usr/bin/sysmond -f -c /etc/sysmond.conf
+ExecReload=/bin/kill -HUP $MAINPID
+DynamicUser=yes
+RuntimeDirectory=sysmond
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
