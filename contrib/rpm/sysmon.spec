@@ -6,6 +6,7 @@ License:        MIT
 URL:            https://github.com/abmcmanu/sysmon
 Source0:        %{url}/archive/v%{version}/sysmon-%{version}.tar.gz
 BuildRequires:  gcc make
+BuildRequires:  systemd-rpm-macros
 
 %description
 sysmond samples cpu, memory, load, disks and plugin metrics and serves
@@ -22,7 +23,14 @@ make test
 
 %install
 %make_install PREFIX=%{_prefix}
+install -Dm644 contrib/sysmond.service %{buildroot}%{_unitdir}/sysmond.service
 install -Dm644 contrib/sysmond.conf %{buildroot}%{_sysconfdir}/sysmond.conf
+
+%post
+%systemd_post sysmond.service
+
+%preun
+%systemd_preun sysmond.service
 
 %files
 %license LICENSE
@@ -35,3 +43,4 @@ install -Dm644 contrib/sysmond.conf %{buildroot}%{_sysconfdir}/sysmond.conf
 %{_datadir}/bash-completion/completions/sysmonctl
 %{_datadir}/zsh/site-functions/_sysmonctl
 %{_datadir}/fish/vendor_completions.d/sysmonctl.fish
+%{_unitdir}/sysmond.service
