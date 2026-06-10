@@ -1,0 +1,29 @@
+# Maintainer: abmcmanu <abmcmanu@users.noreply.github.com>
+pkgname=sysmon
+pkgver=4.1.0
+pkgrel=1
+pkgdesc='Small dependency-free system monitoring daemon'
+arch=('x86_64' 'aarch64')
+url='https://github.com/abmcmanu/sysmon'
+license=('MIT')
+backup=('etc/sysmond.conf')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+  cd "$pkgname-$pkgver"
+  make
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  make test
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  make install DESTDIR="$pkgdir" PREFIX=/usr
+  install -Dm644 contrib/sysmond.conf "$pkgdir/etc/sysmond.conf"
+  install -Dm644 contrib/sysmond.service "$pkgdir/usr/lib/systemd/system/sysmond.service"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
