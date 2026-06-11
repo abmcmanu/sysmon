@@ -159,6 +159,13 @@ uninstall:
 	    $(DESTDIR)$(PREFIX)/share/zsh/site-functions/_sysmonctl \
 	    $(DESTDIR)$(PREFIX)/share/fish/vendor_completions.d/sysmonctl.fish
 
+VERSION := $(shell sed -n 's/^#define SYSMON_VERSION "\(.*\)"/\1/p' src/version.h)
+
+# source tarball of HEAD, what the release workflow uploads
+dist:
+	git archive --prefix=sysmon-$(VERSION)/ -o sysmon-$(VERSION).tar.gz HEAD
+	@echo sysmon-$(VERSION).tar.gz
+
 clean:
 	rm -rf $(BUILD) build-asan build-fuzz
 
