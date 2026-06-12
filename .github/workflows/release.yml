@@ -14,7 +14,7 @@ jobs:
       - name: build and test
         run: make WERROR=1 && make test smoke
       - name: source tarball
-        run: git archive --prefix="sysmon-${GITHUB_REF_NAME#v}/" -o "sysmon-${GITHUB_REF_NAME#v}.tar.gz" HEAD
+        run: make dist
       - name: release notes from CHANGELOG.md
         run: awk -v v="${GITHUB_REF_NAME#v}" '$0 ~ "^## " v " " {p=1; next} /^## / {p=0} p' CHANGELOG.md > notes.md
       - uses: softprops/action-gh-release@v2
