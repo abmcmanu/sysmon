@@ -44,6 +44,8 @@ docker build -t sysmon . && docker run --pid=host --network=host sysmon
 
 Linux (glibc or musl) and macOS (Xcode command line tools) are tested in
 CI.
+Packaging for Homebrew, Debian, Fedora and Arch lives in
+[`contrib/`](contrib/) and [`debian/`](debian/).
 systemd and launchd are in [`contrib/`](contrib/).
 
 ## Using it
