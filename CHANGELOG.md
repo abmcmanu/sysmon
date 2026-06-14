@@ -2,6 +2,15 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 4.2.0 - 2026-06-14
+
+- Docker image, and a compose stack with Prometheus and Grafana (dashboard included).
+- Prometheus alerting rules in `contrib/prometheus/alerts.yml`.
+- Packaging for Homebrew, Debian, Fedora and Arch
+- `make dist`.
+- Fuzzing targets (`make fuzz`), micro benchmarks (`make bench`).
+- CI: gcc and clang, musl, CodeQL, release workflow.
+
 ## 4.1.0 - 2026-04-22
 
 - `sysmonctl -w SEC` refreshes a command like watch(1).
