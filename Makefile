@@ -25,6 +25,8 @@ endif
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
 PLATFORM_SRC = src/collect_darwin.c
+else ifeq ($(UNAME_S),FreeBSD)
+PLATFORM_SRC = src/collect_freebsd.c
 else
 PLATFORM_SRC = src/collect_linux.c
 CFLAGS += -D_GNU_SOURCE
