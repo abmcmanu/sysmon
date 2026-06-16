@@ -63,6 +63,23 @@ static void sample_cpu(void)
     have_prev = 1;
 }
 
+static void sample_mem(void)
+{
+    unsigned long long physmem, pagesize, free_, inactive, laundry = 0;
+
+    if (sysctl_num("hw.physmem", &physmem) < 0 || sysctl_num("hw.pagesize", &pagesize) < 0 ||
+        sysctl_num("vm.stats.vm.v_free_count", &free_) < 0 ||
+        sysctl_num("vm.stats.vm.v_inactive_count", &inactive) < 0)
+        return;
+    sysctl_num("vm.stats.vm.v_laundry_count", &laundry); /* FreeBSD 12+ */
+
+    double avail = (double)(free_ + inactive + laundry) * (double)pagesize;
+    double used = (double)physmem - avail;
+    metrics_set("mem_total_bytes", (double)physmem);
+    metrics_set("mem_used_bytes", used);
+    metrics_set("mem_used_percent", 100.0 * used / (double)physmem);
+}
+
 static void sample_load(void)
 {
     double l[3];
@@ -79,6 +96,9 @@ int collect_init(void)
     unsigned long long idle, total;
 
     metrics_set_help("cpu_usage_percent", "CPU busy time over the last interval, in percent.");
+    metrics_set_help("mem_total_bytes", "Physical memory.");
+    metrics_set_help("mem_used_bytes", "Memory in use (total - free - inactive - laundry).");
+    metrics_set_help("mem_used_percent", "Memory in use, in percent.");
     metrics_set_help("load1", "Load average over 1 minute.");
     metrics_set_help("load5", "Load average over 5 minutes.");
     metrics_set_help("load15", "Load average over 15 minutes.");
@@ -95,6 +115,7 @@ int collect_init(void)
 int collect_sample(void)
 {
     sample_cpu();
+    sample_mem();
     sample_load();
     return 0;
 }
