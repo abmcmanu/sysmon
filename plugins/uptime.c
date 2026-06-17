@@ -3,7 +3,7 @@
  */
 #include <stdio.h>
 #include <time.h>
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__FreeBSD__)
 #include <sys/sysctl.h>
 #include <sys/time.h>
 #endif
@@ -14,7 +14,7 @@ static const sysmon_host_t *H;
 
 static int read_uptime(double *secs)
 {
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__FreeBSD__)
     struct timeval boot;
     size_t len = sizeof boot;
     int mib[2] = { CTL_KERN, KERN_BOOTTIME };
