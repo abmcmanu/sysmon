@@ -5,7 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__FreeBSD__)
+#include <sys/types.h>
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <sys/socket.h>
@@ -43,7 +44,7 @@ static double now(void)
     return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
 }
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__FreeBSD__)
 static int read_counters(unsigned long long *rx, unsigned long long *tx)
 {
     struct ifaddrs *ifa;
