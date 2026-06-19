@@ -2,7 +2,7 @@
  * fd plugin: system-wide open file handles.
  */
 #include <stdio.h>
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__FreeBSD__)
 #include <sys/sysctl.h>
 #include <sys/types.h>
 #endif
@@ -11,13 +11,18 @@
 
 static const sysmon_host_t *H;
 
+#if defined(__APPLE__) || defined(__FreeBSD__)
 #ifdef __APPLE__
+#define OPEN_FILES "kern.num_files"
+#else
+#define OPEN_FILES "kern.openfiles"
+#endif
 static int read_fds(double *used, double *max)
 {
     int n, m;
     size_t len = sizeof n;
 
-    if (sysctlbyname("kern.num_files", &n, &len, NULL, 0) < 0)
+    if (sysctlbyname(OPEN_FILES, &n, &len, NULL, 0) < 0)
         return -1;
     len = sizeof m;
     if (sysctlbyname("kern.maxfiles", &m, &len, NULL, 0) < 0)
