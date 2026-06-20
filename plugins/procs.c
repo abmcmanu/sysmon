@@ -1,9 +1,12 @@
 /*
  * procs plugin: process and thread counts.
  */
-#ifdef __APPLE__
-#include <sys/sysctl.h>
+#if defined(__APPLE__) || defined(__FreeBSD__)
 #include <sys/types.h>
+#include <sys/sysctl.h>
+#ifdef __FreeBSD__
+#include <sys/user.h>
+#endif
 #else
 #include <ctype.h>
 #include <dirent.h>
@@ -25,10 +28,15 @@ static double now(void)
     return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
 }
 
+#if defined(__APPLE__) || defined(__FreeBSD__)
 #ifdef __APPLE__
+#define PROC_WHAT KERN_PROC_ALL
+#else
+#define PROC_WHAT KERN_PROC_PROC /* processes, not threads */
+#endif
 static int count_procs(void)
 {
-    int mib[3] = { CTL_KERN, KERN_PROC, KERN_PROC_ALL };
+    int mib[3] = { CTL_KERN, KERN_PROC, PROC_WHAT };
     size_t len = 0;
 
     if (sysctl(mib, 3, NULL, &len, NULL, 0) < 0)
@@ -92,7 +100,7 @@ static int procs_init(const sysmon_host_t *host)
         return -1;
     }
     H->set_help("procs_total", "Number of processes.");
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__FreeBSD__)
     H->set_help("procs_running", "Processes in the run queue.");
     H->set_help("procs_blocked", "Processes blocked on I/O.");
     H->set_help("threads_total", "Number of threads.");
@@ -109,7 +117,7 @@ static int procs_collect(void)
     if (n < 0)
         return -1;
     H->set("procs_total", n);
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__FreeBSD__)
 
     unsigned long long running = 0, blocked = 0, forks = 0;
     if (read_stat(&running, &blocked, &forks) == 0) {
