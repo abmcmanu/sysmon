@@ -29,6 +29,15 @@ jobs:
       - name: smoke test
         run: make smoke
 
+  freebsd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: vmactions/freebsd-vm@v1
+        with:
+          prepare: pkg install -y gmake curl
+          run: gmake WERROR=1 && gmake test smoke
+
   musl:
     runs-on: ubuntu-latest
     container: alpine:3.20
