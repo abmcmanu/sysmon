@@ -45,6 +45,7 @@ checks; nothing is done in signal context.
 | `src/ring.c` | fixed-size circular buffer (300 samples), no allocation |
 | `src/collect_linux.c` | cpu/mem/swap/load from `/proc` |
 | `src/collect_darwin.c` | same from Mach `host_statistics` and `sysctl` |
+| `src/collect_freebsd.c` | same from `sysctl` (`kern.cp_time`, `vm.stats`) |
 | `src/collect_disk.c` | `statvfs()` on configured mount points, portable |
 | `src/plugins.c` | `dlopen` loader, ABI check, failure counting |
 | `src/server.c` | control socket and its commands |

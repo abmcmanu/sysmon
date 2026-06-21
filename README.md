@@ -1,6 +1,6 @@
 # sysmon
 
-**A small, dependency-free system monitoring daemon for Linux and macOS.**
+**A small, dependency-free system monitoring daemon for Linux, macOS and FreeBSD.**
 
 `sysmond` samples cpu, memory, swap, load, disks and anything its
 plugins provide, keeps a short history in memory, evaluates alert rules
@@ -42,8 +42,8 @@ Prometheus + Grafana compose file):
 docker build -t sysmon . && docker run --pid=host --network=host sysmon
 ```
 
-Linux (glibc or musl) and macOS (Xcode command line tools) are tested in
-CI.
+Linux (glibc or musl), macOS (Xcode command line tools) and FreeBSD
+(`gmake`) are tested in CI.
 Packaging for Homebrew, Debian, Fedora and Arch lives in
 [`contrib/`](contrib/) and [`debian/`](debian/).
 systemd and launchd are in [`contrib/`](contrib/).
