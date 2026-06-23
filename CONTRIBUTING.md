@@ -14,3 +14,13 @@ make asan       # all of the above under AddressSanitizer + UBSan
 
 Everything must pass on Linux and macOS; CI also builds on FreeBSD and
 Alpine (musl).
+
+## Code style
+
+* C11 + POSIX, no other dependency. If you need a library, it is
+  probably a plugin.
+* 4 spaces, 100 columns, braces as in the rest of the code;
+  `.clang-format` describes it.
+* No allocation in the sampling path. Fixed-size buffers, checked.
+* Comments say *why*. The code says what.
+* Every new behaviour comes with a test in `tests/`.
