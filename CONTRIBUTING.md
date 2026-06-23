@@ -24,3 +24,11 @@ Alpine (musl).
 * No allocation in the sampling path. Fixed-size buffers, checked.
 * Comments say *why*. The code says what.
 * Every new behaviour comes with a test in `tests/`.
+
+## Commits
+
+* One logical change per commit, the tree builds and tests pass at
+  every commit.
+* Subject line: `area: what changed`, lower case after the colon, no
+  period, under 72 characters. `server: refuse requests longer than 512 bytes`.
+* The body, if any, explains why.
