@@ -32,3 +32,9 @@ Alpine (musl).
 * Subject line: `area: what changed`, lower case after the colon, no
   period, under 72 characters. `server: refuse requests longer than 512 bytes`.
 * The body, if any, explains why.
+
+## Plugins and the ABI
+
+`include/sysmon/plugin.h` is a public interface. Fields are only ever
+appended; any change bumps `SYSMON_PLUGIN_ABI` and needs an ADR in
+`docs/adr/`. `scripts/check-abi.sh` catches forgotten bumps in CI.
