@@ -38,3 +38,9 @@ Alpine (musl).
 `include/sysmon/plugin.h` is a public interface. Fields are only ever
 appended; any change bumps `SYSMON_PLUGIN_ABI` and needs an ADR in
 `docs/adr/`. `scripts/check-abi.sh` catches forgotten bumps in CI.
+
+## Releasing
+
+1. Write the `CHANGELOG.md` entry.
+2. `scripts/release.sh X.Y.Z`
+3. `git push origin main vX.Y.Z`; the release workflow does the rest.

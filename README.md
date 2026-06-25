@@ -145,6 +145,7 @@ see [docs/PLUGINS.md](docs/PLUGINS.md).
 * [HTTP endpoints](docs/HTTP.md): Prometheus, JSON API, dashboard
 * `man docs/sysmond.8`
 * [Changelog](CHANGELOG.md): thirteen years of it
+* [Contributing](CONTRIBUTING.md)
 
 ## History
 
