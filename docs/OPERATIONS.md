@@ -21,3 +21,14 @@ sudo systemctl reload sysmond      # SIGHUP: re-read the config
 With `DynamicUser=yes`, `/tmp` is private to the service: put the
 socket in `/run/sysmond/sysmond.sock` and point `sysmonctl -s` (or
 `SYSMON_SOCKET`) at it.
+
+## Without systemd
+
+```sh
+sysmond -c /etc/sysmond.conf      # daemonizes, writes pid_file if set
+kill -HUP "$(cat /run/sysmond.pid)"
+```
+
+Start it as root with `[core] user = nobody` if the socket or the pid
+file live in root-owned directories: it opens them, then drops
+privileges.
