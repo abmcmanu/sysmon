@@ -48,3 +48,9 @@ logrotate and send `SIGHUP` afterwards:
     endscript
 }
 ```
+
+## Monitoring the monitor
+
+* `/healthz` answers `ok` as long as the loop runs.
+* `sysmon_build_info` tells Prometheus which version runs where.
+* `contrib/prometheus/alerts.yml` has a `SysmonDown` rule.
