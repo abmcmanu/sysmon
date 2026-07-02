@@ -54,3 +54,17 @@ logrotate and send `SIGHUP` afterwards:
 * `/healthz` answers `ok` as long as the loop runs.
 * `sysmon_build_info` tells Prometheus which version runs where.
 * `contrib/prometheus/alerts.yml` has a `SysmonDown` rule.
+
+## Alert hooks
+
+The hook gets the alert in its environment and should return quickly;
+it runs in the background but a hook stuck forever is a leaked process.
+
+```sh
+#!/bin/sh
+# /usr/local/bin/sysmon-notify
+curl -fsS -m 5 -d "$(hostname): $SYSMON_ALERT is $SYSMON_STATE ($SYSMON_VALUE)" \
+    https://ntfy.sh/my-servers
+```
+
+More examples in [`contrib/hooks/`](../contrib/hooks/).
