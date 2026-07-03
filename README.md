@@ -144,6 +144,7 @@ see [docs/PLUGINS.md](docs/PLUGINS.md).
 * [Protocol](docs/PROTOCOL.md) and [plugins](docs/PLUGINS.md)
 * [HTTP endpoints](docs/HTTP.md): Prometheus, JSON API, dashboard
 * `man docs/sysmond.8`
+* [Operations](docs/OPERATIONS.md): systemd, logs, hooks, upgrading
 * [Changelog](CHANGELOG.md): thirteen years of it
 * [Contributing](CONTRIBUTING.md)
 
