@@ -68,3 +68,9 @@ curl -fsS -m 5 -d "$(hostname): $SYSMON_ALERT is $SYSMON_STATE ($SYSMON_VALUE)" 
 ```
 
 More examples in [`contrib/hooks/`](../contrib/hooks/).
+
+## Upgrading from 3.x to 4.x
+
+* Plugins built for 3.x (ABI 1) keep working.
+* Rules written as `for N` keep their meaning; `for 30s` is new.
+* Nothing in the configuration was removed.
