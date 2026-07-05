@@ -11,3 +11,9 @@ without anyone noticing.
 
 It is a difference between two samples. The first value appears after
 one interval.
+
+### `mem_used_percent` does not match `free` / Activity Monitor
+
+On Linux it is `MemTotal - MemAvailable`, which counts reclaimable
+cache as free, like the "available" column of `free`. On macOS it is
+app memory + wired + compressed, like Activity Monitor's "Memory Used".
