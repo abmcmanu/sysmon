@@ -17,3 +17,9 @@ one interval.
 On Linux it is `MemTotal - MemAvailable`, which counts reclaimable
 cache as free, like the "available" column of `free`. On macOS it is
 app memory + wired + compressed, like Activity Monitor's "Memory Used".
+
+### Can I get more than 300 samples of history?
+
+Not in sysmond: the ring buffer size is fixed at compile time
+(`RING_CAP` in `src/ring.h`) to keep memory bounded. Long term storage
+is Prometheus' job.
