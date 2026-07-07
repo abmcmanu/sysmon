@@ -23,3 +23,9 @@ app memory + wired + compressed, like Activity Monitor's "Memory Used".
 Not in sysmond: the ring buffer size is fixed at compile time
 (`RING_CAP` in `src/ring.h`) to keep memory bounded. Long term storage
 is Prometheus' job.
+
+### sysmonctl says "cannot reach sysmond"
+
+Check which socket the daemon uses (`socket` in the config, default
+`/tmp/sysmond.sock`) and that you can write to it. Under systemd with
+`DynamicUser=yes`, `/tmp` is private: use `/run/sysmond/sysmond.sock`.
