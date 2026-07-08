@@ -29,3 +29,9 @@ is Prometheus' job.
 Check which socket the daemon uses (`socket` in the config, default
 `/tmp/sysmond.sock`) and that you can write to it. Under systemd with
 `DynamicUser=yes`, `/tmp` is private: use `/run/sysmond/sysmond.sock`.
+
+### Does it work in a container?
+
+Yes, see [`contrib/docker/`](../contrib/docker/). To monitor the host,
+run it with `--pid=host --network=host` and mount the host's root file
+system for disk usage.
