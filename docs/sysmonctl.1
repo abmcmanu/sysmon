@@ -1,0 +1,19 @@
+.TH SYSMONCTL 1 "2026" "sysmon 4.2.0" "User Commands"
+.SH NAME
+sysmonctl \- query a running sysmond
+.SH SYNOPSIS
+.B sysmonctl
+.RB [ \-s
+.IR socket ]
+.RB [ \-w
+.IR seconds ]
+.I command
+.RI [ args ...]
+.SH DESCRIPTION
+.B sysmonctl
+sends one command to
+.BR sysmond (8)
+over its unix socket and prints the reply. It exits with status 1 when
+the daemon cannot be reached or answers with an error.
+.SH SEE ALSO
+.BR sysmond (8)
