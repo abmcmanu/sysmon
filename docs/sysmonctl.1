@@ -15,5 +15,38 @@ sends one command to
 .BR sysmond (8)
 over its unix socket and prints the reply. It exits with status 1 when
 the daemon cannot be reached or answers with an error.
+.SH COMMANDS
+.TP
+.B ping
+Check that the daemon is alive.
+.TP
+.BR list " [\fIpattern\fR]"
+Metrics and their current values, optionally filtered with a shell glob.
+.TP
+.BI get " metric"
+One value.
+.TP
+.BI history " metric" " \fR[\fIn\fR]"
+The last
+.I n
+samples, oldest first.
+.TP
+.BI stats " metric" " \fR[\fIn\fR]"
+Minimum, maximum, average, median and 95th percentile of the last
+.I n
+samples.
+.TP
+.B json
+Every metric as a JSON object.
+.TP
+.B alerts
+Alert rules and their state.
+.TP
+.B reload
+Make the daemon re-read its configuration.
+.TP
+.BR top " [\fIseconds\fR]"
+Full-screen dashboard. Keys: q quit, h help, space pause, / filter,
++ and \- change the refresh rate.
 .SH SEE ALSO
 .BR sysmond (8)
