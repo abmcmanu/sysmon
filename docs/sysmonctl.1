@@ -48,5 +48,26 @@ Make the daemon re-read its configuration.
 .BR top " [\fIseconds\fR]"
 Full-screen dashboard. Keys: q quit, h help, space pause, / filter,
 + and \- change the refresh rate.
+.SH OPTIONS
+.TP
+.BI \-s " socket"
+Control socket. Defaults to
+.B $SYSMON_SOCKET
+or
+.IR /tmp/sysmond.sock .
+.TP
+.BI \-w " seconds"
+Repeat the command every
+.I seconds
+and redraw, like
+.BR watch (1).
+.SH ENVIRONMENT
+.TP
+.B SYSMON_SOCKET
+Default control socket.
+.TP
+.B NO_COLOR
+Disable colors in
+.BR top .
 .SH SEE ALSO
 .BR sysmond (8)
