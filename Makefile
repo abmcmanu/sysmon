@@ -144,6 +144,8 @@ install: all
 	install -m 644 $(PLUGINS) $(DESTDIR)$(PREFIX)/lib/sysmon/plugins/
 	install -d $(DESTDIR)$(PREFIX)/share/man/man8
 	install -m 644 docs/sysmond.8 $(DESTDIR)$(PREFIX)/share/man/man8/
+	install -d $(DESTDIR)$(PREFIX)/share/man/man1
+	install -m 644 docs/sysmonctl.1 $(DESTDIR)$(PREFIX)/share/man/man1/
 	install -d $(DESTDIR)$(PREFIX)/share/bash-completion/completions \
 	    $(DESTDIR)$(PREFIX)/share/zsh/site-functions \
 	    $(DESTDIR)$(PREFIX)/share/fish/vendor_completions.d
