@@ -2,6 +2,13 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 4.3.0 - 2026-07-20
+
+- FreeBSD support (collector, plugins, CI).
+- `sysmonctl(1)` man page.
+- Operations guide, FAQ, contributing and security notes
+- alert hook examples.
+
 ## 4.2.0 - 2026-06-14
 
 - Docker image, and a compose stack with Prometheus and Grafana (dashboard included).
