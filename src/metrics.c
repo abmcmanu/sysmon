@@ -8,6 +8,7 @@
 
 static metric_t metrics[METRICS_MAX];
 static size_t nmetrics;
+static unsigned long dropped; /* warn on the first drop and every 1000th, not every tick */
 
 int metric_name_valid(const char *name)
 {
@@ -35,11 +36,13 @@ static metric_t *get_or_create(const char *name)
     if (m)
         return m;
     if (!metric_name_valid(name)) {
-        log_warn("metrics: invalid metric name '%s', ignored", name);
+        if (dropped++ % 1000 == 0)
+            log_warn("metrics: invalid metric name '%s', ignored", name);
         return NULL;
     }
     if (nmetrics == METRICS_MAX) {
-        log_warn("metrics: registry full, dropping '%s'", name);
+        if (dropped++ % 1000 == 0)
+            log_warn("metrics: registry full (%d), dropping '%s'", METRICS_MAX, name);
         return NULL;
     }
     m = &metrics[nmetrics++];
