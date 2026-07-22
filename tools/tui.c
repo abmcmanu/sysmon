@@ -126,9 +126,30 @@ static void emit(sb_t *o)
     fflush(stdout);
 }
 
+/* "cpu2" before "cpu10" */
+static int natcmp(const char *a, const char *b)
+{
+    while (*a && *b) {
+        if (isdigit((unsigned char)*a) && isdigit((unsigned char)*b)) {
+            char *ea, *eb;
+            unsigned long x = strtoul(a, &ea, 10), y = strtoul(b, &eb, 10);
+            if (x != y)
+                return x < y ? -1 : 1;
+            a = ea;
+            b = eb;
+        } else if (*a != *b) {
+            return (unsigned char)*a - (unsigned char)*b;
+        } else {
+            a++;
+            b++;
+        }
+    }
+    return (unsigned char)*a - (unsigned char)*b;
+}
+
 static int cmp_kv(const void *a, const void *b)
 {
-    return strcmp(((const kv_t *)a)->name, ((const kv_t *)b)->name);
+    return natcmp(((const kv_t *)a)->name, ((const kv_t *)b)->name);
 }
 
 static int fetch(const char *sock)
