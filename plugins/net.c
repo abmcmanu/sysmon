@@ -37,6 +37,18 @@ static int wanted(const char *name)
     return 0;
 }
 
+/* container and VPN plumbing: counting it twice inflates the totals */
+static int virtual_if(const char *name)
+{
+    static const char *const skip[] = { "veth", "docker", "br-", "virbr", "cni", "flannel",
+                                        "vxlan", "utun", "awdl", "llw", "bridge", "gif", "stf" };
+
+    for (size_t i = 0; i < sizeof skip / sizeof skip[0]; i++)
+        if (strncmp(name, skip[i], strlen(skip[i])) == 0)
+            return 1;
+    return 0;
+}
+
 static double now(void)
 {
     struct timespec ts;
@@ -57,6 +69,8 @@ static int read_counters(unsigned long long *rx, unsigned long long *tx)
         if (i->ifa_flags & IFF_LOOPBACK)
             continue;
         if (!wanted(i->ifa_name))
+            continue;
+        if (!only[0] && virtual_if(i->ifa_name))
             continue;
         const struct if_data *d = i->ifa_data;
         *rx += d->ifi_ibytes;
@@ -84,6 +98,8 @@ static int read_counters(unsigned long long *rx, unsigned long long *tx)
         if (strcmp(name, "lo") == 0)
             continue;
         if (!wanted(name))
+            continue;
+        if (!only[0] && virtual_if(name))
             continue;
         unsigned long long r, t, skip[7];
         if (sscanf(colon + 1, "%llu %llu %llu %llu %llu %llu %llu %llu %llu",
