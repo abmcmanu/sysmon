@@ -82,7 +82,7 @@ Options of the bundled plugins:
 | plugin | key | |
 |---|---|---|
 | `cpustat` | `per_core` | `no` to skip the `cpuN_usage_percent` metrics on big machines |
-| `net` | `interfaces` | comma-separated list of interfaces to sum, default all but loopback |
+| `net` | `interfaces` | comma-separated list of interfaces to sum; default: all but loopback and virtual ones (veth, docker, bridges, utun...) |
 | `diskio` | `devices` | comma-separated list of devices, default all whole disks |
 
 ## Bundled plugins
