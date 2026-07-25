@@ -264,6 +264,14 @@ static int load_file(config_t *cfg, const char *path, int depth)
         *eq = '\0';
         char *key = trim(s);
         char *val = trim(eq + 1);
+        /* inline comment: " # ..." or " ; ..." after the value */
+        for (char *c = val + 1; *val && *c; c++) {
+            if ((*c == '#' || *c == ';') && isspace((unsigned char)c[-1])) {
+                *c = '\0';
+                val = trim(val);
+                break;
+            }
+        }
         char expanded[512];
         if (expand(val, expanded, sizeof expanded) < 0) {
             log_err("%s:%d: cannot expand '%s'", path, lineno, val);
