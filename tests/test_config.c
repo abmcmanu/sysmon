@@ -89,6 +89,13 @@ int main(void)
     CHECK(strcmp(cfg.opts[1].key, "per_core") == 0);
     unlink(p);
 
+    p = write_tmp("[core]\ninterval = 7   # seconds\nsocket = /tmp/a#b.sock ; comment\n");
+    config_defaults(&cfg);
+    CHECK(config_load(&cfg, p) == 0);
+    CHECK(cfg.interval == 7);
+    CHECK(strcmp(cfg.socket_path, "/tmp/a#b.sock") == 0);
+    unlink(p);
+
     p = write_tmp("[core]\ninterval = 2m\n");
     config_defaults(&cfg);
     CHECK(config_load(&cfg, p) == 0 && cfg.interval == 120);
