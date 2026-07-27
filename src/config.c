@@ -264,6 +264,16 @@ static int load_file(config_t *cfg, const char *path, int depth)
         *eq = '\0';
         char *key = trim(s);
         char *val = trim(eq + 1);
+        if (*val == '"') {
+            char *end = strrchr(val + 1, '"');
+            if (!end) {
+                log_err("%s:%d: missing closing quote", path, lineno);
+                errors++;
+                continue;
+            }
+            *end = '\0';
+            val++;
+        } else
         /* inline comment: " # ..." or " ; ..." after the value */
         for (char *c = val + 1; *val && *c; c++) {
             if ((*c == '#' || *c == ';') && isspace((unsigned char)c[-1])) {
