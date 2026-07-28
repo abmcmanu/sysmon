@@ -96,6 +96,15 @@ int main(void)
     CHECK(strcmp(cfg.socket_path, "/tmp/a#b.sock") == 0);
     unlink(p);
 
+    p = write_tmp("[core]\nlog_file = \"/tmp/my log #1.log\"  # quoted\n");
+    config_defaults(&cfg);
+    CHECK(config_load(&cfg, p) == 0);
+    CHECK(strcmp(cfg.log_file, "/tmp/my log #1.log") == 0);
+    unlink(p);
+    p = write_tmp("[core]\nlog_file = \"/tmp/unterminated\n");
+    CHECK(config_load(&cfg, p) < 0);
+    unlink(p);
+
     p = write_tmp("[core]\ninterval = 2m\n");
     config_defaults(&cfg);
     CHECK(config_load(&cfg, p) == 0 && cfg.interval == 120);
