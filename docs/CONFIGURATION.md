@@ -10,6 +10,8 @@ it without starting.
 key = value
 ```
 
+* A `#` or `;` after whitespace starts a comment, also at the end of a
+  line. Put the value in double quotes to keep them: `"a # b"`.
 * Keys before the first section belong to `[core]`.
 * Unknown keys and invalid values are errors: the daemon refuses to start,
   and a reload keeps the previous configuration.
