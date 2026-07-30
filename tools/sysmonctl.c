@@ -97,7 +97,7 @@ int main(int argc, char **argv)
         sb_reset(&out);
         if (ctl_query(sock, cmd.data, &out) < 0) {
             fprintf(stderr, "sysmonctl: cannot reach sysmond at %s: %s\n", sock, strerror(errno));
-            return 1;
+            return 3;
         }
         fputs("\033[H\033[2J", stdout);
         char ts[16];
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 
     if (ctl_query(sock, cmd.data, &out) < 0) {
         fprintf(stderr, "sysmonctl: cannot reach sysmond at %s: %s\n", sock, strerror(errno));
-        return 1;
+        return 3;
     }
     if (out.len)
         fwrite(out.data, 1, out.len, stdout);
