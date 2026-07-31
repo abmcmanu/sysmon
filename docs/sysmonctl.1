@@ -13,8 +13,9 @@ sysmonctl \- query a running sysmond
 .B sysmonctl
 sends one command to
 .BR sysmond (8)
-over its unix socket and prints the reply. It exits with status 1 when
-the daemon cannot be reached or answers with an error.
+over its unix socket and prints the reply. It exits with status 0 on
+success, 1 when the daemon answers with an error, 2 on a usage error
+and 3 when the daemon cannot be reached.
 .SH COMMANDS
 .TP
 .B ping
