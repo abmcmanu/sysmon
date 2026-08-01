@@ -65,6 +65,13 @@ int main(int argc, char **argv)
             break;
         case 'V':
             printf("sysmonctl %s\n", SYSMON_VERSION);
+            {
+                sb_t v;
+                sb_init(&v);
+                if (ctl_query(sock, "version", &v) == 0 && v.len)
+                    fwrite(v.data, 1, v.len, stdout);
+                sb_free(&v);
+            }
             return 0;
         case 'h':
             usage(stdout);
