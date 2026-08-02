@@ -220,6 +220,21 @@ static int write_all(int fd, const char *p, size_t n)
     return 0;
 }
 
+static void log_peer(int fd)
+{
+#ifdef SO_PEERCRED
+    struct ucred cr;
+    socklen_t len = sizeof cr;
+    if (getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &cr, &len) == 0)
+        log_debug("ctl: client uid %ld pid %ld", (long)cr.uid, (long)cr.pid);
+#else
+    uid_t uid;
+    gid_t gid;
+    if (getpeereid(fd, &uid, &gid) == 0)
+        log_debug("ctl: client uid %ld", (long)uid);
+#endif
+}
+
 void server_handle(int listen_fd)
 {
     int fd = accept(listen_fd, NULL, NULL);
@@ -228,6 +243,7 @@ void server_handle(int listen_fd)
             log_warn("accept: %s", strerror(errno));
         return;
     }
+    log_peer(fd);
     /* BSDs (macOS included) let accepted sockets inherit O_NONBLOCK
      * from the listener; Linux does not. Be explicit. */
     fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) & ~O_NONBLOCK);
