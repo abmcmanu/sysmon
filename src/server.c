@@ -200,6 +200,10 @@ void server_exec(const char *line, sb_t *out)
 {
     char buf[512];
 
+    if (strlen(line) >= sizeof buf) {
+        sb_puts(out, "ERR request too long\n");
+        return;
+    }
     snprintf(buf, sizeof buf, "%s", line);
     buf[strcspn(buf, "\r\n")] = '\0';
     handle_cmd(buf, out);
@@ -264,12 +268,16 @@ void server_handle(int listen_fd)
             break;
     }
     buf[len] = '\0';
+    int too_long = len == sizeof buf - 1 && !memchr(buf, '\n', len);
     buf[strcspn(buf, "\r\n")] = '\0';
     log_debug("ctl: '%s'", buf);
 
     sb_t out;
     sb_init(&out);
-    handle_cmd(buf, &out);
+    if (too_long)
+        sb_puts(&out, "ERR request too long\n");
+    else
+        handle_cmd(buf, &out);
     if (out.len && write_all(fd, out.data, out.len) < 0)
         log_debug("ctl: client went away: %s", strerror(errno));
     sb_free(&out);
