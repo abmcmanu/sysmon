@@ -47,6 +47,11 @@ int main(void)
     CHECK(strstr(run("list load*"), "load1 ") != NULL);
     CHECK(strstr(run("list load*"), "mem_used_bytes") == NULL);
     CHECK(strcmp(run("list nothing_matches_*"), "") == 0);
+
+    char big[600];
+    memset(big, 'x', sizeof big - 1);
+    big[sizeof big - 1] = '\0';
+    CHECK(strcmp(run(big), "ERR request too long\n") == 0);
     CHECK(strcmp(run("ping\r\n"), "pong\n") == 0);
     CHECK(strcmp(run("  ping  "), "pong\n") == 0);
 
