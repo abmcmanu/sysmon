@@ -32,6 +32,6 @@ Any tool that speaks unix sockets works:
 
 ## Limits
 
-* Requests longer than 511 bytes are truncated.
+* Requests longer than 511 bytes are refused with `ERR request too long`.
 * A client has one second to send its line, after which the server
   answers whatever it got so far (usually `ERR empty command`).
