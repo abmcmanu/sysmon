@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "log.h"
 #include "metrics.h"
@@ -16,6 +17,15 @@ typedef struct loaded {
     int failures;
     int disabled;
 } loaded_t;
+
+#define SLOW_MS 100.0
+
+static double now_ms(void)
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (double)ts.tv_sec * 1e3 + (double)ts.tv_nsec / 1e6;
+}
 
 static loaded_t loaded[CFG_LIST_MAX];
 static int nloaded;
@@ -106,12 +116,16 @@ void plugins_collect(void)
         loaded_t *l = &loaded[i];
         if (l->disabled || !l->p->collect)
             continue;
+        double t0 = now_ms();
         if (l->p->collect() == 0) {
             l->failures = 0;
         } else if (++l->failures >= MAX_FAILURES) {
             l->disabled = 1;
             log_warn("plugin %s: %d consecutive failures, disabled", l->p->name, MAX_FAILURES);
         }
+        double ms = now_ms() - t0;
+        if (ms > SLOW_MS)
+            log_warn("plugin %s: collect took %.0f ms, it delays every sample", l->p->name, ms);
     }
 }
 
