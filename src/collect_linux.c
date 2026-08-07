@@ -44,7 +44,8 @@ static void sample_cpu(void)
     if (have_prev && total > prev_total && idle >= prev_idle) {
         double dt = (double)(total - prev_total);
         double di = (double)(idle - prev_idle);
-        metrics_set("cpu_usage_percent", 100.0 * (dt - di) / dt);
+        double pct = 100.0 * (dt - di) / dt;
+        metrics_set("cpu_usage_percent", pct < 0 ? 0 : pct > 100 ? 100 : pct);
     }
     prev_idle = idle;
     prev_total = total;
