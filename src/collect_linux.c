@@ -55,6 +55,7 @@ static void sample_cpu(void)
 static void sample_mem(void)
 {
     unsigned long long total = 0, avail = 0, free_ = 0, buffers = 0, cached = 0;
+    unsigned long long slab = 0;
     unsigned long long swap_total = 0, swap_free = 0;
     char line[256], key[64];
     unsigned long long val;
@@ -77,6 +78,8 @@ static void sample_mem(void)
             buffers = val;
         else if (strcmp(key, "Cached") == 0)
             cached = val;
+        else if (strcmp(key, "SReclaimable") == 0)
+            slab = val;
         else if (strcmp(key, "SwapTotal") == 0)
             swap_total = val;
         else if (strcmp(key, "SwapFree") == 0)
@@ -86,8 +89,8 @@ static void sample_mem(void)
 
     if (total == 0)
         return;
-    if (avail == 0) /* kernel < 3.14 */
-        avail = free_ + buffers + cached;
+    if (avail == 0) /* kernel < 3.14: approximate MemAvailable */
+        avail = free_ + buffers + cached + slab;
 
     double used = (double)(total - avail) * 1024.0;
     metrics_set("mem_total_bytes", (double)total * 1024.0);
