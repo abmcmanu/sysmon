@@ -35,6 +35,31 @@ static int read_zone(int i, char *type, size_t size, double *celsius)
     return 0;
 }
 
+static int read_hwmon(int h, int t, char *type, size_t size, double *celsius)
+{
+    char path[96], chip[24] = "hwmon";
+    long milli;
+    FILE *f;
+
+    snprintf(path, sizeof path, "/sys/class/hwmon/hwmon%d/temp%d_input", h, t);
+    if (!(f = fopen(path, "r")))
+        return -1;
+    int n = fscanf(f, "%ld", &milli);
+    fclose(f);
+    if (n != 1)
+        return -1;
+    *celsius = milli / 1000.0;
+
+    snprintf(path, sizeof path, "/sys/class/hwmon/hwmon%d/name", h);
+    if ((f = fopen(path, "r"))) {
+        if (fgets(chip, sizeof chip, f))
+            chip[strcspn(chip, "\n")] = '\0';
+        fclose(f);
+    }
+    snprintf(type, size, "hwmon%d_%s_%d", h, chip, t);
+    return 0;
+}
+
 static void clean_name(char *s)
 {
     for (; *s; s++)
@@ -69,6 +94,22 @@ static int scan(int set)
         if (set)
             H->set(name, c);
         zones++;
+    }
+    /* no thermal zones, as on many x86 desktops: try hwmon sensors */
+    for (int h = 0, none = zones == 0; none && h < 16; h++) {
+        for (int t = 1; t <= 8; t++) {
+            if (read_hwmon(h, t, type, sizeof type, &c) < 0)
+                continue;
+            if (c <= -40 || c >= 200)
+                continue;
+            if (c > max)
+                max = c;
+            clean_name(type);
+            snprintf(name, sizeof name, "temp_%s_celsius", type);
+            if (set)
+                H->set(name, c);
+            zones++;
+        }
     }
     if (zones && set)
         H->set("temp_max_celsius", max);
