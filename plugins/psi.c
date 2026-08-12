@@ -10,7 +10,8 @@
 #include "sysmon/plugin.h"
 
 static const sysmon_host_t *H;
-static const char *const resources[] = { "cpu", "memory", "io" };
+/* irq pressure exists since Linux 6.1 and only has a "full" line */
+static const char *const resources[] = { "cpu", "memory", "io", "irq" };
 
 static int read_pressure(const char *res)
 {
