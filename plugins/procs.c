@@ -59,6 +59,34 @@ static int count_procs(void)
     return n;
 }
 
+/* the state is the field right after "(comm)", and comm may contain ") " */
+static int count_zombies(void)
+{
+    DIR *d = opendir("/proc");
+    struct dirent *e;
+    char path[64], line[512];
+    int z = 0;
+
+    if (!d)
+        return -1;
+    while ((e = readdir(d))) {
+        if (!isdigit((unsigned char)e->d_name[0]))
+            continue;
+        snprintf(path, sizeof path, "/proc/%.20s/stat", e->d_name);
+        FILE *f = fopen(path, "r");
+        if (!f)
+            continue; /* exited meanwhile */
+        if (fgets(line, sizeof line, f)) {
+            char *p = strrchr(line, ')');
+            if (p && p[1] == ' ' && p[2] == 'Z')
+                z++;
+        }
+        fclose(f);
+    }
+    closedir(d);
+    return z;
+}
+
 /* procs_running / procs_blocked / processes (forks since boot) */
 static int read_stat(unsigned long long *running, unsigned long long *blocked,
                      unsigned long long *forks)
@@ -129,6 +157,10 @@ static int procs_collect(void)
         prev_forks = forks;
         prev_t = t;
     }
+
+    int z = count_zombies();
+    if (z >= 0)
+        H->set("procs_zombie", z);
 
     unsigned long long threads;
     if (read_threads(&threads) == 0)
