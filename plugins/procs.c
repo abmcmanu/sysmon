@@ -133,6 +133,7 @@ static int procs_init(const sysmon_host_t *host)
     H->set_help("procs_blocked", "Processes blocked on I/O.");
     H->set_help("threads_total", "Number of threads.");
     H->set_help("forks_per_second", "Processes created per second.");
+    H->set_help("procs_zombie", "Processes that exited but were not reaped by their parent.");
 #endif
     prev_forks = 0;
     prev_t = now();
