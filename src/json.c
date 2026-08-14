@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "json.h"
 #include "metrics.h"
@@ -39,6 +40,10 @@ void json_metrics(sb_t *out)
 {
     sb_puts(out, "{\"version\":");
     json_string(out, SYSMON_VERSION);
+    char host[256] = "";
+    gethostname(host, sizeof host - 1);
+    sb_puts(out, ",\"host\":");
+    json_string(out, host);
     sb_printf(out, ",\"timestamp\":%lld,\"metrics\":{", (long long)time(NULL));
     for (size_t i = 0; i < metrics_count(); i++) {
         const metric_t *m = metrics_at(i);
