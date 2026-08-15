@@ -25,6 +25,7 @@ int main(void)
     json_metrics(&o);
     CHECK(strncmp(o.data, "{\"version\":", 11) == 0);
     CHECK(strstr(o.data, "\"metrics\":{\"x\":1}") != NULL);
+    CHECK(strstr(o.data, ",\"host\":\"") != NULL);
 
     sb_free(&o);
     return test_report("json");
