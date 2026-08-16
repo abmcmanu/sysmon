@@ -138,7 +138,9 @@ async function refresh() {
 }
 
 function apply(data) {
-  $('meta').textContent = 'v' + data.version + ' · ' + new Date(data.timestamp * 1000).toLocaleTimeString();
+  $('meta').textContent = (data.host ? data.host + ' · ' : '') + 'v' + data.version + ' · ' +
+    new Date(data.timestamp * 1000).toLocaleTimeString();
+  if (data.host) document.title = data.host + ' · sysmond';
   renderCards(data.metrics);
   sparks();
   renderTable(data.metrics);
