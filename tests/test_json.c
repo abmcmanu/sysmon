@@ -27,6 +27,14 @@ int main(void)
     CHECK(strstr(o.data, "\"metrics\":{\"x\":1}") != NULL);
     CHECK(strstr(o.data, ",\"host\":\"") != NULL);
 
+    metrics_set("x", 2);
+    sb_reset(&o);
+    json_history(&o, metrics_get("x"), 10);
+    CHECK(strcmp(o.data, "{\"metric\":\"x\",\"values\":[1,2]}\n") == 0);
+    sb_reset(&o);
+    json_history(&o, metrics_get("x"), 1);
+    CHECK(strcmp(o.data, "{\"metric\":\"x\",\"values\":[2]}\n") == 0);
+
     sb_free(&o);
     return test_report("json");
 }
