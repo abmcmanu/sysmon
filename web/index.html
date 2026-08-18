@@ -154,6 +154,16 @@ function schedule() {
 }
 $('every').addEventListener('change', schedule);
 $('filter').addEventListener('input', refresh);
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && document.activeElement !== $('filter')) {
+    e.preventDefault();
+    $('filter').focus();
+  } else if (e.key === 'Escape') {
+    $('filter').value = '';
+    $('filter').blur();
+    refresh();
+  }
+});
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) clearInterval(timer); else { refresh(); schedule(); }
 });
