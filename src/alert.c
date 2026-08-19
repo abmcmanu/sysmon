@@ -158,6 +158,9 @@ static void run_hook(const alert_t *a, const char *state)
         setenv("SYSMON_STATE", state, 1);
         setenv("SYSMON_METRIC", a->metric, 1);
         setenv("SYSMON_VALUE", value, 1);
+        char host[256] = "";
+        gethostname(host, sizeof host - 1);
+        setenv("SYSMON_HOST", host, 1);
         execl(hook, hook, (char *)NULL);
         _exit(127);
     }
