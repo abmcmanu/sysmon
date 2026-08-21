@@ -71,6 +71,7 @@ TESTS += $(BUILD)/tests/test_metrics
 TESTS += $(BUILD)/tests/test_disk
 TESTS += $(BUILD)/tests/test_http
 TESTS += $(BUILD)/tests/test_plugins
+TESTS += $(BUILD)/tests/test_log
 
 all: $(BUILD)/sysmond $(BUILD)/sysmonctl plugins
 
