@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "alert.h"
+#include "metrics.h"
 #include "test.h"
 
 int main(void)
@@ -42,5 +43,16 @@ int main(void)
     CHECK(alert_update(&a, 10) == -1); /* resolves */
     CHECK(!a.firing);
 
+
+    char rules[1][256] = { "y > 10" };
+    metrics_set("y", 11);
+    CHECK(alerts_load(rules, 1, "") == 0);
+    alerts_eval();
+    CHECK(alerts_firing() == 1);
+    CHECK(alerts_load(rules, 1, "") == 0); /* reload with the same rule */
+    CHECK(alerts_firing() == 1);
+    snprintf(rules[0], sizeof rules[0], "y > 100");
+    CHECK(alerts_load(rules, 1, "") == 0); /* a changed rule starts over */
+    CHECK(alerts_firing() == 0);
     return test_report("alert");
 }
