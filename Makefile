@@ -171,6 +171,8 @@ dist:
 	git archive --prefix=sysmon-$(VERSION)/ -o sysmon-$(VERSION).tar.gz HEAD
 	@echo sysmon-$(VERSION).tar.gz
 
+check: test smoke
+
 clean:
 	rm -rf $(BUILD) build-asan build-fuzz
 
