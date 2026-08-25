@@ -173,6 +173,9 @@ dist:
 
 check: test smoke
 
+format:
+	clang-format -i src/*.[ch] tools/*.[ch] plugins/*.c tests/*.[ch] include/sysmon/*.h
+
 clean:
 	rm -rf $(BUILD) build-asan build-fuzz
 
