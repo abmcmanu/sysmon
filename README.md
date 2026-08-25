@@ -1,5 +1,7 @@
 # sysmon
 
+[![ci](https://github.com/abmcmanu/sysmon/actions/workflows/ci.yml/badge.svg)](https://github.com/abmcmanu/sysmon/actions/workflows/ci.yml)
+
 **A small, dependency-free system monitoring daemon for Linux, macOS and FreeBSD.**
 
 `sysmond` samples cpu, memory, swap, load, disks and anything its
