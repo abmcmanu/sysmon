@@ -32,6 +32,14 @@
 #include "http.h"
 #include "alert.h"
 
+#if defined(__APPLE__)
+#define PLATFORM "macOS"
+#elif defined(__FreeBSD__)
+#define PLATFORM "FreeBSD"
+#else
+#define PLATFORM "Linux"
+#endif
+
 static volatile sig_atomic_t running = 1;
 static volatile sig_atomic_t reload_requested;
 
@@ -288,7 +296,7 @@ int main(int argc, char **argv)
             }
             break;
         case 'V':
-            printf("sysmond %s\n", SYSMON_VERSION);
+            printf("sysmond %s (%s, %s)\n", SYSMON_VERSION, PLATFORM, __VERSION__);
             return 0;
         case 'h':
             usage(stdout);
