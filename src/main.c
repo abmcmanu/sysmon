@@ -369,6 +369,7 @@ int main(int argc, char **argv)
 
     log_info("sysmond %s started (pid %ld, interval %ds)", SYSMON_VERSION, (long)getpid(),
              cfg.interval);
+    log_info("configuration: %s", cfg_path ? cfg_path : "built-in defaults");
 
     double next = now();
     while (running) {
