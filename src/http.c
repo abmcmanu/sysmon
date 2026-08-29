@@ -157,7 +157,6 @@ void http_handle(int listen_fd)
     if (q)
         snprintf(query, sizeof query, "%s", q + 1);
     path[strcspn(path, "?")] = '\0';
-    log_debug("http: %s %s", method, path);
 
     int status = 200;
     const char *ctype = "text/plain; charset=utf-8";
@@ -210,6 +209,7 @@ void http_handle(int listen_fd)
                      status, reason(status), ctype, extra, body.len);
     if (write_all(fd, hdr, (size_t)n) == 0 && body.len)
         write_all(fd, body.data, body.len);
+    log_debug("http: %s %s -> %d, %zu bytes", method, path, status, body.len);
     sb_free(&body);
     close(fd);
 }
