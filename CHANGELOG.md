@@ -2,6 +2,20 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 4.4.0 - 2026-08-30
+
+- Configuration: comments at the end of a line, double-quoted values.
+- `sysmonctl` exits with 3 when the daemon is unreachable
+- `-V` also shows the daemon version.
+- `thermal` falls back to hwmon sensors
+- `psi` reports irq pressure
+- `procs_zombie`.
+- `net` skips virtual interfaces unless listed.
+- JSON output and alert hooks carry the host name.
+- Requests longer than 511 bytes are refused instead of truncated.
+- Warning when a plugin's collect() takes more than 100 ms.
+- Fixed: the same dropped metric was logged on every tick.
+
 ## 4.3.0 - 2026-07-20
 
 - FreeBSD support (collector, plugins, CI).
