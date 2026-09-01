@@ -20,6 +20,8 @@ static int read_sockstat(const char *path, int v6)
         if (!v6 && sscanf(line, "TCP: inuse %llu orphan %llu tw %llu alloc %llu", &inuse, &orphan,
                           &tw, &alloc) == 4) {
             H->set("tcp_inuse", (double)inuse);
+            H->set("tcp_orphan", (double)orphan);
+            H->set("tcp_time_wait", (double)tw);
         } else if (!v6 && sscanf(line, "UDP: inuse %llu", &inuse) == 1) {
             H->set("udp_inuse", (double)inuse);
         }
