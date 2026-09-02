@@ -24,6 +24,10 @@ static int read_sockstat(const char *path, int v6)
             H->set("tcp_time_wait", (double)tw);
         } else if (!v6 && sscanf(line, "UDP: inuse %llu", &inuse) == 1) {
             H->set("udp_inuse", (double)inuse);
+        } else if (v6 && sscanf(line, "TCP6: inuse %llu", &inuse) == 1) {
+            H->set("tcp6_inuse", (double)inuse);
+        } else if (v6 && sscanf(line, "UDP6: inuse %llu", &inuse) == 1) {
+            H->set("udp6_inuse", (double)inuse);
         }
     }
     fclose(f);
@@ -44,6 +48,7 @@ static int sockets_collect(void)
 {
     if (read_sockstat("/proc/net/sockstat", 0) < 0)
         return -1;
+    read_sockstat("/proc/net/sockstat6", 1); /* absent without IPv6 */
     return 0;
 }
 
