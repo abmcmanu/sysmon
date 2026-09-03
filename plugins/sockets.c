@@ -79,6 +79,11 @@ static int sockets_init(const sysmon_host_t *host)
     }
     if (read_retrans(&prev_retrans) == 0)
         prev_t = now();
+    H->set_help("tcp_inuse", "TCP sockets in use (IPv4).");
+    H->set_help("tcp_time_wait", "TCP sockets in TIME_WAIT.");
+    H->set_help("tcp_orphan", "TCP sockets not attached to any process.");
+    H->set_help("udp_inuse", "UDP sockets in use (IPv4).");
+    H->set_help("tcp_retransmits_per_second", "TCP segments retransmitted per second.");
     return 0;
 }
 
