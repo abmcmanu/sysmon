@@ -61,6 +61,7 @@ PLUGINS += $(BUILD)/plugins/diskio.so
 PLUGINS += $(BUILD)/plugins/psi.so
 PLUGINS += $(BUILD)/plugins/thermal.so
 PLUGINS += $(BUILD)/plugins/sockets.so
+PLUGINS += $(BUILD)/plugins/conntrack.so
 
 TESTS = $(BUILD)/tests/test_ring
 TESTS += $(BUILD)/tests/test_config
