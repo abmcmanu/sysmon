@@ -31,7 +31,10 @@ static int conntrack_collect(void)
     if (read_num("/proc/sys/net/netfilter/nf_conntrack_count", &count) < 0)
         return -1;
     H->set("conntrack_entries", count);
-    (void)max;
+    if (read_num("/proc/sys/net/netfilter/nf_conntrack_max", &max) == 0 && max > 0) {
+        H->set("conntrack_max", max);
+        H->set("conntrack_used_percent", 100.0 * count / max);
+    }
     return 0;
 }
 
