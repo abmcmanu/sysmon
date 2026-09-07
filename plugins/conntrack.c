@@ -45,6 +45,8 @@ static int conntrack_init(const sysmon_host_t *host)
         H->log(SYSMON_LOG_WARN, "conntrack: nf_conntrack is not loaded");
         return -1;
     }
+    H->set_help("conntrack_entries", "Connections in the netfilter tracking table.");
+    H->set_help("conntrack_used_percent", "Tracking table usage; new connections drop at 100.");
     return 0;
 }
 
