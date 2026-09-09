@@ -54,6 +54,8 @@ static int battery_collect(void)
     if (read_line("capacity", buf, sizeof buf) < 0)
         return -1;
     H->set("battery_percent", strtod_safe(buf));
+    if (read_line("status", buf, sizeof buf) == 0)
+        H->set("battery_charging", strcmp(buf, "Charging") == 0);
     return 0;
 }
 
