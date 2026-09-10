@@ -56,6 +56,15 @@ static int battery_collect(void)
     H->set("battery_percent", strtod_safe(buf));
     if (read_line("status", buf, sizeof buf) == 0)
         H->set("battery_charging", strcmp(buf, "Charging") == 0);
+    /* power_now in microwatts; some batteries only report current_now (uA) and voltage_now (uV) */
+    if (read_line("power_now", buf, sizeof buf) == 0) {
+        H->set("battery_power_watts", strtod_safe(buf) / 1e6);
+    } else {
+        char v[32];
+        if (read_line("current_now", buf, sizeof buf) == 0 &&
+            read_line("voltage_now", v, sizeof v) == 0)
+            H->set("battery_power_watts", strtod_safe(buf) / 1e6 * strtod_safe(v) / 1e6);
+    }
     return 0;
 }
 
