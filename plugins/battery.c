@@ -40,6 +40,9 @@ static int battery_init(const sysmon_host_t *host)
     for (int i = 0; i < 4; i++) {
         snprintf(dir, sizeof dir, "/sys/class/power_supply/BAT%d", i);
         if (read_line("capacity", buf, sizeof buf) == 0) {
+            H->set_help("battery_percent", "Battery charge, percent.");
+            H->set_help("battery_charging", "1 while charging, 0 otherwise.");
+            H->set_help("battery_power_watts", "Power drawn from or into the battery.");
             return 0;
         }
     }
