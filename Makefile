@@ -63,6 +63,7 @@ PLUGINS += $(BUILD)/plugins/thermal.so
 PLUGINS += $(BUILD)/plugins/sockets.so
 PLUGINS += $(BUILD)/plugins/conntrack.so
 PLUGINS += $(BUILD)/plugins/battery.so
+PLUGINS += $(BUILD)/plugins/cgroup.so
 
 TESTS = $(BUILD)/tests/test_ring
 TESTS += $(BUILD)/tests/test_config
