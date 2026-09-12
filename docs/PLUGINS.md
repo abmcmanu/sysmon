@@ -91,6 +91,7 @@ Options of the bundled plugins:
 |---|---|---|
 | `sockets` | `tcp_inuse`, `tcp_time_wait`, `tcp_orphan`, `udp_inuse`, `tcp6_inuse`, `udp6_inuse`, `tcp_retransmits_per_second` | Linux |
 | `conntrack` | `conntrack_entries`, `conntrack_max`, `conntrack_used_percent` | Linux with nf_conntrack |
+| `battery` | `battery_percent`, `battery_charging`, `battery_power_watts` | Linux |
 | `uptime` | `uptime_seconds` | Linux, macOS |
 | `net` | `net_rx_bytes_per_second`, `net_tx_bytes_per_second` | Linux, macOS |
 | `cpustat` | `cpu_count`, `cpuN_usage_percent`, `cpu_{user,system,iowait,steal}_percent`, `context_switches_per_second`, `interrupts_per_second` | Linux, macOS (no iowait, steal, context switches) |
