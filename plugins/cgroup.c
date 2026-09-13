@@ -29,12 +29,34 @@ static int read_value(const char *file, unsigned long long *out)
     return sscanf(buf, "%llu", out) == 1 ? 0 : -1;
 }
 
+/* "0::/user.slice/..." -> /sys/fs/cgroup/user.slice/... */
+static int own_cgroup(void)
+{
+    char line[200];
+    FILE *f = fopen("/proc/self/cgroup", "r");
+    int found = -1;
+
+    if (!f)
+        return -1;
+    while (fgets(line, sizeof line, f)) {
+        if (strncmp(line, "0::", 3) == 0) {
+            line[strcspn(line, "\n")] = '\0';
+            const char *rel = strcmp(line + 3, "/") ? line + 3 : "";
+            if (snprintf(base, sizeof base, "/sys/fs/cgroup%s", rel) < (int)sizeof base)
+                found = 0;
+        }
+    }
+    fclose(f);
+    return found;
+}
+
 static int cgroup_init(const sysmon_host_t *host)
 {
     unsigned long long v;
 
     H = host;
     snprintf(base, sizeof base, "/sys/fs/cgroup");
+    own_cgroup();
     if (read_value("memory.current", &v) < 0 && read_value("pids.current", &v) < 0) {
         H->log(SYSMON_LOG_WARN, "cgroup: %s is not a cgroup v2 group", base);
         return -1;
