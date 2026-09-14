@@ -57,6 +57,9 @@ static int cgroup_init(const sysmon_host_t *host)
     H = host;
     snprintf(base, sizeof base, "/sys/fs/cgroup");
     own_cgroup();
+    const char *p = H->abi >= 2 ? H->option("cgroup", "path") : NULL;
+    if (p)
+        snprintf(base, sizeof base, "%s", p);
     if (read_value("memory.current", &v) < 0 && read_value("pids.current", &v) < 0) {
         H->log(SYSMON_LOG_WARN, "cgroup: %s is not a cgroup v2 group", base);
         return -1;
