@@ -74,7 +74,10 @@ static int cgroup_collect(void)
 
     if (read_value("memory.current", &cur) == 0) {
         H->set("cgroup_memory_bytes", (double)cur);
-        (void)max;
+        if (read_value("memory.max", &max) == 0 && max > 0) {
+            H->set("cgroup_memory_limit_bytes", (double)max);
+            H->set("cgroup_memory_percent", 100.0 * (double)cur / (double)max);
+        }
     }
     return 0;
 }
