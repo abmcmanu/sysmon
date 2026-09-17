@@ -123,7 +123,11 @@ static int cgroup_collect(void)
         H->set("cgroup_cpu_usage_percent", pct);
         prev_usage = usage;
     }
-    (void)throttled;
+    if (read_stat("cpu.stat", "nr_throttled", &throttled) == 0 && dt > 0 &&
+        throttled >= prev_throttled) {
+        H->set("cgroup_cpu_throttled_per_second", (double)(throttled - prev_throttled) / dt);
+        prev_throttled = throttled;
+    }
     prev_t = t;
     return 0;
 }
