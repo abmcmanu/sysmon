@@ -129,6 +129,8 @@ static int cgroup_collect(void)
         prev_throttled = throttled;
     }
     prev_t = t;
+    if (read_value("pids.current", &cur) == 0)
+        H->set("cgroup_pids", (double)cur);
     return 0;
 }
 
