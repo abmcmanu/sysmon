@@ -102,6 +102,10 @@ static int cgroup_init(const sysmon_host_t *host)
     read_stat("cpu.stat", "usage_usec", &prev_usage);
     read_stat("cpu.stat", "nr_throttled", &prev_throttled);
     prev_t = now();
+    H->set_help("cgroup_memory_bytes", "memory.current of the cgroup.");
+    H->set_help("cgroup_memory_limit_bytes", "memory.max of the cgroup, absent when unlimited.");
+    H->set_help("cgroup_cpu_usage_percent", "cpu used by the cgroup, percent of the whole machine.");
+    H->set_help("cgroup_pids", "Tasks in the cgroup.");
     return 0;
 }
 
