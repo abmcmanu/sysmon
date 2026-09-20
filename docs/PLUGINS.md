@@ -84,6 +84,7 @@ Options of the bundled plugins:
 | `cpustat` | `per_core` | `no` to skip the `cpuN_usage_percent` metrics on big machines |
 | `net` | `interfaces` | comma-separated list of interfaces to sum; default: all but loopback and virtual ones (veth, docker, bridges, utun...) |
 | `diskio` | `devices` | comma-separated list of devices, default all whole disks |
+| `cgroup` | `path` | cgroup directory, default the one sysmond runs in |
 
 ## Bundled plugins
 
@@ -92,6 +93,7 @@ Options of the bundled plugins:
 | `sockets` | `tcp_inuse`, `tcp_time_wait`, `tcp_orphan`, `udp_inuse`, `tcp6_inuse`, `udp6_inuse`, `tcp_retransmits_per_second` | Linux |
 | `conntrack` | `conntrack_entries`, `conntrack_max`, `conntrack_used_percent` | Linux with nf_conntrack |
 | `battery` | `battery_percent`, `battery_charging`, `battery_power_watts` | Linux |
+| `cgroup` | `cgroup_memory_bytes`, `cgroup_memory_limit_bytes`, `cgroup_memory_percent`, `cgroup_cpu_usage_percent`, `cgroup_cpu_throttled_per_second`, `cgroup_pids` | Linux, cgroup v2 |
 | `uptime` | `uptime_seconds` | Linux, macOS |
 | `net` | `net_rx_bytes_per_second`, `net_tx_bytes_per_second` | Linux, macOS |
 | `cpustat` | `cpu_count`, `cpuN_usage_percent`, `cpu_{user,system,iowait,steal}_percent`, `context_switches_per_second`, `interrupts_per_second` | Linux, macOS (no iowait, steal, context switches) |
