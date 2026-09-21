@@ -178,6 +178,14 @@ static int set_key(config_t *cfg, const char *section, const char *key, const ch
         if (strcmp(key, "bind") == 0)
             return copy(cfg->http_bind, sizeof cfg->http_bind, val);
     }
+    if (strcmp(section, "graphite") == 0) {
+        if (strcmp(key, "host") == 0)
+            return copy(cfg->graphite_host, sizeof cfg->graphite_host, val);
+        if (strcmp(key, "port") == 0)
+            return to_int(val, 0, 65535, &cfg->graphite_port);
+        if (strcmp(key, "prefix") == 0)
+            return copy(cfg->graphite_prefix, sizeof cfg->graphite_prefix, val);
+    }
     if (strcmp(section, "alerts") == 0) {
         if (strcmp(key, "rule") == 0) {
             if (cfg->nalerts == CFG_ALERTS_MAX)

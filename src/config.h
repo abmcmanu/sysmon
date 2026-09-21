@@ -30,6 +30,9 @@ typedef struct config {
     int nplugins;
     plugin_opt_t opts[CFG_OPTS_MAX];
     int nopts;
+    char graphite_host[128];
+    int graphite_port;           /* 0 = disabled */
+    char graphite_prefix[128];   /* default: sysmon.<hostname> */
     char http_bind[64];
     int http_port; /* 0 = disabled */
     char alerts[CFG_ALERTS_MAX][CFG_RULE_MAX];
