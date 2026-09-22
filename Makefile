@@ -42,6 +42,7 @@ LIB_SRC += src/plugins.c
 LIB_SRC += src/http.c
 LIB_SRC += src/json.c
 LIB_SRC += src/alert.c
+LIB_SRC += src/graphite.c
 
 LIB_OBJ  = $(LIB_SRC:%.c=$(BUILD)/obj/%.o)
 MAIN_OBJ = $(BUILD)/obj/src/main.o
@@ -76,6 +77,7 @@ TESTS += $(BUILD)/tests/test_disk
 TESTS += $(BUILD)/tests/test_http
 TESTS += $(BUILD)/tests/test_plugins
 TESTS += $(BUILD)/tests/test_log
+TESTS += $(BUILD)/tests/test_graphite
 
 all: $(BUILD)/sysmond $(BUILD)/sysmonctl plugins
 
