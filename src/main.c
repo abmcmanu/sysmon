@@ -31,6 +31,7 @@
 #include "plugins.h"
 #include "http.h"
 #include "alert.h"
+#include "graphite.h"
 
 #if defined(__APPLE__)
 #define PLATFORM "macOS"
@@ -246,6 +247,7 @@ static void tick(const config_t *cfg)
     collect_sample();
     collect_disks(cfg);
     plugins_collect();
+    graphite_send();
     alerts_eval();
     if (cfg->print)
         print_sample();
@@ -355,6 +357,8 @@ int main(int argc, char **argv)
         add_listener(http_fd, http_handle);
     }
     plugins_load(&cfg);
+    if (cfg.graphite_host[0] && cfg.graphite_port > 0 && graphite_open(&cfg) < 0)
+        log_warn("graphite: disabled");
 
     if (!foreground && daemonize() < 0) {
         log_err("daemonize: %s", strerror(errno));
@@ -389,6 +393,7 @@ int main(int argc, char **argv)
     plugins_unload();
     if (http_fd >= 0)
         close(http_fd);
+    graphite_close();
     server_close(srv, cfg.socket_path);
     if (!foreground && cfg.pid_file[0])
         unlink(cfg.pid_file);
