@@ -59,8 +59,21 @@ void graphite_send(void)
         return;
     sb_init(&out);
     graphite_format(&out, prefix, time(NULL));
-    if (out.len && send(fd, out.data, out.len, 0) < 0)
-        log_debug("graphite: send: %s", strerror(errno));
+    /* keep datagrams under a typical MTU, cut on line boundaries */
+    size_t off = 0;
+    while (off < out.len) {
+        size_t n = out.len - off;
+        if (n > 1400) {
+            n = 1400;
+            while (n > 0 && out.data[off + n - 1] != '\n')
+                n--;
+            if (n == 0)
+                n = 1400;
+        }
+        if (send(fd, out.data + off, n, 0) < 0)
+            log_debug("graphite: send: %s", strerror(errno));
+        off += n;
+    }
     sb_free(&out);
 }
 
