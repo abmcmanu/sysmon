@@ -46,7 +46,16 @@ int graphite_open(const config_t *cfg)
         return -1;
     }
     freeaddrinfo(res);
-    snprintf(prefix, sizeof prefix, "%s", cfg->graphite_prefix[0] ? cfg->graphite_prefix : "sysmon");
+    if (cfg->graphite_prefix[0]) {
+        snprintf(prefix, sizeof prefix, "%s", cfg->graphite_prefix);
+    } else {
+        char host[64] = "";
+        gethostname(host, sizeof host - 1);
+        for (char *p = host; *p; p++)
+            if (*p == '.') /* dots are path separators in Graphite */
+                *p = '_';
+        snprintf(prefix, sizeof prefix, "sysmon.%s", host);
+    }
     log_info("graphite: sending to %s:%d as %s.*", cfg->graphite_host, cfg->graphite_port, prefix);
     return 0;
 }
