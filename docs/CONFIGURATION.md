@@ -74,6 +74,17 @@ include = sysmond.d/*.conf
 | `port` | `0` (disabled) | Prometheus / API port |
 | `bind` | `127.0.0.1` | address to listen on |
 
+## [graphite]
+
+| key | default | |
+|---|---|---|
+| `host` | none | carbon host |
+| `port` | `0` (disabled) | carbon plaintext port, usually 2003 |
+| `prefix` | `sysmon.<hostname>` | path of every metric, dots in the host name become `_` |
+
+Every sample of every metric is sent over UDP, cut into datagrams of at
+most 1400 bytes. There is no retry: a lost datagram is a gap.
+
 ## [alerts]
 
 | key | default | |
