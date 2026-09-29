@@ -9,6 +9,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "http.h"
@@ -75,6 +76,29 @@ static void render_prometheus(sb_t *out)
         else
             sb_printf(out, "sysmon_%s %.17g\n", m->name, m->value);
     }
+}
+
+/* InfluxDB line protocol, one point with every metric as a field */
+static void render_influx(sb_t *out)
+{
+    char host[256] = "";
+    int first = 1;
+
+    gethostname(host, sizeof host - 1);
+    sb_puts(out, "sysmon,host=");
+    for (const char *p = host; *p; p++) {
+        if (*p == ',' || *p == ' ' || *p == '=')
+            sb_puts(out, "\\");
+        sb_append(out, p, 1);
+    }
+    for (size_t i = 0; i < metrics_count(); i++) {
+        const metric_t *m = metrics_at(i);
+        if (isnan(m->value))
+            continue;
+        sb_printf(out, "%c%s=%.15g", first ? ' ' : ',', m->name, m->value);
+        first = 0;
+    }
+    sb_printf(out, " %lld000000000\n", (long long)time(NULL));
 }
 
 static int write_all(int fd, const char *p, size_t n)
@@ -186,6 +210,8 @@ void http_handle(int listen_fd)
             long n = query_param(query, "n", nbuf, sizeof nbuf) ? strtol(nbuf, NULL, 10) : 60;
             json_history(&body, m, n > 0 ? (size_t)n : 60);
         }
+    } else if (strcmp(path, "/api/influx") == 0) {
+        render_influx(&body);
     } else if (strcmp(path, "/api/version") == 0) {
         ctype = "application/json";
         sb_printf(&body, "{\"version\":\"%s\"}\n", SYSMON_VERSION);
