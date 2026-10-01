@@ -12,12 +12,22 @@
 static unsigned long long prev_idle, prev_total;
 static int have_prev;
 
+/* SYSMON_PROC_ROOT lets the tests feed fake /proc files */
+static FILE *proc_open(const char *name)
+{
+    char path[512];
+    const char *root = getenv("SYSMON_PROC_ROOT");
+
+    snprintf(path, sizeof path, "%s/%s", root && *root ? root : "/proc", name);
+    return fopen(path, "r");
+}
+
 static int read_cpu(unsigned long long *idle, unsigned long long *total)
 {
     unsigned long long user = 0, nice = 0, sys = 0, idl = 0, iowait = 0;
     unsigned long long irq = 0, softirq = 0, steal = 0;
 
-    FILE *f = fopen("/proc/stat", "r");
+    FILE *f = proc_open("stat");
     if (!f)
         return -1;
     int n = fscanf(f, "cpu %llu %llu %llu %llu %llu %llu %llu %llu",
@@ -60,7 +70,7 @@ static void sample_mem(void)
     char line[256], key[64];
     unsigned long long val;
 
-    FILE *f = fopen("/proc/meminfo", "r");
+    FILE *f = proc_open("meminfo");
     if (!f) {
         log_warn("mem: cannot read /proc/meminfo");
         return;
