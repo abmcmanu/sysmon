@@ -46,6 +46,11 @@ int main(void)
     CHECK_NEAR(get("mem_used_percent"), 75.0, 1e-9);
     CHECK_NEAR(get("mem_total_bytes"), 1024000.0, 1e-9);
 
+    /* iowait counts as idle */
+    put("stat", "cpu  150 0 150 900 100 0 0 0\n");
+    collect_sample();
+    CHECK_NEAR(get("cpu_usage_percent"), 0.0, 1e-9);
+
     char cmd[64];
     snprintf(cmd, sizeof cmd, "rm -rf %s", root);
     CHECK(system(cmd) == 0);
