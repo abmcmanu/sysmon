@@ -51,6 +51,11 @@ int main(void)
     collect_sample();
     CHECK_NEAR(get("cpu_usage_percent"), 0.0, 1e-9);
 
+    /* counters going backwards (VM migration) leave the previous value */
+    put("stat", "cpu  10 0 10 10 0 0 0 0\n");
+    collect_sample();
+    CHECK_NEAR(get("cpu_usage_percent"), 0.0, 1e-9);
+
     char cmd[64];
     snprintf(cmd, sizeof cmd, "rm -rf %s", root);
     CHECK(system(cmd) == 0);
