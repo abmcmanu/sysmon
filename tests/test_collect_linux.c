@@ -56,6 +56,12 @@ int main(void)
     collect_sample();
     CHECK_NEAR(get("cpu_usage_percent"), 0.0, 1e-9);
 
+    /* kernels before 3.14 have no MemAvailable */
+    put("meminfo", "MemTotal: 1000 kB\nMemFree: 100 kB\nBuffers: 50 kB\nCached: 50 kB\n"
+                   "SReclaimable: 100 kB\n");
+    collect_sample();
+    CHECK_NEAR(get("mem_used_percent"), 70.0, 1e-9);
+
     char cmd[64];
     snprintf(cmd, sizeof cmd, "rm -rf %s", root);
     CHECK(system(cmd) == 0);
