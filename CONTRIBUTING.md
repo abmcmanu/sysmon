@@ -15,6 +15,10 @@ make asan       # all of the above under AddressSanitizer + UBSan
 Everything must pass on Linux and macOS; CI also builds on FreeBSD and
 Alpine (musl).
 
+`SYSMON_PROC_ROOT=/some/dir` makes the Linux collector read its files
+from there instead of `/proc`; `tests/test_collect_linux.c` uses it to
+test edge cases with hand-written files.
+
 ## Code style
 
 * C11 + POSIX, no other dependency. If you need a library, it is
