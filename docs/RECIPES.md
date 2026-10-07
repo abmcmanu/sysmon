@@ -12,3 +12,13 @@ exec = /usr/local/bin/notify-me
 
 With Prometheus, `predict_linear` sees it coming days ahead: see
 `DiskFillingUp` in `contrib/prometheus/alerts.yml`.
+
+## Watch one network interface
+
+```ini
+[plugins]
+load = net
+
+[plugin.net]
+interfaces = eth0
+```
