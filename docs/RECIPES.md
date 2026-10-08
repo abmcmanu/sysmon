@@ -22,3 +22,14 @@ load = net
 [plugin.net]
 interfaces = eth0
 ```
+
+## Monitor a container from inside
+
+Load the `cgroup` plugin: it finds the container's own cgroup and
+reports its memory against the limit, which is what the OOM killer
+looks at, not `mem_used_percent` of the host.
+
+```ini
+[plugins]
+load = cgroup
+```
