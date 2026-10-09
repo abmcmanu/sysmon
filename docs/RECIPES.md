@@ -33,3 +33,13 @@ looks at, not `mem_used_percent` of the host.
 [plugins]
 load = cgroup
 ```
+
+## Raspberry Pi temperature
+
+```ini
+[plugins]
+load = thermal
+
+[alerts]
+rule = temp_max_celsius > 75 for 2m
+```
