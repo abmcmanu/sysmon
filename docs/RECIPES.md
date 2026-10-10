@@ -43,3 +43,11 @@ load = thermal
 [alerts]
 rule = temp_max_celsius > 75 for 2m
 ```
+
+## A CSV of the last five minutes
+
+```sh
+for m in cpu_usage_percent mem_used_percent load1; do
+    sysmonctl history "$m" 60 | paste -sd, - | sed "s/^/$m,/"
+done
+```
