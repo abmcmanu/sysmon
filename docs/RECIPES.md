@@ -51,3 +51,11 @@ for m in cpu_usage_percent mem_used_percent load1; do
     sysmonctl history "$m" 60 | paste -sd, - | sed "s/^/$m,/"
 done
 ```
+
+## Feed Telegraf or InfluxDB
+
+```toml
+[[inputs.http]]
+  urls = ["http://127.0.0.1:9273/api/influx"]
+  data_format = "influx"
+```

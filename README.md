@@ -148,6 +148,7 @@ see [docs/PLUGINS.md](docs/PLUGINS.md).
 * `man docs/sysmond.8`, `man docs/sysmonctl.1`
 * [Operations](docs/OPERATIONS.md): systemd, logs, hooks, upgrading
 * [FAQ](docs/FAQ.md)
+* [Recipes](docs/RECIPES.md): disks, containers, Raspberry Pi, Telegraf
 * [Changelog](CHANGELOG.md): thirteen years of it
 * [Contributing](CONTRIBUTING.md)
 
