@@ -244,6 +244,7 @@ static void reload(config_t *cfg, const char *path)
 
 static void tick(const config_t *cfg)
 {
+    double t0 = now();
     collect_sample();
     collect_disks(cfg);
     plugins_collect();
@@ -251,6 +252,7 @@ static void tick(const config_t *cfg)
     alerts_eval();
     if (cfg->print)
         print_sample();
+    metrics_set("sysmond_tick_seconds", now() - t0);
 }
 
 int main(int argc, char **argv)
