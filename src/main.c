@@ -21,6 +21,7 @@
 #include <poll.h>
 #include <grp.h>
 #include <pwd.h>
+#include <sys/resource.h>
 
 #include "collector.h"
 #include "config.h"
@@ -253,6 +254,13 @@ static void tick(const config_t *cfg)
     if (cfg->print)
         print_sample();
     metrics_set("sysmond_tick_seconds", now() - t0);
+    struct rusage ru;
+    if (getrusage(RUSAGE_SELF, &ru) == 0)
+#ifdef __APPLE__
+        metrics_set("sysmond_max_rss_bytes", (double)ru.ru_maxrss);
+#else
+        metrics_set("sysmond_max_rss_bytes", (double)ru.ru_maxrss * 1024.0);
+#endif
 }
 
 int main(int argc, char **argv)
