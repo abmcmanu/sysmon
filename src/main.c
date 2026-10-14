@@ -348,6 +348,8 @@ int main(int argc, char **argv)
 
     if (collect_init() < 0)
         return 1;
+    metrics_set_help("sysmond_tick_seconds", "Time spent sampling during the last tick.");
+    metrics_set_help("sysmond_max_rss_bytes", "Peak resident memory of sysmond.");
     alerts_set_interval(cfg.interval);
     if (alerts_load(cfg.alerts, cfg.nalerts, cfg.alert_exec) < 0)
         return 1;
