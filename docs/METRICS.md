@@ -35,6 +35,13 @@ For every `[disk] mount`, the mount point becomes part of the name:
 | `disk_<mount>_free_bytes` | space available to unprivileged users |
 | `disk_<mount>_inodes_used_percent` | inodes in use; absent on file systems without an inode table (btrfs, zfs) |
 
+## The daemon itself
+
+| metric | meaning |
+|---|---|
+| `sysmond_tick_seconds` | time the last tick took: collectors, plugins, alerts |
+| `sysmond_max_rss_bytes` | peak resident memory of sysmond |
+
 ## Alerts
 
 | metric | meaning |
