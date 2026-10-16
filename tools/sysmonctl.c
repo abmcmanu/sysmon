@@ -86,6 +86,33 @@ int main(int argc, char **argv)
         return 2;
     }
 
+    /* wait METRIC OP VALUE [TIMEOUT]: for scripts and CI jobs */
+    if (strcmp(argv[optind], "wait") == 0) {
+        if (argc - optind < 4) {
+            fprintf(stderr, "usage: sysmonctl wait METRIC OP VALUE [TIMEOUT]\n");
+            return 2;
+        }
+        const char *op = argv[optind + 2];
+        double want = atof(argv[optind + 3]);
+        char q[128];
+        snprintf(q, sizeof q, "get %s", argv[optind + 1]);
+        for (;;) {
+            sb_t r;
+            sb_init(&r);
+            if (ctl_query(sock, q, &r) < 0 || !r.data || strncmp(r.data, "ERR", 3) == 0) {
+                fprintf(stderr, "sysmonctl: %s", r.data ? r.data : "cannot reach sysmond\n");
+                sb_free(&r);
+                return 1;
+            }
+            double v = atof(r.data);
+            sb_free(&r);
+            if ((strcmp(op, ">") == 0 && v > want) || (strcmp(op, ">=") == 0 && v >= want) ||
+                (strcmp(op, "<") == 0 && v < want) || (strcmp(op, "<=") == 0 && v <= want))
+                return 0;
+            sleep(1);
+        }
+    }
+
     if (strcmp(argv[optind], "top") == 0) {
         double secs = optind + 1 < argc ? atof(argv[optind + 1]) : 1.0;
         return tui_run(sock, (int)(secs * 1000.0)) < 0 ? 1 : 0;
