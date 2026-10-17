@@ -94,6 +94,8 @@ int main(int argc, char **argv)
         }
         const char *op = argv[optind + 2];
         double want = atof(argv[optind + 3]);
+        double timeout = argc - optind > 4 ? atof(argv[optind + 4]) : 0;
+        time_t start = time(NULL);
         char q[128];
         snprintf(q, sizeof q, "get %s", argv[optind + 1]);
         for (;;) {
@@ -109,6 +111,8 @@ int main(int argc, char **argv)
             if ((strcmp(op, ">") == 0 && v > want) || (strcmp(op, ">=") == 0 && v >= want) ||
                 (strcmp(op, "<") == 0 && v < want) || (strcmp(op, "<=") == 0 && v <= want))
                 return 0;
+            if (timeout > 0 && difftime(time(NULL), start) >= timeout)
+                return 4;
             sleep(1);
         }
     }
