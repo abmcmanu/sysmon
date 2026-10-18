@@ -36,6 +36,8 @@ static void usage(FILE *out)
             "  alerts                 alert rules and their state\n"
             "  reload                 re-read the configuration file\n"
             "  top [SEC]              interactive dashboard\n"
+            "  wait METRIC OP VALUE [TIMEOUT]\n"
+            "                         block until the condition holds (exit 4 on timeout)\n"
             "\n"
             "-w SEC repeats the command every SEC seconds, like watch(1).\n"
             "SOCKET defaults to $SYSMON_SOCKET, then " DEFAULT_SOCKET ".\n");
