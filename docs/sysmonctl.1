@@ -46,6 +46,15 @@ Alert rules and their state.
 .B reload
 Make the daemon re-read its configuration.
 .TP
+.BI wait " metric op value" " \fR[\fItimeout\fR]"
+Poll every second until
+.I metric op value
+holds, with
+.I op
+one of > >= < <=. Exits 0 when it does, 4 after
+.I timeout
+seconds.
+.TP
 .BR top " [\fIseconds\fR]"
 Full-screen dashboard. Keys: q quit, h help, space pause, / filter,
 + and \- change the refresh rate.
