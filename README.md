@@ -63,6 +63,7 @@ sysmonctl json                          # everything, machine-readable
 sysmonctl alerts                        # rule states
 sysmonctl reload                        # same as kill -HUP
 sysmonctl -w 2 list 'cpu*'              # refresh every 2 s, like watch(1)
+sysmonctl wait load1 '<' 1 300          # block until the box calms down
 ```
 
 Shell completions for bash, zsh and fish are in
