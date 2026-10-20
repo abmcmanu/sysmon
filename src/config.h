@@ -41,6 +41,8 @@ typedef struct config {
 } config_t;
 
 void config_defaults(config_t *cfg);
+/* "section.key=value", as given to sysmond -D */
+int config_set(config_t *cfg, const char *assignment);
 /* Returns 0 on success, -1 if the file is missing or has errors. */
 int config_load(config_t *cfg, const char *path);
 

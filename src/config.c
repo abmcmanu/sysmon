@@ -321,3 +321,22 @@ int config_load(config_t *cfg, const char *path)
     seen_mount = 0;
     return load_file(cfg, path, 0);
 }
+
+int config_set(config_t *cfg, const char *assignment)
+{
+    char buf[512], section[64];
+    const char *eq = strchr(assignment, '=');
+    const char *dot = strchr(assignment, '.');
+
+    if (!eq || !dot || dot > eq || (size_t)(dot - assignment) >= sizeof section) {
+        log_err("-D %s: expected section.key=value", assignment);
+        return -1;
+    }
+    snprintf(section, sizeof section, "%.*s", (int)(dot - assignment), assignment);
+    snprintf(buf, sizeof buf, "%.*s", (int)(eq - dot - 1), dot + 1);
+    if (set_key(cfg, section, trim(buf), eq + 1) != 0) {
+        log_err("-D %s: unknown key or invalid value", assignment);
+        return -1;
+    }
+    return 0;
+}
