@@ -89,6 +89,12 @@ int main(void)
     CHECK(strcmp(cfg.opts[1].key, "per_core") == 0);
     unlink(p);
 
+    config_defaults(&cfg);
+    CHECK(config_set(&cfg, "core.interval=9") == 0 && cfg.interval == 9);
+    CHECK(config_set(&cfg, "http.port=9273") == 0 && cfg.http_port == 9273);
+    CHECK(config_set(&cfg, "core.nope=1") < 0);
+    CHECK(config_set(&cfg, "interval=1") < 0);
+
     p = write_tmp("[core]\ninterval = 7   # seconds\nsocket = /tmp/a#b.sock ; comment\n");
     config_defaults(&cfg);
     CHECK(config_load(&cfg, p) == 0);
