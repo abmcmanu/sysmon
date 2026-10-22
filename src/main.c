@@ -61,6 +61,7 @@ static void usage(FILE *out)
             "usage: sysmond [options]\n"
             "\n"
             "  -c FILE   configuration file\n"
+            "  -D S.K=V  override a configuration key, e.g. -D http.port=9273\n"
             "  -t        check the configuration and exit\n"
             "  -f        stay in the foreground\n"
             "  -i SEC    sampling interval in seconds (default: 5)\n"
@@ -271,7 +272,10 @@ int main(int argc, char **argv)
     int foreground = 0;
     int print = 0;
     int interval = 0, level = -1, opt;
+    const char *overrides[16];
+    int noverrides = 0;
     static const char optstring[] = "hVi:l:"
+                                    "D:"
                                     "c:"
                                     "t"
                                     "f"
@@ -300,6 +304,10 @@ int main(int argc, char **argv)
                 return 2;
             }
             break;
+        case 'D':
+            if (noverrides < 16)
+                overrides[noverrides++] = optarg;
+            break;
         case 'l':
             level = log_level_from_str(optarg);
             if (level < 0) {
@@ -321,6 +329,9 @@ int main(int argc, char **argv)
 
     if (cfg_path && config_load(&cfg, cfg_path) < 0)
         return 1;
+    for (int i = 0; i < noverrides; i++)
+        if (config_set(&cfg, overrides[i]) < 0)
+            return 1;
     if (check_only) {
         if (alerts_load(cfg.alerts, cfg.nalerts, cfg.alert_exec) < 0)
             return 1;
