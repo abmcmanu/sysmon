@@ -25,6 +25,11 @@ simple threshold alerts.
 Read the configuration from
 .IR file .
 .TP
+.BI \-D " section.key=value"
+Override one configuration key after the file is read, e.g.
+.BR "\-D http.port=9273" .
+May be repeated.
+.TP
 .B \-f
 Stay in the foreground instead of daemonizing.
 .TP
