@@ -41,5 +41,7 @@ void alerts_set_interval(int seconds);
 int alert_ticks(int seconds, int interval);
 int alerts_firing(void);
 void alerts_dump(sb_t *out);
+/* [{"rule": ..., "firing": true, "value": ..., "since": ...}, ...] */
+void alerts_json(sb_t *out);
 
 #endif
