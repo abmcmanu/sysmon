@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 
 #include "alert.h"
+#include "json.h"
 #include "log.h"
 #include "metrics.h"
 
@@ -209,4 +210,18 @@ void alerts_dump(sb_t *out)
             sb_printf(out, ", since %lds", (long)(now - a->since));
         sb_puts(out, ")\n");
     }
+}
+
+void alerts_json(sb_t *out)
+{
+    sb_puts(out, "[");
+    for (int i = 0; i < nalerts; i++) {
+        const alert_t *a = &alerts[i];
+        sb_puts(out, i ? ",{\"rule\":" : "{\"rule\":");
+        json_string(out, a->rule);
+        sb_printf(out, ",\"firing\":%s,\"value\":", a->firing ? "true" : "false");
+        json_number(out, a->last);
+        sb_printf(out, ",\"since\":%lld}", (long long)a->since);
+    }
+    sb_puts(out, "]\n");
 }
