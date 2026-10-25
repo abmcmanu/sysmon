@@ -18,6 +18,7 @@
 #include "sb.h"
 #include "version.h"
 #include "json.h"
+#include "alert.h"
 #include "web_index.h"
 
 int http_open(const char *bind_addr, int port)
@@ -210,6 +211,9 @@ void http_handle(int listen_fd)
             long n = query_param(query, "n", nbuf, sizeof nbuf) ? strtol(nbuf, NULL, 10) : 60;
             json_history(&body, m, n > 0 ? (size_t)n : 60);
         }
+    } else if (strcmp(path, "/api/alerts") == 0) {
+        ctype = "application/json";
+        alerts_json(&body);
     } else if (strcmp(path, "/api/influx") == 0) {
         render_influx(&body);
     } else if (strcmp(path, "/api/version") == 0) {
