@@ -59,6 +59,7 @@ int main(void)
     CHECK(strncmp(get("POST /metrics HTTP/1.0\r\n\r\n"), "HTTP/1.0 405", 12) == 0);
     CHECK(strstr(get("GET /api/version HTTP/1.0\r\n\r\n"), "{\"version\":\"") != NULL);
     CHECK(strstr(get("GET /metrics?x=1 HTTP/1.0\r\n\r\n"), "sysmon_load1") != NULL);
+    CHECK(strstr(get("GET /api/alerts HTTP/1.0\r\n\r\n"), "\r\n\r\n[]\n") != NULL);
     CHECK(strstr(get("GET /api/influx HTTP/1.0\r\n\r\n"), "\r\n\r\nsysmon,host=") != NULL);
     CHECK(strstr(reply, "load1=1.5") != NULL);
 
