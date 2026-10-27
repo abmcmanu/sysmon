@@ -12,6 +12,7 @@ reverse proxy in front.
 | `/api/metrics` | all metrics as JSON, same shape as `sysmonctl json` |
 | `/api/history?metric=NAME&n=N` | `{"metric": NAME, "values": [...]}`, oldest first (default 60, max 300) |
 | `/api/version` | `{"version": "X.Y.Z"}` |
+| `/api/alerts` | `[{"rule": ..., "firing": true, "value": ..., "since": UNIX_TIME}, ...]` |
 | `/api/influx` | InfluxDB line protocol, one point `sysmon,host=...` with every metric as a field, for Telegraf's `http` input |
 
 `/api/*` answers carry `Cache-Control: no-store`.
