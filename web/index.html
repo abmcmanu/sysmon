@@ -44,6 +44,7 @@ input { flex: 1; }
 </header>
 <main>
   <div class="error" id="error"></div>
+  <div id="alerts"></div>
   <div class="cards" id="cards"></div>
   <div class="tools">
     <input id="filter" placeholder="filter metrics" autocomplete="off">
@@ -143,6 +144,14 @@ function apply(data) {
     new Date(data.timestamp * 1000).toLocaleTimeString();
   if (data.host) document.title = data.host + ' · sysmond';
   renderCards(data.metrics);
+  if (data.metrics.alerts_firing > 0) {
+    fetch('/api/alerts').then((r) => r.json()).then((list) => {
+      $('alerts').innerHTML = list.filter((a) => a.firing)
+        .map((a) => `<div class="error" style="display:block">${a.rule} (${fmt(a.value)})</div>`).join('');
+    });
+  } else {
+    $('alerts').innerHTML = '';
+  }
   sparks();
   renderTable(data.metrics);
 }
