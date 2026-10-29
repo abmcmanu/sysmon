@@ -364,6 +364,18 @@ static void render(const char *sock, int interval_ms, int connected)
         sb_printf(&o, "\n  " RED BOLD "%d alert(s) firing" RESET DIM "  (sysmonctl alerts)" RESET "\n",
                   (int)firing);
         used += 2;
+        sb_t al;
+        sb_init(&al);
+        if (ctl_query(sock, "alerts", &al) == 0 && al.data) {
+            char *save = NULL;
+            for (char *l = strtok_r(al.data, "\n", &save); l; l = strtok_r(NULL, "\n", &save)) {
+                if (strncmp(l, "FIRING", 6) == 0) {
+                    sb_printf(&o, "  " RED "%.*s" RESET "\n", cols - 4, l);
+                    used++;
+                }
+            }
+        }
+        sb_free(&al);
     }
 
     if (show_help) {
