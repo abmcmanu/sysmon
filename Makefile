@@ -178,6 +178,12 @@ dist:
 	git archive --prefix=sysmon-$(VERSION)/ -o sysmon-$(VERSION).tar.gz HEAD
 	@echo sysmon-$(VERSION).tar.gz
 
+examples: $(BUILD)/examples/hello.so
+
+$(BUILD)/examples/%.so: examples/plugins/%.c include/sysmon/plugin.h
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -fPIC -shared -o $@ $< $(LDFLAGS)
+
 check: test smoke
 
 format:
