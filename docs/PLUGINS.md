@@ -32,7 +32,8 @@ static const sysmon_plugin_t plugin = {
 SYSMON_PLUGIN_EXPORT(plugin)
 ```
 
-Build it like the bundled ones:
+The file is in [`examples/plugins/hello.c`](../examples/plugins/hello.c),
+`make examples` builds it. By hand:
 
     cc -std=c11 -Iinclude -fPIC -shared -o build/plugins/hello.so plugins/hello.c
 
