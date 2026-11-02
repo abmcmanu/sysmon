@@ -168,6 +168,7 @@ see [docs/PLUGINS.md](docs/PLUGINS.md).
 | 2023 | live reload (SIGHUP) |
 | 2024 | packaging: systemd, launchd, man page |
 | 2025 | `sysmonctl top` (3.0) |
+| 2026 | plugin ABI 2 (4.0), web dashboard, JSON API, FreeBSD, Graphite push, 13 plugins |
 
 ## License
 
