@@ -2,6 +2,17 @@
 
 All notable changes to sysmon. Dates are release dates.
 
+## 4.5.0 - 2026-11-03
+
+- `sockets`, `conntrack`, `battery` and `cgroup` plugins.
+- Push to Graphite over UDP (`[graphite]`).
+- `/api/influx` and `/api/alerts`
+- the dashboard shows firing alerts.
+- `sysmonctl wait METRIC OP VALUE [TIMEOUT]`.
+- `sysmond -D section.key=value`.
+- `sysmond_tick_seconds` and `sysmond_max_rss_bytes`.
+- Example plugin in `examples/plugins/`.
+
 ## 4.4.0 - 2026-08-30
 
 - Configuration: comments at the end of a line, double-quoted values.
