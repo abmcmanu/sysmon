@@ -18,7 +18,7 @@ jobs:
     env:
       CC: ${{ matrix.cc }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: build
         run: make
       - name: unit tests
@@ -32,7 +32,7 @@ jobs:
   freebsd:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: vmactions/freebsd-vm@v1
         with:
           prepare: pkg install -y gmake curl
@@ -43,14 +43,14 @@ jobs:
     container: alpine:3.20
     steps:
       - run: apk add --no-cache build-base curl
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: make WERROR=1
       - run: make test smoke
 
   docker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: docker build -t sysmon .
       - name: container answers
         run: |
@@ -62,7 +62,7 @@ jobs:
   sanitizers:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: asan + ubsan
         run: make asan
       - name: smoke test under asan
@@ -71,7 +71,7 @@ jobs:
   fuzz:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: fuzz each target for 2 minutes
         run: sh fuzz/run.sh 120
       - uses: actions/upload-artifact@v4
