@@ -1,6 +1,6 @@
 # Maintainer: abmcmanu <abmcmanu@users.noreply.github.com>
 pkgname=sysmon
-pkgver=4.4.0
+pkgver=4.5.0
 pkgrel=1
 pkgdesc='Small dependency-free system monitoring daemon'
 arch=('x86_64' 'aarch64')
